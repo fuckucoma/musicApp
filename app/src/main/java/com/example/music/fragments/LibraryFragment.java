@@ -13,10 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.example.music.PlayerViewModel;
 import com.example.music.UploadTrackActivity;
+import com.example.music.models.Track;
 import com.example.test.R;
 
 public class LibraryFragment extends Fragment {
+
+    private PlayerViewModel playerViewModel;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -39,5 +43,14 @@ public class LibraryFragment extends Fragment {
 
 
         return view;
+    }
+
+    private void onTrackSelected(Track track) {
+        String trackUrl = getTrackStreamUrl(track.getId());
+        playerViewModel.playTrack(trackUrl, track, false); // false, так как не из HomeFragment
+    }
+
+    private String getTrackStreamUrl(String trackId) {
+        return "http://192.168.100.29:3000/tracks/" + trackId + "/stream";
     }
 }

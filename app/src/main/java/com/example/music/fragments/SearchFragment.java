@@ -2,26 +2,27 @@ package com.example.music.fragments;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.music.PlayerViewModel;
 import com.example.music.adapters.SearchAdapter;
 import com.example.music.models.Track;
-import com.example.music.PlayerViewModel;
+import com.example.music.SearchViewModel;
 import com.example.test.R;
-import com.google.gson.Gson;
+import com.google.android.material.button.MaterialButton;
 import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,39 +34,58 @@ import okhttp3.Response;
 
 public class SearchFragment extends Fragment {
 
-    private PlayerViewModel playerViewModel; // ViewModel для управления плеером
+    private PlayerViewModel playerViewModel;
+    private SearchViewModel searchViewModel;
     private SearchAdapter searchAdapter;
-    private final List<Track> trackList = new ArrayList<>();
     private RecyclerView recyclerView;
+    private EditText searchInput;
+    private MaterialButton searchButton;
 
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint("WrongViewCast")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
-        // Получаем экземпляр PlayerViewModel
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
+        searchViewModel = new ViewModelProvider(this).get(SearchViewModel.class);
 
         recyclerView = view.findViewById(R.id.search_results);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        EditText searchInput = view.findViewById(R.id.search_input);
-        Button searchButton = view.findViewById(R.id.search_button);
+        searchInput = view.findViewById(R.id.search_input);
+        searchButton = view.findViewById(R.id.search_button);
+
+        searchAdapter = new SearchAdapter(getContext(), new ArrayList<>(), this::onTrackSelected);
+        recyclerView.setAdapter(searchAdapter);
 
         searchButton.setOnClickListener(v -> {
             String query = searchInput.getText().toString();
             if (!query.isEmpty()) {
-                searchTracks(query);  // Выполняем поиск с запросом
+                searchViewModel.setLastQuery(query);
+                searchTracks(query);
             }
         });
+
+        // Наблюдаем за результатами поиска
+        searchViewModel.getSearchResults().observe(getViewLifecycleOwner(), tracks -> {
+            if (tracks != null) {
+                searchAdapter.updateData(tracks);
+            }
+        });
+
+        // Если были предыдущие результаты поиска, отображаем их
+        if (searchViewModel.getSearchResults().getValue() != null && !searchViewModel.getSearchResults().getValue().isEmpty()) {
+            searchAdapter.updateData(searchViewModel.getSearchResults().getValue());
+            searchInput.setText(searchViewModel.getLastQuery());
+        }
 
         return view;
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private void searchTracks(String query) {
         new Thread(() -> {
             OkHttpClient client = new OkHttpClient();
-            String url = "http://192.168.100.30:3000/search-tracks?query=" + query;
+            String url = "http://192.168.100.29:3000/search-tracks?query=" + query;
 
             Log.d("SearchTracks", "URL запроса: " + url);
 
@@ -78,16 +98,8 @@ public class SearchFragment extends Fragment {
 
                 if (response.isSuccessful()) {
                     List<Track> searchResults = new Gson().fromJson(responseBody, new TypeToken<List<Track>>(){}.getType());
-                    requireActivity().runOnUiThread(() -> {
-                        searchAdapter = new SearchAdapter(getContext(), trackList, track -> {
-                            playTrack(track.getId());
-                        }, playerViewModel.getPlayer());
-                        recyclerView.setAdapter(searchAdapter);
-
-                        trackList.clear();
-                        trackList.addAll(searchResults);
-                        searchAdapter.notifyDataSetChanged();
-                    });
+                    // Сохраняем результаты в ViewModel
+                    searchViewModel.setSearchResults(searchResults);
                 } else {
                     requireActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Ошибка поиска треков", Toast.LENGTH_SHORT).show());
                 }
@@ -98,20 +110,17 @@ public class SearchFragment extends Fragment {
         }).start();
     }
 
-    private void playTrack(String trackId) {
-        String trackUrl = getTrackStreamUrl(trackId);
-        Log.d("SearchFragment", "playTrack: " + trackUrl);
-
-        if (trackUrl == null || trackUrl.isEmpty()) {
-            Toast.makeText(getContext(), "Ошибка: некорректный URL трека", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Используем ViewModel для управления воспроизведением
-        playerViewModel.playTrack(trackUrl);
+    private void onTrackSelected(Track track) {
+        String trackUrl = getTrackStreamUrl(track.getId());
+        playerViewModel.playTrack(trackUrl, track, false); // false, так как не из HomeFragment
     }
 
     private String getTrackStreamUrl(String trackId) {
-        return "http://192.168.100.30:3000/tracks/" + trackId + "/stream";
+        return "http://192.168.100.29:3000/tracks/" + trackId + "/stream";
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
     }
 }
