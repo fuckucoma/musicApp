@@ -47,7 +47,7 @@ public class LibraryFragment extends Fragment {
 
     private void onTrackSelected(Track track) {
         String trackUrl = getTrackStreamUrl(track.getId());
-        playerViewModel.playTrack(trackUrl, track, false); // false, так как не из HomeFragment
+        playerViewModel.playTrack(trackUrl, track); // false, так как не из HomeFragment
     }
 
     private String getTrackStreamUrl(String trackId) {

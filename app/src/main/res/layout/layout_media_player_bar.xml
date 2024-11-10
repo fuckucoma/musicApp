@@ -27,7 +27,7 @@
             android:orientation="vertical">
 
             <com.google.android.material.progressindicator.LinearProgressIndicator
-                android:id="@+id/media_player_bar_progress_indicator"
+                android:id="@+id/seek_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:progress="45"
@@ -58,7 +58,7 @@
                     app:layout_constraintBottom_toBottomOf="parent">
 
                     <ImageView
-                        android:id="@+id/image_view_album_art"
+                        android:id="@+id/track_image_bar"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:src="@drawable/placeholder_image"/>
@@ -77,7 +77,7 @@
                     app:layout_constraintEnd_toStartOf="@id/btn_favorite">
 
                     <TextView
-                        android:id="@+id/text_view_song_title"
+                        android:id="@+id/track_title_bar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Hope"
@@ -128,7 +128,7 @@
                     app:layout_constraintEnd_toEndOf="parent">
 
                     <ImageButton
-                        android:id="@+id/btn_play_pause"
+                        android:id="@+id/play_pause_button_bar"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="#03000000"

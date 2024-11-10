@@ -14,8 +14,10 @@ import com.example.music.fragments.HomeFragment;
 import com.example.music.fragments.LibraryFragment;
 import com.example.music.fragments.SearchFragment;
 import com.example.test.R;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.squareup.picasso.Picasso;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,12 +27,11 @@ import androidx.lifecycle.ViewModelProvider;
 public class MainActivity extends AppCompatActivity {
 
     private PlayerViewModel playerViewModel;
-    private ExoPlayer exoPlayer;
     private View mediaPlayerBottomBar;
     private TextView trackTitleBar;
     private ImageView trackImageBar;
     private ImageButton playPauseButtonBar;
-    private SeekBar seekBar;
+    private LinearProgressIndicator seekBar;
     private Handler handler = new Handler(Looper.getMainLooper());
 
     private Fragment currentFragment;
@@ -46,9 +47,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        exoPlayer = new ExoPlayer.Builder(this).build();
         playerViewModel = new ViewModelProvider(this).get(PlayerViewModel.class);
-        playerViewModel.setPlayer(exoPlayer);
 
         mediaPlayerBottomBar = findViewById(R.id.media_player_bottom_bar);
         trackTitleBar = findViewById(R.id.track_title_bar);
@@ -79,12 +78,10 @@ public class MainActivity extends AppCompatActivity {
                         .replace(R.id.fragment_container, selectedFragment)
                         .commit();
 
-
                 updateMediaPlayerVisibility();
             }
             return true;
         });
-
 
         setupMediaPlayerControls();
 
@@ -101,7 +98,8 @@ public class MainActivity extends AppCompatActivity {
         if (currentFragment instanceof HomeFragment) {
             mediaPlayerBottomBar.setVisibility(View.GONE);
             Log.d("MainActivity", "Media bar hidden in HomeFragment");
-        } else if (playerViewModel.isPlaying().getValue() != null && playerViewModel.isPlaying().getValue()) {
+        } else if (playerViewModel.getCurrentTrack().getValue() != null) {
+            // Показываем медиабар, если есть текущий трек в основном плеере
             mediaPlayerBottomBar.setVisibility(View.VISIBLE);
             Log.d("MainActivity", "Media bar shown in other fragment");
         } else {
@@ -110,20 +108,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isInHomeFragment() {
-        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-        return currentFragment instanceof HomeFragment;
-    }
-
     private void setupMediaPlayerControls() {
         playPauseButtonBar.setOnClickListener(v -> {
             if (playerViewModel.isPlaying().getValue() != null && playerViewModel.isPlaying().getValue()) {
                 playerViewModel.pauseTrack();
                 playPauseButtonBar.setImageResource(R.drawable.ic_play);
             } else {
-                playerViewModel.getPlayer().play();
+                playerViewModel.resumeTrack();
                 playPauseButtonBar.setImageResource(R.drawable.ic_pause);
             }
+        });
+
+
+        mediaPlayerBottomBar.setOnClickListener(v -> {
+            // Открыть активность полного плеера или диалог
+            // Intent intent = new Intent(this, FullPlayerActivity.class);
+            // startActivity(intent);
         });
 
         playerViewModel.getCurrentTrack().observe(this, track -> {
@@ -132,12 +132,30 @@ public class MainActivity extends AppCompatActivity {
             if (track != null && mediaPlayerBottomBar.getVisibility() == View.VISIBLE) {
                 trackTitleBar.setText(track.getTitle());
                 Picasso.get().load(track.getImageUrl()).into(trackImageBar);
-                updateSeekBar();
+
             }
         });
 
         playerViewModel.isPlaying().observe(this, isPlaying -> {
             updateMediaPlayerVisibility();
+            if (isPlaying != null) {
+
+                if (isPlaying) {
+
+                    playPauseButtonBar.setImageResource(R.drawable.ic_pause);
+                    handler.post(updateRunnable);
+                    updateSeekBar();
+                } else {
+                    playPauseButtonBar.setImageResource(R.drawable.ic_play);
+                    handler.removeCallbacks(updateRunnable);
+                }
+            }
+        });
+
+        playerViewModel.isPlayerReady().observe(this, isReady -> {
+            if (isReady != null && isReady) {
+                updateSeekBar();
+            }
         });
     }
 
@@ -148,16 +166,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateSeekBar() {
-        seekBar.setMax((int) playerViewModel.getPlayer().getDuration());
-        handler.postDelayed(updateRunnable, 1000);
+        if (playerViewModel.getPlayerInstance() != null) {
+            long duration = playerViewModel.getPlayerInstance().getDuration();
+            if (duration != C.TIME_UNSET && duration > 0) {
+                seekBar.setMax((int) duration);
+
+                handler.postDelayed(updateRunnable, 1000);
+            }
+            else {
+                handler.postDelayed(this::updateSeekBar, 500);
+            }
+        }
     }
 
     private Runnable updateRunnable = new Runnable() {
         @Override
         public void run() {
-            if (playerViewModel.getPlayer().isPlaying()) {
-                seekBar.setProgress((int) playerViewModel.getPlayer().getCurrentPosition());
-                handler.postDelayed(this, 1000);
+            if (playerViewModel.getPlayerInstance() != null && playerViewModel.getPlayerInstance().isPlaying()) {
+
+                long currentPosition = playerViewModel.getPlayerInstance().getCurrentPosition();
+                long duration = playerViewModel.getPlayerInstance().getDuration();
+
+                if (duration != C.TIME_UNSET && duration > 0) {
+                    seekBar.setMax((int) duration);
+                    seekBar.setProgress((int) currentPosition);
+                    handler.postDelayed(this, 1000);
+                }
+            }
+            else{
+                handler.removeCallbacks(updateRunnable);
             }
         }
     };
@@ -165,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        exoPlayer.release();
+        playerViewModel.releasePlayers();
         handler.removeCallbacks(updateRunnable);
     }
 }

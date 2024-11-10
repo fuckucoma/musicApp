@@ -35,8 +35,6 @@ public class HomeFragment extends Fragment {
     private ViewPager2 viewPager;
     private HomeAdapter homeAdapter;
     private List<Track> trackList = new ArrayList<>();
-    private boolean isPlayingStarted = false;
-    private boolean isTrackPlaying = false;
 
     @Nullable
     @Override
@@ -55,16 +53,20 @@ public class HomeFragment extends Fragment {
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
 
-                if (playerViewModel.isPlaying().getValue() != null && playerViewModel.isPlaying().getValue()
-                        && playerViewModel.isFromHomeFragment()) {
+                Log.d("HomeFragment", "Page selected: " + position);
 
+                if (playerViewModel.isHomePlaying()) {
                     Track selectedTrack = trackList.get(position);
 
-                    if (playerViewModel.getCurrentTrack().getValue() != null &&
-                            playerViewModel.getCurrentTrack().getValue().getId().equals(selectedTrack.getId())) {
-                        // Текущий трек уже играет, ничего не делаем
+                    Log.d("HomeFragment", "Selected track: " + selectedTrack.getTitle());
+
+
+                    if (playerViewModel.getCurrentHomeTrack() != null &&
+                            playerViewModel.getCurrentHomeTrack().getId().equals(selectedTrack.getId())) {
+                        Log.d("HomeFragment", "Current track is already playing");
+                        playTrack(selectedTrack);
                     } else {
-                        // Запускаем воспроизведение трека на новой странице
+                        Log.d("HomeFragment", "Playing new track");
                         playTrack(selectedTrack);
                     }
                 }
@@ -123,13 +125,10 @@ public class HomeFragment extends Fragment {
         }).start();
     }
 
-
     public void onItemClicked(Track track) {
-        if (playerViewModel.isPlaying().getValue() != null && playerViewModel.isPlaying().getValue()
-                && playerViewModel.getCurrentTrack().getValue() != null
-                && playerViewModel.getCurrentTrack().getValue().getId().equals(track.getId())) {
-            // Трек уже играет, ставим на паузу
-            playerViewModel.pauseTrack();
+        if (playerViewModel.isHomePlaying()) {
+            // Трек уже играет в HomeFragment, ставим на паузу
+            playerViewModel.pauseHomeTrack();
         } else {
             // Запускаем воспроизведение нового трека
             playTrack(track);
@@ -138,25 +137,15 @@ public class HomeFragment extends Fragment {
 
     private void playTrack(Track track) {
         String trackUrl = getTrackStreamUrl(track.getId());
-        playerViewModel.playTrack(trackUrl, track, true); // true, так как это из HomeFragment
-    }
-
-    private void onPlayButtonClicked(Track track) {
-        isPlayingStarted = true;
-        playTrack(track);
+        playerViewModel.playHomeTrack(trackUrl, track); // Используем playHomeTrack
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (playerViewModel.isFromHomeFragment()) {
-            playerViewModel.stopTrack();
+        if (playerViewModel.isHomePlaying()) {
+            playerViewModel.pauseHomeTrack();
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
     private String getTrackStreamUrl(String trackId) {
