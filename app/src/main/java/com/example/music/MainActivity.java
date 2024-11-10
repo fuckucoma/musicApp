@@ -1,5 +1,6 @@
 package com.example.music;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.example.music.fragments.HomeFragment;
 import com.example.music.fragments.LibraryFragment;
+import com.example.music.fragments.PlayerFragment;
 import com.example.music.fragments.SearchFragment;
 import com.example.test.R;
 import com.google.android.exoplayer2.C;
@@ -23,6 +25,8 @@ import com.squareup.picasso.Picasso;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
+import jnr.ffi.annotations.In;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     private Fragment searchFragment = null;
     private Fragment libraryFragment = null;
 
+
+    private boolean isPlayerFragmentVisible = false;
 
 
     @Override
@@ -95,11 +101,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateMediaPlayerVisibility() {
+        if (isPlayerFragmentVisible) {
+            mediaPlayerBottomBar.setVisibility(View.GONE); // Всегда скрываем mediaPlayerBottomBar в PlayerFragment
+            return;
+        }
+
         if (currentFragment instanceof HomeFragment) {
             mediaPlayerBottomBar.setVisibility(View.GONE);
             Log.d("MainActivity", "Media bar hidden in HomeFragment");
         } else if (playerViewModel.getCurrentTrack().getValue() != null) {
-            // Показываем медиабар, если есть текущий трек в основном плеере
             mediaPlayerBottomBar.setVisibility(View.VISIBLE);
             Log.d("MainActivity", "Media bar shown in other fragment");
         } else {
@@ -112,18 +122,17 @@ public class MainActivity extends AppCompatActivity {
         playPauseButtonBar.setOnClickListener(v -> {
             if (playerViewModel.isPlaying().getValue() != null && playerViewModel.isPlaying().getValue()) {
                 playerViewModel.pauseTrack();
-                playPauseButtonBar.setImageResource(R.drawable.ic_play);
+                playPauseButtonBar.setImageResource(R.drawable.ic_play_arrow_24px);
             } else {
                 playerViewModel.resumeTrack();
-                playPauseButtonBar.setImageResource(R.drawable.ic_pause);
+                playPauseButtonBar.setImageResource(R.drawable.ic_pause_24px);
             }
         });
 
 
         mediaPlayerBottomBar.setOnClickListener(v -> {
-            // Открыть активность полного плеера или диалог
-            // Intent intent = new Intent(this, FullPlayerActivity.class);
-            // startActivity(intent);
+            Log.d("MainActivity", "Opening PlayerFragment");
+            openPlayerFragment();
         });
 
         playerViewModel.getCurrentTrack().observe(this, track -> {
@@ -142,11 +151,11 @@ public class MainActivity extends AppCompatActivity {
 
                 if (isPlaying) {
 
-                    playPauseButtonBar.setImageResource(R.drawable.ic_pause);
+                    playPauseButtonBar.setImageResource(R.drawable.ic_pause_24px);
                     handler.post(updateRunnable);
                     updateSeekBar();
                 } else {
-                    playPauseButtonBar.setImageResource(R.drawable.ic_play);
+                    playPauseButtonBar.setImageResource(R.drawable.ic_play_arrow_24px);
                     handler.removeCallbacks(updateRunnable);
                 }
             }
@@ -157,6 +166,27 @@ public class MainActivity extends AppCompatActivity {
                 updateSeekBar();
             }
         });
+    }
+
+    private void openPlayerFragment() {
+        isPlayerFragmentVisible = true; // Устанавливаем флаг
+        mediaPlayerBottomBar.setVisibility(View.GONE);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new PlayerFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            isPlayerFragmentVisible = false; // Сбрасываем флаг, если мы вышли из PlayerFragment
+            updateMediaPlayerVisibility();
+        }
     }
 
     @Override

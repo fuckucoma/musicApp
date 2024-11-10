@@ -36,6 +36,13 @@
 
         </activity>
 
+        <activity
+            android:name="com.example.music.MediaPlayerView"
+            android:exported="true"
+            tools:ignore="Instantiatable">
+
+        </activity>
+
 
         <activity
             android:name="com.example.music.LoginActivity"
