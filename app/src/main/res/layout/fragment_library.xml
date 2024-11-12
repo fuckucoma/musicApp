@@ -1,28 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/libraryFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.music.fragments.LibraryFragment">
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Верхняя панель с заголовком и иконкой профиля -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/tvLibraryTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Библиотека"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_centerVertical="true" />
+
+            <ImageView
+                android:id="@+id/ivProfile"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_profile_24"
+                android:layout_marginStart="340dp"
+                android:contentDescription="Профиль пользователя"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="2dp"
+                />
+
+        </RelativeLayout>
+
         <Button
             android:id="@+id/upload_track"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="загрузка трека" />
+            android:text="Загрузка трека"
+            android:layout_marginBottom="16dp" />
 
         <!-- RecyclerView для отображения треков в библиотеке -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/library_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Кнопка Logout -->
+
 
     </LinearLayout>
 

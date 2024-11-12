@@ -33,7 +33,11 @@ android {
 
 dependencies {
 
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
 
+    implementation (libs.glide)
+    implementation(libs.shimmer)
     implementation(libs.json)
     implementation(libs.web3j.core)
     implementation(libs.gson)
@@ -47,4 +51,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
 }

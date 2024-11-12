@@ -8,8 +8,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import com.example.music.fragments.HomeFragment;
 import com.example.music.fragments.LibraryFragment;
@@ -17,16 +22,15 @@ import com.example.music.fragments.PlayerFragment;
 import com.example.music.fragments.SearchFragment;
 import com.example.test.R;
 import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.squareup.picasso.Picasso;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
-
-import jnr.ffi.annotations.In;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
     private LinearProgressIndicator seekBar;
     private Handler handler = new Handler(Looper.getMainLooper());
 
+
+
+
     private Fragment currentFragment;
 
     private Fragment homeFragment = null;
@@ -46,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private boolean isPlayerFragmentVisible = false;
+
+
 
 
     @Override
@@ -99,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         }
     }
+
 
     private void updateMediaPlayerVisibility() {
         if (isPlayerFragmentVisible) {

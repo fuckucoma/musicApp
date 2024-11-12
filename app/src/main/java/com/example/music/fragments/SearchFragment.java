@@ -85,7 +85,7 @@ public class SearchFragment extends Fragment {
     private void searchTracks(String query) {
         new Thread(() -> {
             OkHttpClient client = new OkHttpClient();
-            String url = "http://192.168.100.29:3000/search-tracks?query=" + query;
+            String url = "http://192.168.100.4:3000/tracks/search?query=" + query;
 
             Log.d("SearchTracks", "URL запроса: " + url);
 
@@ -116,7 +116,7 @@ public class SearchFragment extends Fragment {
     }
 
     private String getTrackStreamUrl(String trackId) {
-        return "http://192.168.100.29:3000/tracks/" + trackId + "/stream";
+        return "http://192.168.100.4:3000/tracks/" + trackId + "/stream";
     }
 
     @Override

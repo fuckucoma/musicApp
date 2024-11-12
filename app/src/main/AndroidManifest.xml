@@ -7,6 +7,7 @@
 
 
     <application
+        android:name="com.example.music.MyApp"
         android:allowBackup="true"
         android:usesCleartextTraffic="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -40,26 +41,26 @@
             android:name="com.example.music.MediaPlayerView"
             android:exported="true"
             tools:ignore="Instantiatable">
+        </activity>
 
+        <activity android:name="com.example.music.RegisterActivity"
+            android:exported="true">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
 
         <activity
             android:name="com.example.music.LoginActivity"
             android:exported="true">
-            <intent-filter android:autoVerify="true">
-                <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>
         </activity>
 
 
         <activity
             android:name="com.example.music.MainActivity"
             android:exported="true">
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

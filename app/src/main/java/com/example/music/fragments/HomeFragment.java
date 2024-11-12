@@ -81,7 +81,7 @@ public class HomeFragment extends Fragment {
     private void fetchTracks() {
         new Thread(() -> {
             OkHttpClient client = new OkHttpClient();
-            String url = "http://192.168.100.29:3000/tracks/";
+            String url = "http://192.168.100.4:3000/tracks/";
             Request request = new Request.Builder().url(url).build();
 
             try (Response response = client.newCall(request).execute()) {
@@ -149,6 +149,6 @@ public class HomeFragment extends Fragment {
     }
 
     private String getTrackStreamUrl(String trackId) {
-        return "http://192.168.100.29:3000/tracks/" + trackId + "/stream";
+        return "http://192.168.100.4:3000/tracks/" + trackId + "/stream";
     }
 }

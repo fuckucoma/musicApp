@@ -1,97 +1,131 @@
 package com.example.music;
 
-import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 import android.util.Log;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.music.models.LoginResponse;
+import com.example.music.models.RegisterResponse;
+import com.example.music.models.User;
+import com.example.music.api.ApiClient;
+import com.example.music.api.ApiService;
 import com.example.test.R;
+
+import java.io.IOException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
-    private WebView webView;
+
+    private EditText etUsername, etPassword;
+    private Button btnLogin;
+    private ApiService apiService;
+    private TextView tvRegisterLink;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login_activity);
 
-        webView = findViewById(R.id.webview);
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setDomStorageEnabled(true);
+        setContentView(R.layout.login_activity); // Убедитесь, что у вас есть соответствующий макет
 
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
+        etUsername = findViewById(R.id.etUsername);
+        etPassword = findViewById(R.id.etPassword);
+        Button btnLogin = findViewById(R.id.btnLogin);
+        TextView tvRegisterLink = findViewById(R.id.tvRegisterLink);
 
-                // Загружаем библиотеку Hedgehog через CDN
-                loadHedgehogScript();
+        apiService = ApiClient.getClient().create(ApiService.class);
 
-                // Выполняем JavaScript для получения токена через Hedgehog после загрузки страницы
-                if (url.contains("audius.co/feed")) {
-                    extractTokenUsingHedgehog();
-                }
+        btnLogin.setOnClickListener(v -> {
+            String username = etUsername.getText().toString().trim();
+            String password = etPassword.getText().toString().trim();
+
+            if (validateInput(username, password)) {
+                User user = new User(username, password);
+                loginUser(user);
             }
         });
 
-        webView.addJavascriptInterface(new WebAppInterface(), "Android");
-
-        // Загружаем страницу аутентификации Audius
-        webView.loadUrl("https://audius.co/signin");
+        tvRegisterLink.setOnClickListener(v -> {
+            // Перейти на экран регистрации
+            Intent intent = new Intent(this, RegisterActivity.class);
+            startActivity(intent);
+            finish();
+        });
     }
 
-    // Метод для загрузки Hedgehog через CDN, если она не подключена
-    private void loadHedgehogScript() {
-        String hedgehogScript = "javascript:(function() {" +
-                "  if (typeof window.Hedgehog === 'undefined') {" +
-                "    var script = document.createElement('script');" +
-                "    script.src = 'https://cdn.jsdelivr.net/npm/@audius/hedgehog';" +
-                "    script.onload = function() { console.log('Hedgehog загружена'); };" +
-                "    document.head.appendChild(script);" +
-                "  } else {" +
-                "    console.log('Hedgehog уже подключена');" +
-                "  }" +
-                "})();";
-
-        webView.evaluateJavascript(hedgehogScript, null);
-    }
-
-    // Интерфейс для получения данных из JavaScript
-    private class WebAppInterface {
-        @JavascriptInterface
-        public void onTokenReceived(String accessToken) {
-            Log.d(TAG, "Access Token: " + accessToken);
-            saveToken(accessToken);
+    private boolean validateInput(String username, String password) {
+        if (username.isEmpty()) {
+            etUsername.setError("Введите имя пользователя");
+            return false;
         }
+
+        if (password.isEmpty()) {
+            etPassword.setError("Введите пароль");
+            return false;
+        }
+
+        return true;
     }
 
-    // Метод для извлечения токена через Hedgehog после входа
-    private void extractTokenUsingHedgehog() {
-        String jsCode = "javascript:(function() {" +
-                "  const hedgehog = new window.Hedgehog();" +
-                "  hedgehog.login({ username: 'velkosasa21@gmail.com', password: 'jutluv20062122_' }).then(wallet => {" +
-                "    wallet.getToken().then(token => {" +
-                "      Android.onTokenReceived(token);" +
-                "    }).catch(error => console.error('Error getting token:', error));" +
-                "  }).catch(error => console.error('Login error:', error));" +
-                "})();";
+    private void loginUser(User user) {
+        Call<LoginResponse> call = apiService.login(user);
+        call.enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                if (response.isSuccessful()) {
+                    LoginResponse loginResponse = response.body();
+                    if (loginResponse != null && loginResponse.getToken() != null) {
+                        Toast.makeText(LoginActivity.this, "Вход выполнен успешно", Toast.LENGTH_SHORT).show();
+                        saveAuthToken(loginResponse.getToken());
 
-        webView.evaluateJavascript(jsCode, null);
+                        // Переход к основной активности
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Ошибка получения токена", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    try {
+                        String errorBody = response.errorBody().string();
+                        Toast.makeText(LoginActivity.this, "Ошибка входа: " + errorBody, Toast.LENGTH_SHORT).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Toast.makeText(LoginActivity.this, "Ошибка входа", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                Log.e("Login", "Ошибка сети: " + t.getMessage());
+                Toast.makeText(LoginActivity.this, "Ошибка сети: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void saveToken(String token) {
-        getSharedPreferences("app_prefs", MODE_PRIVATE)
-                .edit()
-                .putString("access_token", token)
-                .apply();
-        Log.d(TAG, "Token saved: " + token);
+    private void saveAuthToken(String token) {
+        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("authToken", token);
+        editor.apply();
+    }
+
+    private String getAuthToken() {
+        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+        return sharedPreferences.getString("authToken", null);
     }
 }
