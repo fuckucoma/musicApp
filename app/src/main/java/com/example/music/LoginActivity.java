@@ -3,7 +3,6 @@ package com.example.music;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -14,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.music.models.LoginResponse;
-import com.example.music.models.RegisterResponse;
 import com.example.music.models.User;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
@@ -38,8 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.login_activity); // Убедитесь, что у вас есть соответствующий макет
+        setContentView(R.layout.login_activity);
 
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
@@ -59,7 +56,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         tvRegisterLink.setOnClickListener(v -> {
-            // Перейти на экран регистрации
             Intent intent = new Intent(this, RegisterActivity.class);
             startActivity(intent);
             finish();
@@ -91,7 +87,6 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this, "Вход выполнен успешно", Toast.LENGTH_SHORT).show();
                         saveAuthToken(loginResponse.getToken());
 
-                        // Переход к основной активности
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();

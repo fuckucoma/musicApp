@@ -14,7 +14,7 @@ public class TrackResponse {
 
     public static class TrackData {
         @SerializedName("id")
-        private String id;
+        private int id;
 
         @SerializedName("title")
         private String title;
@@ -34,7 +34,7 @@ public class TrackResponse {
         @SerializedName("createdAt")
         private String createdAt;
 
-        public String getId() {
+        public int getId() {
             return id;
         }
 

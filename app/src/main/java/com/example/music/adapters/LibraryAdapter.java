@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,25 +21,29 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.TrackViewHolder>{
-
+public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.TrackViewHolder> {
 
     private final Context context;
-    private final List<Track> trackList;
+    private  List<Track> trackList;
     private final ExoPlayer exoPlayer;
     private final OnTrackClickListener listener;
+    private final OnFavoriteClickListener favoriteListener;
     private final Handler handler = new Handler(Looper.getMainLooper());
-
 
     public interface OnTrackClickListener {
         void onTrackClick(Track track);
     }
 
-    public LibraryAdapter(Context context, List<Track> trackList, OnTrackClickListener listener, ExoPlayer exoPlayer) {
+    public interface OnFavoriteClickListener {
+        void onFavoriteClick(Track track, boolean isFavorite);
+    }
+
+    public LibraryAdapter(Context context, List<Track> trackList, OnTrackClickListener listener, OnFavoriteClickListener favoriteListener, ExoPlayer exoPlayer) {
         this.context = context;
         this.trackList = trackList;
         this.exoPlayer = exoPlayer;
         this.listener = listener;
+        this.favoriteListener = favoriteListener;
     }
 
     @NonNull
@@ -63,34 +68,25 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.TrackVie
             holder.trackImage.setImageResource(R.drawable.placeholder_image);
         }
 
-
-        holder.itemView.setOnClickListener(v -> {
-            listener.onTrackClick(track);
-        });
-
     }
-
 
     @Override
     public int getItemCount() {
         return trackList.size();
     }
 
-
-
     public static class TrackViewHolder extends RecyclerView.ViewHolder {
         ImageView trackImage;
         TextView trackTitle;
         TextView trackName;
-
-
+        ImageButton favoriteIcon;
 
         public TrackViewHolder(@NonNull View itemView) {
             super(itemView);
             trackImage = itemView.findViewById(R.id.track_image);
             trackTitle = itemView.findViewById(R.id.track_title);
             trackName = itemView.findViewById(R.id.track_name);
-
+            favoriteIcon = itemView.findViewById(R.id.favorite_button);
         }
     }
 }

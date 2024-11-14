@@ -11,6 +11,7 @@ import com.example.music.PlayerViewModel;
 import com.example.music.adapters.HomeAdapter;
 import com.example.music.models.Track;
 import com.example.music.models.TrackResponse;
+import com.example.test.BuildConfig;
 import com.example.test.R;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.material.snackbar.Snackbar;
@@ -62,7 +63,7 @@ public class HomeFragment extends Fragment {
 
 
                     if (playerViewModel.getCurrentHomeTrack() != null &&
-                            playerViewModel.getCurrentHomeTrack().getId().equals(selectedTrack.getId())) {
+                            playerViewModel.getCurrentHomeTrack().getId()==(selectedTrack.getId())) {
                         Log.d("HomeFragment", "Current track is already playing");
                         playTrack(selectedTrack);
                     } else {
@@ -81,7 +82,7 @@ public class HomeFragment extends Fragment {
     private void fetchTracks() {
         new Thread(() -> {
             OkHttpClient client = new OkHttpClient();
-            String url = "http://192.168.100.4:3000/tracks/";
+            String url = BuildConfig.BASE_URL + "/tracks/";
             Request request = new Request.Builder().url(url).build();
 
             try (Response response = client.newCall(request).execute()) {
@@ -130,13 +131,13 @@ public class HomeFragment extends Fragment {
             // Трек уже играет в HomeFragment, ставим на паузу
             playerViewModel.pauseHomeTrack();
         } else {
-            // Запускаем воспроизведение нового трека
+
             playTrack(track);
         }
     }
 
     private void playTrack(Track track) {
-        String trackUrl = getTrackStreamUrl(track.getId());
+        String trackUrl = getTrackStreamUrl(track.getId()+"");
         playerViewModel.playHomeTrack(trackUrl, track); // Используем playHomeTrack
     }
 
@@ -149,6 +150,6 @@ public class HomeFragment extends Fragment {
     }
 
     private String getTrackStreamUrl(String trackId) {
-        return "http://192.168.100.4:3000/tracks/" + trackId + "/stream";
+        return BuildConfig.BASE_URL + "/tracks/" + trackId + "/stream";
     }
 }

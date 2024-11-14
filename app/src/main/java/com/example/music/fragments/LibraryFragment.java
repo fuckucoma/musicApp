@@ -20,16 +20,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-
-
-import com.example.music.LoginActivity;
+import android.widget.Toast;
 
 import com.example.music.PlayerViewModel;
 import com.example.music.UploadTrackActivity;
+import com.example.music.adapters.LibraryAdapter;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
 import com.example.music.models.Track;
+import com.example.test.BuildConfig;
 import com.example.test.R;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class LibraryFragment extends Fragment {
@@ -37,6 +43,7 @@ public class LibraryFragment extends Fragment {
     private static final String TAG = "LibraryFragment";
 
     private PlayerViewModel playerViewModel;
+    private ApiService apiService;
 
     private Button btnUploadTrack;
     private ImageView ivProfile;
@@ -54,7 +61,9 @@ public class LibraryFragment extends Fragment {
 
         ivProfile=view.findViewById(R.id.ivProfile);
 
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        apiService = ApiClient.getClient().create(ApiService.class);
+
+
 
 
 
@@ -75,31 +84,42 @@ public class LibraryFragment extends Fragment {
 
     private void openUserProfile() {
         Log.d(TAG, "Opening UserFragment");
-
-        // Создаём экземпляр UserFragment
         UserFragment userFragment = new UserFragment();
-
-        // Получаем FragmentManager и начинаем транзакцию
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-
-        // Заменяем текущий фрагмент на UserFragment
         transaction.replace(R.id.fragment_container, userFragment); // Убедитесь, что у вас есть контейнер с id 'fragment_container' в вашем Activity
-
-        // Добавляем транзакцию в back stack, чтобы пользователь мог вернуться
         transaction.addToBackStack(null);
-
-        // Выполняем транзакцию
         transaction.commit();
     }
 
+//    private void loadFavoriteTracks() {
+//        Call<List<Track>> call = apiService.getFavorites();
+//        call.enqueue(new Callback<List<Track>>() {
+//            @Override
+//            public void onResponse(Call<List<Track>> call, Response<List<Track>> response) {
+//                if (response.isSuccessful()) {
+//                    List<Track> favoriteTracks = response.body();
+//
+//                    LibraryAdapter.setTracks(favoriteTracks);
+//                } else {
+//                    Toast.makeText(getContext(), "Ошибка загрузки избранного", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<Track>> call, Throwable t) {
+//                Toast.makeText(getContext(), "Ошибка сети", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
+
 
     private void onTrackSelected(Track track) {
-        String trackUrl = getTrackStreamUrl(track.getId());
+        String trackUrl = getTrackStreamUrl(track.getId()+"");
         playerViewModel.playTrack(trackUrl, track); // false, так как не из HomeFragment
     }
 
     private String getTrackStreamUrl(String trackId) {
-        return "http://192.168.100.4:3000/tracks/" + trackId + "/stream";
+        return BuildConfig.BASE_URL +"/tracks/" + trackId + "/stream";
     }
 
     private String getAuthToken() {

@@ -1,7 +1,7 @@
 package com.example.music.models;
 
 public class Track {
-    private final String id;
+    private final int id;
     private final String title;
     private final String artist;
     private final String album;
@@ -9,7 +9,7 @@ public class Track {
     private final String filename;
     private final String createdAt;
 
-    public Track(String id, String title, String artist, String album, String imageUrl, String filename, String createdAt) {
+    public Track(int id, String title, String artist, String album, String imageUrl, String filename, String createdAt) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -19,7 +19,7 @@ public class Track {
         this.createdAt = createdAt;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -46,4 +46,5 @@ public class Track {
     public String getCreatedAt() {
         return createdAt;
     }
+
 }

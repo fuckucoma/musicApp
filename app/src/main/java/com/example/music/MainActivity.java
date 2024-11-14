@@ -1,6 +1,7 @@
 package com.example.music;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,10 +17,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import com.example.music.api.ApiClient;
+import com.example.music.api.ApiService;
+import com.example.music.api.FavoriteResponse;
 import com.example.music.fragments.HomeFragment;
 import com.example.music.fragments.LibraryFragment;
 import com.example.music.fragments.PlayerFragment;
 import com.example.music.fragments.SearchFragment;
+import com.example.music.models.Track;
 import com.example.test.R;
 import com.google.android.exoplayer2.C;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -31,6 +36,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
+
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,8 +60,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     private boolean isPlayerFragmentVisible = false;
+    private ApiService apiService;
 
-
+    private String authToken;
 
 
     @Override
@@ -69,6 +77,13 @@ public class MainActivity extends AppCompatActivity {
         trackImageBar = findViewById(R.id.track_image_bar);
         playPauseButtonBar = findViewById(R.id.play_pause_button_bar);
         seekBar = findViewById(R.id.seek_bar);
+
+        apiService = ApiClient.getClient().create(ApiService.class);
+
+        SharedPreferences sharedPreferences = MainActivity.this.getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+        authToken = sharedPreferences.getString("authToken", null);
+        Log.d("MainActivity", "Token user: " + authToken);
+
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
@@ -109,13 +124,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private void updateMediaPlayerVisibility() {
         if (isPlayerFragmentVisible) {
-            mediaPlayerBottomBar.setVisibility(View.GONE); // Всегда скрываем mediaPlayerBottomBar в PlayerFragment
+            mediaPlayerBottomBar.setVisibility(View.GONE);
             return;
         }
-
         if (currentFragment instanceof HomeFragment) {
             mediaPlayerBottomBar.setVisibility(View.GONE);
             Log.d("MainActivity", "Media bar hidden in HomeFragment");
@@ -139,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         mediaPlayerBottomBar.setOnClickListener(v -> {
             Log.d("MainActivity", "Opening PlayerFragment");
             openPlayerFragment();
@@ -151,9 +163,14 @@ public class MainActivity extends AppCompatActivity {
             if (track != null && mediaPlayerBottomBar.getVisibility() == View.VISIBLE) {
                 trackTitleBar.setText(track.getTitle());
                 Picasso.get().load(track.getImageUrl()).into(trackImageBar);
-
+                mediaPlayerBottomBar.findViewById(R.id.btn_favorite).setOnClickListener(v -> {
+                    Log.d("Track",": " + track);
+                    addTrackToFavorites(track);
+                });
             }
         });
+
+
 
         playerViewModel.isPlaying().observe(this, isPlaying -> {
             updateMediaPlayerVisibility();
@@ -174,6 +191,27 @@ public class MainActivity extends AppCompatActivity {
         playerViewModel.isPlayerReady().observe(this, isReady -> {
             if (isReady != null && isReady) {
                 updateSeekBar();
+            }
+        });
+    }
+
+    private void addTrackToFavorites(Track track) {
+        FavoriteRequest favoriteRequest = new FavoriteRequest(track.getId());
+        apiService.addFavorite(favoriteRequest).enqueue(new Callback<FavoriteResponse>() {
+            @Override
+            public void onResponse(Call<FavoriteResponse> call, Response<FavoriteResponse> response) {
+                    if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+
+                        Log.d("Лайки", "Трек добавлен в избранное: " + response.body());
+                    }
+                    else {
+                        Log.d("Лайки", "Ошибка добавления в избранное: " + response.message() );
+                    }
+            }
+
+            @Override
+            public void onFailure(Call<FavoriteResponse> call, Throwable t) {
+                Log.d("Лайки", "Ошибка сети: " + t.getMessage());
             }
         });
     }

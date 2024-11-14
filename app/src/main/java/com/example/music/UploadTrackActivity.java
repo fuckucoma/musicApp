@@ -24,6 +24,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.test.BuildConfig;
 import com.example.test.R;
 
 import java.io.FileInputStream;
@@ -51,7 +52,7 @@ public class UploadTrackActivity extends AppCompatActivity {
     private ImageView imageView;
     private TextView audioFileName;
 
-    private static final String SERVER_URL = "http://192.168.100.29:3000/tracks/add-track"; // Замените на ваш URL
+    private static final String SERVER_URL = BuildConfig.BASE_URL +"/tracks/add-track";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

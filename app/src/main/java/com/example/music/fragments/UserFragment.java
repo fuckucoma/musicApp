@@ -62,7 +62,6 @@ public class UserFragment extends Fragment {
         tvUsername = view.findViewById(R.id.tvUsername);
         Button btnUploadImage = view.findViewById(R.id.btnUploadImage);
 
-        // Инициализируем ApiService без передачи токена
         apiService = ApiClient.getClient().create(ApiService.class);
 
         @SuppressLint({"MissingInflatedId", "LocalSuppress"}) Button btnLogout=view.findViewById(R.id.btnLogout);

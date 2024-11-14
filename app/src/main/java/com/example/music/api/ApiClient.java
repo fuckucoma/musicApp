@@ -3,6 +3,8 @@ package com.example.music.api;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.test.BuildConfig;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -48,7 +50,7 @@ public class ApiClient {
             OkHttpClient client = clientBuilder.build();
 
             retrofit = new Retrofit.Builder()
-                    .baseUrl("http://192.168.100.4:3000/") // Замените на адрес вашего сервера
+                    .baseUrl(BuildConfig.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(client)
                     .build();

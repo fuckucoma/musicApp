@@ -11,26 +11,26 @@ import android.widget.Toast;
 
 import com.example.music.PlayerViewModel;
 import com.example.music.adapters.SearchAdapter;
+import com.example.music.api.ApiClient;
+import com.example.music.api.ApiService;
 import com.example.music.models.Track;
 import com.example.music.SearchViewModel;
+import com.example.test.BuildConfig;
 import com.example.test.R;
 import com.google.android.material.button.MaterialButton;
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 public class SearchFragment extends Fragment {
 
@@ -40,6 +40,7 @@ public class SearchFragment extends Fragment {
     private RecyclerView recyclerView;
     private EditText searchInput;
     private MaterialButton searchButton;
+    private ApiService apiService;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -57,6 +58,9 @@ public class SearchFragment extends Fragment {
 
         searchAdapter = new SearchAdapter(getContext(), new ArrayList<>(), this::onTrackSelected);
         recyclerView.setAdapter(searchAdapter);
+
+        apiService = ApiClient.getClient().create(ApiService.class);
+
 
         searchButton.setOnClickListener(v -> {
             String query = searchInput.getText().toString();
@@ -82,41 +86,55 @@ public class SearchFragment extends Fragment {
         return view;
     }
 
+//    public void addTrackToFavorites(Track track) {
+//        Call<FavoriteResponse> call = apiService.addFavorite(track);
+//        call.enqueue(new Callback<FavoriteResponse>() {
+//            @Override
+//            public void onResponse(Call<FavoriteResponse> call, Response<FavoriteResponse> response) {
+//                if (response.isSuccessful()) {
+//                    Toast.makeText(getContext(), "Трек добавлен в избранное", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(getContext(), "Ошибка добавления в избранное", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<FavoriteResponse> call, Throwable t) {
+//                Toast.makeText(getContext(), "Ошибка сети", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
+
     private void searchTracks(String query) {
-        new Thread(() -> {
-            OkHttpClient client = new OkHttpClient();
-            String url = "http://192.168.100.4:3000/tracks/search?query=" + query;
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        Call<List<Track>> call = apiService.searchTracks(query);
+        call.enqueue(new Callback<List<Track>>() {
+            @Override
+            public void onResponse(Call<List<Track>> call, Response<List<Track>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Track> searchResults = response.body();
 
-            Log.d("SearchTracks", "URL запроса: " + url);
-
-            Request request = new Request.Builder().url(url).build();
-
-            try (Response response = client.newCall(request).execute()) {
-                String responseBody = response.body().string();
-                Log.d("SearchTracks", "Код ответа: " + response.code());
-                Log.d("SearchTracks", "Тело ответа: " + responseBody);
-
-                if (response.isSuccessful()) {
-                    List<Track> searchResults = new Gson().fromJson(responseBody, new TypeToken<List<Track>>(){}.getType());
-                    // Сохраняем результаты в ViewModel
                     searchViewModel.setSearchResults(searchResults);
                 } else {
-                    requireActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Ошибка поиска треков", Toast.LENGTH_SHORT).show());
+                    Toast.makeText(getContext(), "Ошибка поиска треков", Toast.LENGTH_SHORT).show();
                 }
-            } catch (IOException e) {
-                Log.e("SearchTracks", "Ошибка сети", e);
-                requireActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Ошибка сети: " + e.getMessage(), Toast.LENGTH_SHORT).show());
             }
-        }).start();
+
+            @Override
+            public void onFailure(Call<List<Track>> call, Throwable t) {
+                Log.e("SearchTracks", "Ошибка сети", t);
+                Toast.makeText(getContext(), "Ошибка сети: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void onTrackSelected(Track track) {
-        String trackUrl = getTrackStreamUrl(track.getId());
+        String trackUrl = getTrackStreamUrl(track.getId() + "");
         playerViewModel.playTrack(trackUrl, track); // false, так как не из HomeFragment
     }
 
     private String getTrackStreamUrl(String trackId) {
-        return "http://192.168.100.4:3000/tracks/" + trackId + "/stream";
+        return BuildConfig.BASE_URL + "/tracks/" + trackId + "/stream";
     }
 
     @Override
