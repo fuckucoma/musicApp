@@ -33,7 +33,16 @@
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toStartOf="@id/item_song_description_parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/track_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="Track Image"
+                android:padding="12dp"/>
+
+            </androidx.cardview.widget.CardView>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/item_song_description_parent"
@@ -63,7 +72,15 @@
                         android:background="@color/bg_light_gray"
                         app:layout_constraintWidth_percent="0.8"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent" >
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/track_title">
+
+                        </TextView>
+                </FrameLayout>
 
                     <ImageButton
                         android:id="@+id/favorite_button"
@@ -88,7 +105,16 @@
                         app:layout_constraintWidth_percent="0.56"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/placeholder_title_textview" />
+                        app:layout_constraintTop_toBottomOf="@id/placeholder_title_textview">
+
+                        <TextView
+                            android:id="@+id/track_artist"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                        </TextView>
+
+                    </FrameLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>

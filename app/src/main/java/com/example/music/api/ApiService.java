@@ -1,7 +1,7 @@
 package com.example.music.api;
 
 import com.example.music.FavoriteRequest;
-import com.example.music.models.Favorite;
+import com.example.music.models.FavoriteResponse;
 import com.example.music.models.LoginResponse;
 import com.example.music.models.RegisterResponse;
 import com.example.music.models.Track;
@@ -38,11 +38,14 @@ public interface ApiService {
             @Part MultipartBody.Part profileImage
     );
 
-    @POST("/favorites/add")
-    Call<FavoriteResponse> addFavorite(@Body FavoriteRequest trackId);
-
     @GET("/favorites/get")
     Call<FavoriteResponse> getFavorites();
+
+    @POST("/favorites/remove")
+    Call<FavoriteResponse> removeFavorite(@Body FavoriteRequest favoriteRequest);
+
+    @POST("/favorites/add")
+    Call<FavoriteResponse> addFavorite(@Body FavoriteRequest favoriteRequest);
 
     @GET("/tracks/search")
     Call<List<Track>> searchTracks(@Query("query") String query);

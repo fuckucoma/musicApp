@@ -2,6 +2,7 @@ package com.example.music.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.example.test.BuildConfig;
 
@@ -10,6 +11,7 @@ import java.io.IOException;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import okhttp3.OkHttpClient;
@@ -28,6 +30,7 @@ public class ApiClient {
         if (retrofit == null) {
             OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
 
+            // Добавление interceptor для авторизации
             clientBuilder.addInterceptor(new Interceptor() {
                 @Override
                 public Response intercept(Chain chain) throws IOException {
@@ -43,9 +46,19 @@ public class ApiClient {
                     }
 
                     Request request = requestBuilder.build();
+                    Log.d("ApiClient", "Запрос: " + request.method() + " " + request.url());
+                    if (request.body() != null) {
+                        Log.d("ApiClient", "Тело запроса: " + request.body().toString());
+                    }
+
                     return chain.proceed(request);
                 }
             });
+
+            // Добавление interceptor для логирования запросов и ответов
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            clientBuilder.addInterceptor(logging);
 
             OkHttpClient client = clientBuilder.build();
 

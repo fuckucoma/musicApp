@@ -27,6 +27,7 @@ public class PlayerFragment extends Fragment {
     private TextView trackTitle;
     private SeekBar seekBar;
     private ImageButton playPauseButton;
+    private ImageButton btn_favorite;
 
     private PlayerViewModel playerViewModel;
     private Handler handler = new Handler();
@@ -41,6 +42,7 @@ public class PlayerFragment extends Fragment {
         trackTitle = view.findViewById(R.id.text_view_song_title);
         seekBar = view.findViewById(R.id.seek_bar_main);
         playPauseButton = view.findViewById(R.id.btn_play_pause);
+        btn_favorite = view.findViewById(R.id.btn_favorite);
 
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
 
@@ -70,6 +72,10 @@ public class PlayerFragment extends Fragment {
             } else {
                 playerViewModel.resumeTrack();
             }
+        });
+
+        btn_favorite.setOnClickListener(v->{
+
         });
 
 

@@ -122,7 +122,6 @@ public class UploadTrackActivity extends AppCompatActivity {
                 return;
             }
 
-            // Получение динамических имен файлов
             String imageFileName = getFileNameFromUri(imageUri);
             String audioFileName = getFileNameFromUri(audioUri);
 
@@ -224,5 +223,4 @@ public class UploadTrackActivity extends AppCompatActivity {
         }
         return result;
     }
-
 }

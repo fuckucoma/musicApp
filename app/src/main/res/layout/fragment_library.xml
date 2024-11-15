@@ -6,11 +6,15 @@
     android:layout_height="match_parent"
     tools:context="com.example.music.fragments.LibraryFragment">
 
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="16dp">
+
+
 
         <!-- Верхняя панель с заголовком и иконкой профиля -->
         <RelativeLayout
@@ -27,6 +31,8 @@
                 android:textStyle="bold"
                 android:layout_centerVertical="true" />
 
+
+
             <ImageView
                 android:id="@+id/ivProfile"
                 android:layout_width="40dp"
@@ -40,6 +46,8 @@
                 android:padding="2dp"
                 />
 
+
+
         </RelativeLayout>
 
         <Button
@@ -49,16 +57,27 @@
             android:text="Загрузка трека"
             android:layout_marginBottom="16dp" />
 
+
         <!-- RecyclerView для отображения треков в библиотеке -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/library_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            />
 
         <!-- Кнопка Logout -->
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </ProgressBar>
 
 
     </LinearLayout>
+
+
 
 </FrameLayout>

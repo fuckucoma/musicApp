@@ -42,6 +42,7 @@ dependencies {
 
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
+    implementation (libs.logging.interceptor.v491)
 
     implementation (libs.glide)
     implementation(libs.shimmer)

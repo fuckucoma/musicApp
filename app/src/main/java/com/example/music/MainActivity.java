@@ -1,6 +1,5 @@
 package com.example.music;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,7 +9,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import retrofit2.Call;
@@ -19,7 +17,7 @@ import retrofit2.Response;
 
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
-import com.example.music.api.FavoriteResponse;
+import com.example.music.models.FavoriteResponse;
 import com.example.music.fragments.HomeFragment;
 import com.example.music.fragments.LibraryFragment;
 import com.example.music.fragments.PlayerFragment;
@@ -31,13 +29,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.squareup.picasso.Picasso;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
-
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -200,13 +194,13 @@ public class MainActivity extends AppCompatActivity {
         apiService.addFavorite(favoriteRequest).enqueue(new Callback<FavoriteResponse>() {
             @Override
             public void onResponse(Call<FavoriteResponse> call, Response<FavoriteResponse> response) {
-                    if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-
-                        Log.d("Лайки", "Трек добавлен в избранное: " + response.body());
-                    }
-                    else {
-                        Log.d("Лайки", "Ошибка добавления в избранное: " + response.message() );
-                    }
+                if (response.isSuccessful() && response.body() != null) {
+                    FavoriteResponse favoriteResponse = response.body();
+                    Log.d("Лайки", "Трек добавлен в избранное: " + favoriteResponse.getMessage());
+                    Log.d("Лайки", "Добавленный трек: " + favoriteResponse);
+                } else {
+                    Log.d("Лайки", "Ошибка добавления в избранное: " + response.message());
+                }
             }
 
             @Override
@@ -217,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openPlayerFragment() {
-        isPlayerFragmentVisible = true; // Устанавливаем флаг
+        isPlayerFragmentVisible = true;
         mediaPlayerBottomBar.setVisibility(View.GONE);
 
         getSupportFragmentManager().beginTransaction()

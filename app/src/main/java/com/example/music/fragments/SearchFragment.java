@@ -130,7 +130,7 @@ public class SearchFragment extends Fragment {
 
     private void onTrackSelected(Track track) {
         String trackUrl = getTrackStreamUrl(track.getId() + "");
-        playerViewModel.playTrack(trackUrl, track); // false, так как не из HomeFragment
+        playerViewModel.playTrack(trackUrl, track);
     }
 
     private String getTrackStreamUrl(String trackId) {
