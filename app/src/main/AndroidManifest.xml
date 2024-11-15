@@ -37,18 +37,8 @@
 
         </activity>
 
-        <activity
-            android:name="com.example.music.MediaPlayerView"
-            android:exported="true"
-            tools:ignore="Instantiatable">
-        </activity>
-
         <activity android:name="com.example.music.RegisterActivity"
             android:exported="true">
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
 
@@ -61,6 +51,10 @@
         <activity
             android:name="com.example.music.MainActivity"
             android:exported="true">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

@@ -1,5 +1,6 @@
 package com.example.music;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -74,9 +75,19 @@ public class MainActivity extends AppCompatActivity {
 
         apiService = ApiClient.getClient().create(ApiService.class);
 
-        SharedPreferences sharedPreferences = MainActivity.this.getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-        authToken = sharedPreferences.getString("authToken", null);
-        Log.d("MainActivity", "Token user: " + authToken);
+        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+        String authToken = sharedPreferences.getString("authToken", null);
+        Log.d("MainActivity", "Token найден: " + authToken);
+        if (authToken == null) {
+            // Если токен отсутствует, переходим на экран входа
+            openLoginActivity();
+            finish();
+            return;
+        }
+
+        this.authToken = authToken;
+
+
 
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -118,6 +129,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void openLoginActivity() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     private void updateMediaPlayerVisibility() {
         if (isPlayerFragmentVisible) {
             mediaPlayerBottomBar.setVisibility(View.GONE);
@@ -129,10 +146,11 @@ public class MainActivity extends AppCompatActivity {
         } else if (playerViewModel.getCurrentTrack().getValue() != null) {
             mediaPlayerBottomBar.setVisibility(View.VISIBLE);
             Log.d("MainActivity", "Media bar shown in other fragment");
-        } else {
-            mediaPlayerBottomBar.setVisibility(View.GONE);
-            Log.d("MainActivity", "Media bar hidden, music not playing");
         }
+//        else {
+//            mediaPlayerBottomBar.setVisibility(View.GONE);
+//            Log.d("MainActivity", "Media bar hidden, music not playing");
+//        }
     }
 
     private void setupMediaPlayerControls() {
@@ -214,6 +232,9 @@ public class MainActivity extends AppCompatActivity {
         isPlayerFragmentVisible = true;
         mediaPlayerBottomBar.setVisibility(View.GONE);
 
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setVisibility(View.GONE);
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, new PlayerFragment())
                 .addToBackStack(null)
@@ -223,18 +244,34 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+            isPlayerFragmentVisible = false;
 
-        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
-            isPlayerFragmentVisible = false; // Сбрасываем флаг, если мы вышли из PlayerFragment
+            // Показываем BottomNavigationView
+            BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+            bottomNavigationView.setVisibility(View.VISIBLE);
+
             updateMediaPlayerVisibility();
+        } else {
+            super.onBackPressed();
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        isPlayerFragmentVisible = getSupportFragmentManager().getBackStackEntryCount() > 0;
         updateMediaPlayerVisibility();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        updateMediaPlayerVisibility();
+        handler.removeCallbacks(updateRunnable);
+
     }
 
     private void updateSeekBar() {

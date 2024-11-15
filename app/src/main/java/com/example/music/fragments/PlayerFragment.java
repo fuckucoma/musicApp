@@ -38,6 +38,9 @@ public class PlayerFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.layout_media_player_view, container, false);
 
+
+
+
         albumArt = view.findViewById(R.id.player_track_image);
         trackTitle = view.findViewById(R.id.text_view_song_title);
         seekBar = view.findViewById(R.id.seek_bar_main);

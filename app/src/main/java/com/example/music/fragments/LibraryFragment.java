@@ -121,7 +121,7 @@ public class LibraryFragment extends Fragment {
             public void onResponse(Call<FavoriteResponse> call, Response<FavoriteResponse> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(getContext(), "Трек удален из избранного", Toast.LENGTH_SHORT).show();
-                    // Обновите интерфейс, если это необходимо
+                   getFavorites();
                 } else {
                     Toast.makeText(getContext(), "Ошибка при удалении из избранного", Toast.LENGTH_SHORT).show();
                 }
@@ -155,7 +155,6 @@ public class LibraryFragment extends Fragment {
                     }
 
                     libraryAdapter.notifyDataSetChanged();
-                    Toast.makeText(getContext(), "Избранные треки загружены", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), "Не удалось получить избранное", Toast.LENGTH_SHORT).show();
                 }
@@ -196,10 +195,4 @@ public class LibraryFragment extends Fragment {
     private String getTrackStreamUrl(String trackId) {
         return BuildConfig.BASE_URL +"/tracks/" + trackId + "/stream";
     }
-
-    private String getAuthToken() {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-        return sharedPreferences.getString("authToken", null);
-    }
-
 }
