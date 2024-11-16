@@ -86,25 +86,6 @@ public class SearchFragment extends Fragment {
         return view;
     }
 
-//    public void addTrackToFavorites(Track track) {
-//        Call<FavoriteResponse> call = apiService.addFavorite(track);
-//        call.enqueue(new Callback<FavoriteResponse>() {
-//            @Override
-//            public void onResponse(Call<FavoriteResponse> call, Response<FavoriteResponse> response) {
-//                if (response.isSuccessful()) {
-//                    Toast.makeText(getContext(), "Трек добавлен в избранное", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Toast.makeText(getContext(), "Ошибка добавления в избранное", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<FavoriteResponse> call, Throwable t) {
-//                Toast.makeText(getContext(), "Ошибка сети", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
-
     private void searchTracks(String query) {
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
         Call<List<Track>> call = apiService.searchTracks(query);

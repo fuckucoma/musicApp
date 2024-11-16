@@ -9,6 +9,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.music.FavoriteRepository;
 import com.example.music.models.Track;
 import com.example.test.R;
 import com.squareup.picasso.Picasso;
@@ -23,15 +24,24 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TrackViewHolde
     private Context context;
     private List<Track> trackList;
     private OnItemClickListener listener;
+    private OnFavoriteClickListener favoriteClickListener;
+    private FavoriteRepository favoriteRepository;
+
 
     public interface OnItemClickListener {
         void onItemClicked(Track track);
     }
 
-    public HomeAdapter(Context context, List<Track> trackList, OnItemClickListener listener) {
+    public interface OnFavoriteClickListener {
+        void onFavoriteClicked(Track track, boolean isFavorite);
+    }
+
+    public HomeAdapter(Context context, List<Track> trackList, FavoriteRepository favoriteRepository,OnItemClickListener listener ,OnFavoriteClickListener favoriteClickListener) {
         this.context = context;
         this.trackList = trackList;
         this.listener = listener;
+        this.favoriteRepository = favoriteRepository;
+        this.favoriteClickListener = favoriteClickListener;
     }
 
     @NonNull
@@ -63,6 +73,15 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TrackViewHolde
                 listener.onItemClicked(track);
             }
         });
+
+        boolean isFavorite = favoriteRepository.isTrackFavorite(track.getId());
+        holder.favoriteButton.setImageResource(isFavorite ? R.drawable.ic_heart__24 : R.drawable.ic_favorite_24px);
+
+        holder.favoriteButton.setOnClickListener(v -> {
+            favoriteClickListener.onFavoriteClicked(track, isFavorite);
+            notifyItemChanged(position);
+        });
+
     }
 
     @Override
@@ -74,12 +93,14 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TrackViewHolde
         TextView trackTitle;
         TextView trackArtist;
         ImageView trackImage;
+        ImageButton favoriteButton;
 
         public TrackViewHolder(@NonNull View itemView) {
             super(itemView);
             trackTitle = itemView.findViewById(R.id.track_title);
             trackArtist = itemView.findViewById(R.id.track_artist);
             trackImage = itemView.findViewById(R.id.track_image);
+            favoriteButton = itemView.findViewById(R.id.btn_favorite);
         }
     }
 }

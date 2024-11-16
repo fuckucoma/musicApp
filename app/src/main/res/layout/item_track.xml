@@ -6,33 +6,60 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
+    android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true">
 
+    <!-- Изображение трека -->
     <ImageView
         android:id="@+id/track_image"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="350dp"
         android:scaleType="centerCrop"
-        android:layout_gravity="center_horizontal" />
-
-    <TextView
-        android:id="@+id/track_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Track Title"
-        android:textSize="18sp"
-        android:textStyle="bold"
         android:layout_gravity="center_horizontal"
-        android:paddingTop="8dp" />
+        android:contentDescription="track_image" />
 
-    <TextView
-        android:id="@+id/track_artist"
-        android:layout_width="wrap_content"
+    <!-- Горизонтальная секция для текста и кнопки -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Artist Name"
-        android:textSize="16sp"
-        android:layout_gravity="center_horizontal"
-        android:paddingBottom="8dp" />
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
 
+        <!-- Текстовая информация о треке -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/track_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Track Title"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:paddingStart="8dp" />
+
+            <TextView
+                android:id="@+id/track_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Artist Name"
+                android:textSize="16sp"
+                android:paddingStart="8dp" />
+        </LinearLayout>
+
+        <!-- Кнопка избранного -->
+        <ImageButton
+            android:id="@+id/btn_favorite"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_favorite_24px"
+            android:contentDescription="favorite_button" />
+
+    </LinearLayout>
 </LinearLayout>

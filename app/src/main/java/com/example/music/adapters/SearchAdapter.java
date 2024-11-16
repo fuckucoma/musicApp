@@ -28,6 +28,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.TrackViewH
         void onTrackSelected(Track track);
     }
 
+
     public SearchAdapter(Context context, List<Track> trackList, OnTrackSelectedListener listener) {
         this.context = context;
         this.trackList = trackList;
@@ -65,6 +66,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.TrackViewH
         }
 
         holder.itemView.setOnClickListener(v -> listener.onTrackSelected(track));
+
+
     }
 
     @Override

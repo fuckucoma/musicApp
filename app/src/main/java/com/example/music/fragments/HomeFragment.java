@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.music.FavoriteRepository;
+import com.example.music.MainActivity;
 import com.example.music.PlayerViewModel;
 import com.example.music.adapters.HomeAdapter;
 import com.example.music.models.Track;
@@ -36,6 +38,7 @@ public class HomeFragment extends Fragment {
     private ViewPager2 viewPager;
     private HomeAdapter homeAdapter;
     private List<Track> trackList = new ArrayList<>();
+    private FavoriteRepository favoriteRepository;
 
     @Nullable
     @Override
@@ -44,9 +47,11 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
+        favoriteRepository = ((MainActivity) requireActivity()).getFavoriteRepository();
+
 
         viewPager = view.findViewById(R.id.view_pager);
-        homeAdapter = new HomeAdapter(getContext(), trackList, this::onItemClicked);
+        homeAdapter = new HomeAdapter(getContext(), trackList,favoriteRepository, this::onItemClicked, this::onFavoriteClicked);
         viewPager.setAdapter(homeAdapter);
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -77,6 +82,18 @@ public class HomeFragment extends Fragment {
         fetchTracks();
 
         return view;
+    }
+
+    private void onFavoriteClicked(Track track, boolean isFavorite) {
+        if (isFavorite) {
+            favoriteRepository.removeTrackFromFavorites(track);
+            Toast.makeText(getContext(), "Removed from favorites", Toast.LENGTH_SHORT).show();
+            fetchTracks();
+        } else {
+            favoriteRepository.addTrackToFavorites(track);
+            Toast.makeText(getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
+            fetchTracks();
+        }
     }
 
     private void fetchTracks() {

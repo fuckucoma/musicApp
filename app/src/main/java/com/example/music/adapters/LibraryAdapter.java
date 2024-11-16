@@ -1,10 +1,6 @@
 package com.example.music.adapters;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.music.models.Track;
 import com.example.test.R;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.squareup.picasso.Picasso;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.TrackViewHolder> {
 
@@ -29,6 +25,7 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.TrackVie
     private List<Track> trackList;
     private final OnTrackClickListener listener;
     private final OnFavoriteClickListener favoriteListener;
+    private final Set<Integer> favoriteTrackIds = new HashSet<>(); // Хранит ID избранных треков
 
     public interface OnTrackClickListener {
         void onTrackClick(Track track);
@@ -59,22 +56,25 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.TrackVie
         holder.trackTitle.setText(track.getTitle());
         holder.trackName.setText(track.getArtist());
 
-        String imageUrl = track.getImageUrl();
-
-        Log.d("Favorite","Image favorite track: "+ imageUrl);
-
-        if (imageUrl != null && !imageUrl.isEmpty()) {
+        if (track.getImageUrl() != null && !track.getImageUrl().isEmpty()) {
             Glide.with(context).load(track.getImageUrl()).into(holder.trackImage);
         } else {
             holder.trackImage.setImageResource(R.drawable.placeholder_image);
         }
 
+        boolean isFavorite = favoriteTrackIds.contains(track.getId());
+        holder.favoriteIcon.setImageResource(isFavorite ? R.drawable.ic_heart__24 : R.drawable.ic_favorite_24px);
+
         holder.itemView.setOnClickListener(v -> listener.onTrackClick(track));
 
-
         holder.favoriteIcon.setOnClickListener(v -> {
-            boolean isFavorite = true;
             favoriteListener.onFavoriteClick(track, isFavorite);
+            if (isFavorite) {
+                favoriteTrackIds.remove(track.getId());
+            } else {
+                favoriteTrackIds.add(track.getId());
+            }
+            notifyItemChanged(position);
         });
     }
 
@@ -83,13 +83,36 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.TrackVie
         return trackList.size();
     }
 
+    public void updateFavorites(List<Integer> favoriteIds) {
+        Set<Integer> updatedFavorites = new HashSet<>(favoriteIds);
+        for (int i = 0; i < trackList.size(); i++) {
+            Track track = trackList.get(i);
+            boolean isFavorite = favoriteTrackIds.contains(track.getId());
+            boolean shouldBeFavorite = updatedFavorites.contains(track.getId());
+            if (isFavorite != shouldBeFavorite) {
+                if (shouldBeFavorite) {
+                    favoriteTrackIds.add(track.getId());
+                } else {
+                    favoriteTrackIds.remove(track.getId());
+                }
+                notifyItemChanged(i);
+            }
+        }
+    }
+
+    public void updateData(List<Track> newTracks, Set<Integer> updatedFavorites) {
+        this.trackList = newTracks;
+        this.favoriteTrackIds.clear();
+        this.favoriteTrackIds.addAll(updatedFavorites); // Обновляем избранное
+        notifyDataSetChanged();
+    }
+
     public static class TrackViewHolder extends RecyclerView.ViewHolder {
         ImageView trackImage;
         TextView trackTitle;
         TextView trackName;
         ImageButton favoriteIcon;
 
-        @SuppressLint("WrongViewCast")
         public TrackViewHolder(@NonNull View itemView) {
             super(itemView);
             trackImage = itemView.findViewById(R.id.track_image);

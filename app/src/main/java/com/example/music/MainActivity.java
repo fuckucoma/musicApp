@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import retrofit2.Call;
@@ -34,6 +35,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     private PlayerViewModel playerViewModel;
@@ -44,8 +48,10 @@ public class MainActivity extends AppCompatActivity {
     private LinearProgressIndicator seekBar;
     private Handler handler = new Handler(Looper.getMainLooper());
 
+    private FavoriteRepository favoriteRepository;
 
 
+    private FavoriteManager favoriteManager;
 
     private Fragment currentFragment;
 
@@ -65,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        favoriteManager = new FavoriteManager();
+
+
         playerViewModel = new ViewModelProvider(this).get(PlayerViewModel.class);
 
         mediaPlayerBottomBar = findViewById(R.id.media_player_bottom_bar);
@@ -72,6 +81,9 @@ public class MainActivity extends AppCompatActivity {
         trackImageBar = findViewById(R.id.track_image_bar);
         playPauseButtonBar = findViewById(R.id.play_pause_button_bar);
         seekBar = findViewById(R.id.seek_bar);
+
+        favoriteRepository = new FavoriteRepository(this);
+
 
         apiService = ApiClient.getClient().create(ApiService.class);
 
@@ -127,6 +139,9 @@ public class MainActivity extends AppCompatActivity {
                     .replace(R.id.fragment_container, homeFragment)
                     .commit();
         }
+
+
+        favoriteRepository.fetchFavorites();
     }
 
     private void openLoginActivity() {
@@ -154,6 +169,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupMediaPlayerControls() {
+
+        ImageButton favoriteButton = mediaPlayerBottomBar.findViewById(R.id.btn_favorite);
+
+
         playPauseButtonBar.setOnClickListener(v -> {
             if (playerViewModel.isPlaying().getValue() != null && playerViewModel.isPlaying().getValue()) {
                 playerViewModel.pauseTrack();
@@ -164,25 +183,48 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         mediaPlayerBottomBar.setOnClickListener(v -> {
             Log.d("MainActivity", "Opening PlayerFragment");
             openPlayerFragment();
         });
 
         playerViewModel.getCurrentTrack().observe(this, track -> {
-            updateMediaPlayerVisibility();
-
-            if (track != null && mediaPlayerBottomBar.getVisibility() == View.VISIBLE) {
+            if (track != null) {
                 trackTitleBar.setText(track.getTitle());
                 Picasso.get().load(track.getImageUrl()).into(trackImageBar);
-                mediaPlayerBottomBar.findViewById(R.id.btn_favorite).setOnClickListener(v -> {
-                    Log.d("Track",": " + track);
-                    addTrackToFavorites(track);
+
+                // Подписываемся на изменения избранного
+                favoriteRepository.getFavoriteTrackIds().observe(this, favoriteIds -> {
+                    if (favoriteIds.contains(track.getId())) {
+                        favoriteButton.setImageResource(R.drawable.ic_heart__24);
+                    } else {
+                        favoriteButton.setImageResource(R.drawable.ic_favorite_24px);
+                    }
                 });
             }
         });
 
+        favoriteButton.setOnClickListener(v -> {
+            Track currentTrack = playerViewModel.getCurrentTrack().getValue();
+            if (currentTrack != null) {
+                boolean isFavorite = favoriteRepository.isTrackFavorite(currentTrack.getId());
+                if (isFavorite) {
+                    favoriteRepository.removeTrackFromFavorites(currentTrack);
 
+                } else {
+                    favoriteRepository.addTrackToFavorites(currentTrack);
+                }
+            }
+        });
+
+        favoriteRepository.getFavoriteTrackIds().observe(this, favoriteIds -> {
+            Track currentTrack = playerViewModel.getCurrentTrack().getValue();
+            if (currentTrack != null) {
+                boolean isFavorite = favoriteIds.contains(currentTrack.getId());
+                favoriteButton.setImageResource(isFavorite ? R.drawable.ic_heart__24 : R.drawable.ic_favorite_24px);
+            }
+        });
 
         playerViewModel.isPlaying().observe(this, isPlaying -> {
             updateMediaPlayerVisibility();
@@ -207,25 +249,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void addTrackToFavorites(Track track) {
-        FavoriteRequest favoriteRequest = new FavoriteRequest(track.getId());
-        apiService.addFavorite(favoriteRequest).enqueue(new Callback<FavoriteResponse>() {
-            @Override
-            public void onResponse(Call<FavoriteResponse> call, Response<FavoriteResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    FavoriteResponse favoriteResponse = response.body();
-                    Log.d("Лайки", "Трек добавлен в избранное: " + favoriteResponse.getMessage());
-                    Log.d("Лайки", "Добавленный трек: " + favoriteResponse);
-                } else {
-                    Log.d("Лайки", "Ошибка добавления в избранное: " + response.message());
-                }
-            }
+    private void updateFavoriteButtonState(Track track) {
+        ImageButton favoriteButton = mediaPlayerBottomBar.findViewById(R.id.btn_favorite);
+        boolean isFavorite = favoriteRepository.isTrackFavorite(track.getId());
+        favoriteButton.setImageResource(isFavorite ? R.drawable.ic_heart__24 : R.drawable.ic_favorite_24px);
+    }
 
-            @Override
-            public void onFailure(Call<FavoriteResponse> call, Throwable t) {
-                Log.d("Лайки", "Ошибка сети: " + t.getMessage());
-            }
-        });
+    public FavoriteRepository getFavoriteRepository() {
+        return favoriteRepository;
     }
 
     private void openPlayerFragment() {
@@ -241,14 +272,13 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-
     @Override
     public void onBackPressed() {
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStack();
             isPlayerFragmentVisible = false;
 
-            // Показываем BottomNavigationView
+
             BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
             bottomNavigationView.setVisibility(View.VISIBLE);
 
