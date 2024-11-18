@@ -10,20 +10,14 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
-import com.example.music.models.FavoriteResponse;
-import com.example.music.fragments.HomeFragment;
-import com.example.music.fragments.LibraryFragment;
-import com.example.music.fragments.PlayerFragment;
-import com.example.music.fragments.SearchFragment;
+import com.example.music.User_fragments.HomeFragment;
+import com.example.music.User_fragments.LibraryFragment;
+import com.example.music.User_fragments.PlayerFragment;
+import com.example.music.User_fragments.SearchFragment;
 import com.example.music.models.Track;
 import com.example.test.R;
 import com.google.android.exoplayer2.C;
@@ -35,8 +29,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.web3j.abi.datatypes.Bool;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -89,9 +82,18 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
         String authToken = sharedPreferences.getString("authToken", null);
+        Boolean admin = sharedPreferences.getBoolean("admin" , false);
+
         Log.d("MainActivity", "Token найден: " + authToken);
+
+        if(admin)
+        {
+            Intent intent = new Intent(MainActivity.this,AdminActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         if (authToken == null) {
-            // Если токен отсутствует, переходим на экран входа
             openLoginActivity();
             finish();
             return;

@@ -1,4 +1,4 @@
-package com.example.music.fragments;
+package com.example.music.User_fragments;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -15,8 +15,6 @@ import com.example.music.models.Track;
 import com.example.music.models.TrackResponse;
 import com.example.test.BuildConfig;
 import com.example.test.R;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
 import androidx.annotation.Nullable;
@@ -26,6 +24,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -39,6 +38,7 @@ public class HomeFragment extends Fragment {
     private HomeAdapter homeAdapter;
     private List<Track> trackList = new ArrayList<>();
     private FavoriteRepository favoriteRepository;
+    private boolean isFetchingTracks = false;
 
     @Nullable
     @Override
@@ -97,6 +97,14 @@ public class HomeFragment extends Fragment {
     }
 
     private void fetchTracks() {
+
+
+        if (isFetchingTracks) {
+            return;
+        }
+
+        isFetchingTracks = true;
+
         new Thread(() -> {
             OkHttpClient client = new OkHttpClient();
             String url = BuildConfig.BASE_URL + "/tracks/";
@@ -125,7 +133,7 @@ public class HomeFragment extends Fragment {
                                         data.getCreatedAt()
                                 ));
                             }
-
+                            Collections.shuffle(trackList);
                             homeAdapter.notifyDataSetChanged();
                         });
                     }
@@ -145,7 +153,7 @@ public class HomeFragment extends Fragment {
 
     public void onItemClicked(Track track) {
         if (playerViewModel.isHomePlaying()) {
-            // Трек уже играет в HomeFragment, ставим на паузу
+
             playerViewModel.pauseHomeTrack();
         } else {
 

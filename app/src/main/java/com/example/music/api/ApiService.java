@@ -7,12 +7,14 @@ import com.example.music.models.RegisterResponse;
 import com.example.music.models.Track;
 import com.example.music.models.User;
 import com.example.music.models.UserProfileResponse;
+import com.example.music.models.UsersResponse;
 
 import java.util.List;
 
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -37,6 +39,12 @@ public interface ApiService {
     Call<RegisterResponse> uploadProfileImage(
             @Part MultipartBody.Part profileImage
     );
+
+    @GET("users/all")
+    Call<UsersResponse> getAllUsers();
+
+    @DELETE("/users/delete/:id")
+    Call<User> deleteUser();
 
     @GET("/favorites/get")
     Call<FavoriteResponse> getFavorites();

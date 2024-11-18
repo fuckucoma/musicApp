@@ -1,5 +1,5 @@
 // UserFragment.java
-package com.example.music.fragments;
+package com.example.music.User_fragments;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -30,7 +30,6 @@ import com.example.music.api.ApiService;
 import com.example.music.models.RegisterResponse;
 import com.example.music.models.UserProfileResponse;
 import com.example.test.R;
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

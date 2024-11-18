@@ -12,12 +12,13 @@
         android:usesCleartextTraffic="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Test"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        android:screenOrientation="portrait">
 
 
         <provider
@@ -33,24 +34,35 @@
 
         <activity
             android:name="com.example.music.UploadTrackActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
 
         </activity>
 
         <activity android:name="com.example.music.RegisterActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
         </activity>
 
 
         <activity
             android:name="com.example.music.LoginActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity
+            android:name="com.example.music.AdminActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
+
         </activity>
 
 
         <activity
             android:name="com.example.music.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -1,4 +1,4 @@
-package com.example.music.fragments;
+package com.example.music.User_fragments;
 
 // PlayerFragment.java
 import android.annotation.SuppressLint;
@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.music.MainActivity;
 import com.example.music.PlayerViewModel;
 import com.example.test.R;
 import com.squareup.picasso.Picasso;

@@ -2,6 +2,11 @@ package com.example.music.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class Track {
     private int id;
     private String title;
@@ -10,6 +15,20 @@ public class Track {
     private String imageUrl;
     private String filename;
     private String createdAt;
+
+
+    public Date getCreatedAtDate() {
+        if (createdAt == null) return null;
+
+        // Парсим строку в объект Date
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+        try {
+            return dateFormat.parse(createdAt);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null; // Если ошибка парсинга, возвращаем null
+        }
+    }
 
     // Конструктор без аргументов (по умолчанию)
     public Track() {

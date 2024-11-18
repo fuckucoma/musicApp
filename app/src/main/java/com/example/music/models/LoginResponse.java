@@ -6,6 +6,8 @@ public class LoginResponse {
 
     private String token;
 
+    private boolean admin;
+
 
     public String getMessage() {
         return message;
@@ -21,5 +23,9 @@ public class LoginResponse {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public boolean getAdmin(){
+        return admin;
     }
 }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="24dp"
-    tools:context="com.example.music.fragments.UserFragment">
+    tools:context="com.example.music.User_fragments.UserFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -43,13 +43,13 @@
             android:textStyle="bold"
             android:layout_marginBottom="8dp" />
 
-        <TextView
+        <!--<TextView
             android:id="@+id/tvEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="email@example.com"
             android:textSize="16sp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp" /> -->
 
         <TextView
             android:id="@+id/tvOtherInfo"
@@ -69,8 +69,9 @@
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Выйти из системы" />
+            android:layout_height="match_parent"
+            android:text="Выйти из системы"
+            android:layout_marginTop="300dp"/>
 
     </LinearLayout>
 

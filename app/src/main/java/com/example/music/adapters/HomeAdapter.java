@@ -74,6 +74,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TrackViewHolde
             }
         });
 
+
+
         boolean isFavorite = favoriteRepository.isTrackFavorite(track.getId());
         holder.favoriteButton.setImageResource(isFavorite ? R.drawable.ic_heart__24 : R.drawable.ic_favorite_24px);
 

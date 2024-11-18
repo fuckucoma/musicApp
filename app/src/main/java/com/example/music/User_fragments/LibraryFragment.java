@@ -1,4 +1,4 @@
-package com.example.music.fragments;
+package com.example.music.User_fragments;
 
 import android.annotation.SuppressLint;
 
@@ -17,14 +17,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.music.FavoriteManager;
 import com.example.music.FavoriteRepository;
-import com.example.music.FavoriteRequest;
 import com.example.music.MainActivity;
 import com.example.music.PlayerViewModel;
 import com.example.music.UploadTrackActivity;
@@ -36,9 +33,15 @@ import com.example.music.models.Track;
 import com.example.test.BuildConfig;
 import com.example.test.R;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import retrofit2.Call;
@@ -136,12 +139,33 @@ public class LibraryFragment extends Fragment {
                         track.setArtist(favoriteTrack.getArtist());
                         track.setImageUrl(favoriteTrack.getImageUrl());
                         track.setFilename(favoriteTrack.getFilename());
+                        track.setCreatedAt(favoriteTrack.getCreatedAt());
                         trackList.add(track);
 
-                        favoriteIds.add(favoriteTrack.getTrackId()); // Добавляем ID в избранное
+
+
+                        favoriteIds.add(favoriteTrack.getTrackId());
                     }
 
-                    libraryAdapter.updateData(trackList, favoriteIds); // Передаем обновленный список
+                    trackList.sort((track1, track2) -> {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+                        try {
+                            Date date1 = track1.getCreatedAt() != null ? dateFormat.parse(track1.getCreatedAt()) : null;
+                            Date date2 = track2.getCreatedAt() != null ? dateFormat.parse(track2.getCreatedAt()) : null;
+
+                            if (date1 == null && date2 == null) return 0;
+                            if (date1 == null) return 1;
+                            if (date2 == null) return -1;
+
+                            return date2.compareTo(date1); // По убыванию
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                            return 0; // Если ошибка парсинга, не меняем порядок
+                        }
+                    });
+
+                    libraryAdapter.updateData(trackList, favoriteIds);
+                    libraryAdapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(getContext(), "Не удалось получить избранное", Toast.LENGTH_SHORT).show();
                 }

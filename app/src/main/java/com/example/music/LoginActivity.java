@@ -87,7 +87,12 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this, "Вход выполнен успешно", Toast.LENGTH_SHORT).show();
                         saveAuthToken(loginResponse.getToken());
 
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        Intent intent;
+                        if (!loginResponse.getAdmin()) {
+                            intent = new Intent(LoginActivity.this, MainActivity.class);
+                        } else {
+                            intent = new Intent(LoginActivity.this, AdminActivity.class);
+                        }
                         startActivity(intent);
                         finish();
                     } else {
@@ -119,8 +124,4 @@ public class LoginActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    private String getAuthToken() {
-        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-        return sharedPreferences.getString("authToken", null);
-    }
 }

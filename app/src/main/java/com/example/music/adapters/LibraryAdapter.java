@@ -1,6 +1,7 @@
 package com.example.music.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.example.music.models.Track;
 import com.example.test.R;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -104,6 +106,18 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.TrackVie
         this.trackList = newTracks;
         this.favoriteTrackIds.clear();
         this.favoriteTrackIds.addAll(updatedFavorites); // Обновляем избранное
+
+        trackList.sort((track1, track2) -> {
+            Date date1 = track1.getCreatedAtDate();
+            Date date2 = track2.getCreatedAtDate();
+
+            if (date1 == null && date2 == null) return 0;
+            if (date1 == null) return 1;
+            if (date2 == null) return -1;
+
+            return date2.compareTo(date1);
+        });
+
         notifyDataSetChanged();
     }
 

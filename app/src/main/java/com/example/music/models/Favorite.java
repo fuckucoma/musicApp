@@ -5,12 +5,15 @@ public class Favorite {
     private int trackId;
     private int userId;
     private String createdAt;
+    private String updatedAt;
 
-    public Favorite(int id, int trackId, int userId, String createdAt) {
+
+    public Favorite(int id, int trackId, int userId, String createdAt, String updatedAt) {
         this.id = id;
         this.trackId = trackId;
         this.userId = userId;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public Favorite() {

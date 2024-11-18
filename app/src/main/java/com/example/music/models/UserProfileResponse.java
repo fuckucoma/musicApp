@@ -7,9 +7,19 @@ public class UserProfileResponse {
     private String profileImageUrl;
     private String createdAt;
     private String updatedAt;
+    private boolean isAdmin;
 
     public int getId() {
         return id;
+    }
+
+    public void setAdmin(boolean isAdmin)
+    {
+
+    }
+
+    public boolean getAdmin() {
+        return isAdmin;
     }
 
     public void setId(int id) {

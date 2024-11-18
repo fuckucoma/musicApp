@@ -3,7 +3,15 @@ package com.example.music.models;
 public class User {
     private String username;
     private String password;
-   //private String email; // Добавьте, если используется
+   //private String email;
+    private int id;
+
+
+
+
+    public int getId() {
+        return id;
+    }
 
     public User(String username, String password) {
         this.username = username;

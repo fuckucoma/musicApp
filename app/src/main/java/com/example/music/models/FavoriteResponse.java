@@ -9,6 +9,11 @@ public class FavoriteResponse {
     private String message;
     @SerializedName("favorites")
     private List<FavoriteTrack> favoriteTracks;
+    private String createdAt;
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
 
     public boolean isSuccess() {
         return success;
@@ -42,10 +47,19 @@ public class FavoriteResponse {
         private String artist;
         private String imageUrl;
         private String filename;
+        private String createdAt;
+        private String updatedAt;
 
         // Геттеры и сеттеры
         public int getFavoriteId() {
             return favoriteId;
+        }
+
+        public void setCreatedAt(String createdAt) {
+            this.createdAt = createdAt;
+        }
+        public String getCreatedAt() {
+            return createdAt;
         }
 
         public void setFavoriteId(int favoriteId) {
@@ -90,6 +104,14 @@ public class FavoriteResponse {
 
         public void setFilename(String filename) {
             this.filename = filename;
+        }
+
+        public String getUpdatedAt() {
+            return updatedAt;
+        }
+
+        public void setUpdatedAt(String updatedAt) {
+            this.updatedAt = updatedAt;
         }
     }
 }
