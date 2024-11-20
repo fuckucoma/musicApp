@@ -29,12 +29,12 @@
             <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/seek_bar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:progress="45"
-                app:trackThickness="2dp"
-                app:trackCornerRadius="6dp"
+                app:indicatorColor="#FFF"
                 app:trackColor="#3E3E3E"
-                app:indicatorColor="#FFF" />
+                app:trackCornerRadius="6dp"
+                app:trackThickness="2dp" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/media_player_bar_controls_container"
@@ -88,7 +88,7 @@
                         android:marqueeRepeatLimit="marquee_forever"/>
 
                     <TextView
-                        android:id="@+id/text_view_song_artist"
+                        android:id="@+id/bar_name_artist"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="NF"

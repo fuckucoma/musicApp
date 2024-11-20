@@ -1,5 +1,5 @@
 // UserFragment.java
-package com.example.music.User_fragments;
+package com.example.music.fragments;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -24,11 +24,11 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.example.music.LoginActivity;
+import com.example.music.activity.LoginActivity;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
-import com.example.music.models.RegisterResponse;
-import com.example.music.models.UserProfileResponse;
+import com.example.music.response.RegisterResponse;
+import com.example.music.response.UserProfileResponse;
 import com.example.test.R;
 
 import java.io.ByteArrayOutputStream;

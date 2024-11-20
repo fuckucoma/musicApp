@@ -1,4 +1,4 @@
-package com.example.music;
+package com.example.music.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,12 +12,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.example.music.FavoriteManager;
+import com.example.music.FavoriteRepository;
+import com.example.music.PlayerViewModel;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
-import com.example.music.User_fragments.HomeFragment;
-import com.example.music.User_fragments.LibraryFragment;
-import com.example.music.User_fragments.PlayerFragment;
-import com.example.music.User_fragments.SearchFragment;
+import com.example.music.fragments.HomeFragment;
+import com.example.music.fragments.LibraryFragment;
+import com.example.music.fragments.PlayerFragment;
+import com.example.music.fragments.SearchFragment;
 import com.example.music.models.Track;
 import com.example.test.R;
 import com.google.android.exoplayer2.C;
@@ -29,8 +32,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.web3j.abi.datatypes.Bool;
-
 public class MainActivity extends AppCompatActivity {
 
     private PlayerViewModel playerViewModel;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView trackImageBar;
     private ImageButton playPauseButtonBar;
     private LinearProgressIndicator seekBar;
+    private TextView bar_name_artist;
     private Handler handler = new Handler(Looper.getMainLooper());
 
     private FavoriteRepository favoriteRepository;
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         trackImageBar = findViewById(R.id.track_image_bar);
         playPauseButtonBar = findViewById(R.id.play_pause_button_bar);
         seekBar = findViewById(R.id.seek_bar);
+        bar_name_artist=findViewById(R.id.bar_name_artist);
 
         favoriteRepository = new FavoriteRepository(this);
 
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(admin)
         {
-            Intent intent = new Intent(MainActivity.this,AdminActivity.class);
+            Intent intent = new Intent(MainActivity.this, AdminActivity.class);
             startActivity(intent);
             finish();
         }
@@ -194,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
         playerViewModel.getCurrentTrack().observe(this, track -> {
             if (track != null) {
                 trackTitleBar.setText(track.getTitle());
+                bar_name_artist.setText(track.getArtist());
                 Picasso.get().load(track.getImageUrl()).into(trackImageBar);
 
                 // Подписываемся на изменения избранного

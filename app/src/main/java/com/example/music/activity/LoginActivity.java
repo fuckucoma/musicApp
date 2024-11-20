@@ -1,4 +1,4 @@
-package com.example.music;
+package com.example.music.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,7 +12,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.music.models.LoginResponse;
+import com.example.music.response.LoginResponse;
 import com.example.music.models.User;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;

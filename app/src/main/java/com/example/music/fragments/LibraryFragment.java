@@ -1,4 +1,4 @@
-package com.example.music.User_fragments;
+package com.example.music.fragments;
 
 import android.annotation.SuppressLint;
 
@@ -22,13 +22,13 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.music.FavoriteRepository;
-import com.example.music.MainActivity;
+import com.example.music.activity.MainActivity;
 import com.example.music.PlayerViewModel;
-import com.example.music.UploadTrackActivity;
+import com.example.music.activity.UploadTrackActivity;
 import com.example.music.adapters.LibraryAdapter;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
-import com.example.music.models.FavoriteResponse;
+import com.example.music.response.FavoriteResponse;
 import com.example.music.models.Track;
 import com.example.test.BuildConfig;
 import com.example.test.R;
@@ -36,8 +36,6 @@ import com.example.test.R;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -165,6 +163,11 @@ public class LibraryFragment extends Fragment {
                     });
 
                     libraryAdapter.updateData(trackList, favoriteIds);
+
+                    playerViewModel.setTrackList(trackList);
+                    Log.d("PlayerViewModel", "setTrackList: trackList size = " + trackList.size());
+
+
                     libraryAdapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(getContext(), "Не удалось получить избранное", Toast.LENGTH_SHORT).show();
@@ -191,9 +194,11 @@ public class LibraryFragment extends Fragment {
     }
 
     private void onTrackSelected(Track track) {
-        String trackUrl = getTrackStreamUrl(track.getId() + "");
-        Log.d(TAG, "Playing track URL: " + trackUrl);
-        playerViewModel.playTrack(trackUrl, track);
+        if (!trackList.isEmpty()) {
+            Track firstTrack = trackList.get(0);
+            String trackUrl = getTrackStreamUrl(firstTrack.getId() + "");
+            playerViewModel.playTrack(trackUrl, firstTrack);
+        }
     }
 
     private String getTrackStreamUrl(String trackId) {

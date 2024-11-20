@@ -1,13 +1,10 @@
-package com.example.music.models;
+package com.example.music.response;
 
-public class LoginResponse {
+public class RegisterResponse {
 
     private String message;
-
+    private int userId;
     private String token;
-
-    private boolean admin;
-
 
     public String getMessage() {
         return message;
@@ -17,15 +14,19 @@ public class LoginResponse {
         this.message = message;
     }
 
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
     public String getToken() {
         return token;
     }
 
     public void setToken(String token) {
         this.token = token;
-    }
-
-    public boolean getAdmin(){
-        return admin;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.music.models;
+package com.example.music.response;
 
 import com.google.gson.annotations.SerializedName;
 

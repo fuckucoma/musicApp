@@ -1,13 +1,13 @@
 package com.example.music.api;
 
 import com.example.music.FavoriteRequest;
-import com.example.music.models.FavoriteResponse;
-import com.example.music.models.LoginResponse;
-import com.example.music.models.RegisterResponse;
+import com.example.music.response.FavoriteResponse;
+import com.example.music.response.LoginResponse;
+import com.example.music.response.RegisterResponse;
 import com.example.music.models.Track;
 import com.example.music.models.User;
-import com.example.music.models.UserProfileResponse;
-import com.example.music.models.UsersResponse;
+import com.example.music.response.UserProfileResponse;
+import com.example.music.response.UsersResponse;
 
 import java.util.List;
 

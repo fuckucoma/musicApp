@@ -1,4 +1,4 @@
-package com.example.music.models;
+package com.example.music.response;
 
 public class UserProfileResponse {
     private int id;

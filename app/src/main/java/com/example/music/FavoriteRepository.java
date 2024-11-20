@@ -8,17 +8,15 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
-import com.example.music.models.FavoriteResponse;
+import com.example.music.response.FavoriteResponse;
 import com.example.music.models.Track;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;

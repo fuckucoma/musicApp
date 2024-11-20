@@ -1,4 +1,4 @@
-package com.example.music;
+package com.example.music.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;

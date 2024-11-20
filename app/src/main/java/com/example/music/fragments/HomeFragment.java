@@ -1,4 +1,4 @@
-package com.example.music.User_fragments;
+package com.example.music.fragments;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -8,11 +8,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.music.FavoriteRepository;
-import com.example.music.MainActivity;
+import com.example.music.activity.MainActivity;
 import com.example.music.PlayerViewModel;
 import com.example.music.adapters.HomeAdapter;
 import com.example.music.models.Track;
-import com.example.music.models.TrackResponse;
+import com.example.music.response.TrackResponse;
 import com.example.test.BuildConfig;
 import com.example.test.R;
 import com.google.gson.Gson;
@@ -134,6 +134,8 @@ public class HomeFragment extends Fragment {
                                 ));
                             }
                             Collections.shuffle(trackList);
+                            playerViewModel.setTrackList(trackList);
+                            Log.d("PlayerViewModel", "setTrackList: trackList size = " + trackList.size());
                             homeAdapter.notifyDataSetChanged();
                         });
                     }

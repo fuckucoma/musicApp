@@ -1,16 +1,12 @@
-package com.example.music;
+package com.example.music.activity;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.example.music.Admin_fragments.UsersFragment;
-import com.example.music.User_fragments.HomeFragment;
-import com.example.music.User_fragments.LibraryFragment;
-import com.example.music.User_fragments.SearchFragment;
-import com.example.music.User_fragments.UserFragment;
-import com.example.music.models.User;
+import com.example.music.a_fragments.UsersFragment;
+import com.example.music.fragments.UserFragment;
 import com.example.test.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 

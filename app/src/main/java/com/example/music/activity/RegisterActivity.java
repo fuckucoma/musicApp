@@ -1,4 +1,4 @@
-package com.example.music;
+package com.example.music.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,7 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.music.models.RegisterResponse;
+import com.example.music.response.RegisterResponse;
 import com.example.music.models.User;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;

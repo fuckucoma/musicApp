@@ -1,4 +1,4 @@
-package com.example.music.User_fragments;
+package com.example.music.fragments;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -110,8 +110,9 @@ public class SearchFragment extends Fragment {
     }
 
     private void onTrackSelected(Track track) {
-        String trackUrl = getTrackStreamUrl(track.getId() + "");
+        String trackUrl = getTrackStreamUrl(track.getId()+"");
         playerViewModel.playTrack(trackUrl, track);
+        Log.d("PlayerFragment", "Track selected: " + track.getTitle());
     }
 
     private String getTrackStreamUrl(String trackId) {

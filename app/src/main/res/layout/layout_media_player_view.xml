@@ -114,7 +114,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/text_view_song_artist"
+                    android:id="@+id/name_artist"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start"

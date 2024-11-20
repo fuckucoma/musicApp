@@ -1,4 +1,4 @@
-package com.example.music.Admin_fragments;
+package com.example.music.a_fragments;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -17,10 +17,9 @@ import android.widget.Toast;
 import com.example.music.adapters.UsersAdapter;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
-import com.example.music.models.LoginResponse;
 import com.example.music.models.User;
-import com.example.music.models.UserProfileResponse;
-import com.example.music.models.UsersResponse;
+import com.example.music.response.UserProfileResponse;
+import com.example.music.response.UsersResponse;
 import com.example.test.R;
 
 import java.util.ArrayList;

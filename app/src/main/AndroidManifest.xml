@@ -33,26 +33,26 @@
         </provider>
 
         <activity
-            android:name="com.example.music.UploadTrackActivity"
+            android:name="com.example.music.activity.UploadTrackActivity"
             android:exported="true"
             android:screenOrientation="portrait">
 
         </activity>
 
-        <activity android:name="com.example.music.RegisterActivity"
+        <activity android:name="com.example.music.activity.RegisterActivity"
             android:exported="true"
             android:screenOrientation="portrait">
         </activity>
 
 
         <activity
-            android:name="com.example.music.LoginActivity"
+            android:name="com.example.music.activity.LoginActivity"
             android:exported="true"
             android:screenOrientation="portrait">
         </activity>
         
         <activity
-            android:name="com.example.music.AdminActivity"
+            android:name="com.example.music.activity.AdminActivity"
             android:exported="true"
             android:screenOrientation="portrait">
 
@@ -60,7 +60,7 @@
 
 
         <activity
-            android:name="com.example.music.MainActivity"
+            android:name="com.example.music.activity.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter android:autoVerify="true">
