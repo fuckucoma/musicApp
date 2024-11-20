@@ -71,11 +71,12 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.TrackVie
 
         holder.favoriteIcon.setOnClickListener(v -> {
             favoriteListener.onFavoriteClick(track, isFavorite);
-            if (isFavorite) {
-                favoriteTrackIds.remove(track.getId());
-            } else {
-                favoriteTrackIds.add(track.getId());
-            }
+            // Удалите следующие строки:
+            // if (isFavorite) {
+            //     favoriteTrackIds.remove(track.getId());
+            // } else {
+            //     favoriteTrackIds.add(track.getId());
+            // }
             notifyItemChanged(position);
         });
     }
@@ -85,7 +86,24 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.TrackVie
         return trackList.size();
     }
 
-    public void updateFavorites(List<Integer> favoriteIds) {
+//    public void updateFavorites(List<Integer> favoriteIds) {
+//        Set<Integer> updatedFavorites = new HashSet<>(favoriteIds);
+//        for (int i = 0; i < trackList.size(); i++) {
+//            Track track = trackList.get(i);
+//            boolean isFavorite = favoriteTrackIds.contains(track.getId());
+//            boolean shouldBeFavorite = updatedFavorites.contains(track.getId());
+//            if (isFavorite != shouldBeFavorite) {
+//                if (shouldBeFavorite) {
+//                    favoriteTrackIds.add(track.getId());
+//                } else {
+//                    favoriteTrackIds.remove(track.getId());
+//                }
+//                notifyItemChanged(i);
+//            }
+//        }
+//    }
+
+    public void updateFavorites(Set<Integer> favoriteIds) {
         Set<Integer> updatedFavorites = new HashSet<>(favoriteIds);
         for (int i = 0; i < trackList.size(); i++) {
             Track track = trackList.get(i);
@@ -102,11 +120,22 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.TrackVie
         }
     }
 
+//    public void updateFavorites(Set<Integer> updatedFavorites) {
+//        this.favoriteTrackIds.clear();
+//        if (updatedFavorites != null) {
+//            this.favoriteTrackIds.addAll(updatedFavorites);
+//        }
+//        notifyDataSetChanged();
+//    }
+
     public void updateData(List<Track> newTracks, Set<Integer> updatedFavorites) {
         this.trackList = newTracks;
         this.favoriteTrackIds.clear();
-        this.favoriteTrackIds.addAll(updatedFavorites); // Обновляем избранное
+        if (updatedFavorites != null) {
+            this.favoriteTrackIds.addAll(updatedFavorites); // Обновляем избранное
+        }
 
+        // Сортировка треков по дате создания
         trackList.sort((track1, track2) -> {
             Date date1 = track1.getCreatedAtDate();
             Date date2 = track2.getCreatedAtDate();

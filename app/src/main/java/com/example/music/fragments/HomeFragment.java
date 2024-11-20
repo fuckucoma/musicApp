@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.music.FavoriteRepository;
+import com.example.music.repository.FavoriteRepository;
 import com.example.music.activity.MainActivity;
 import com.example.music.PlayerViewModel;
 import com.example.music.adapters.HomeAdapter;

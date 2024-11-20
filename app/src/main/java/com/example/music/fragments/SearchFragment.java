@@ -51,6 +51,7 @@ public class SearchFragment extends Fragment {
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
         searchViewModel = new ViewModelProvider(this).get(SearchViewModel.class);
 
+
         recyclerView = view.findViewById(R.id.search_results);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         searchInput = view.findViewById(R.id.search_input);
@@ -65,8 +66,7 @@ public class SearchFragment extends Fragment {
         searchButton.setOnClickListener(v -> {
             String query = searchInput.getText().toString();
             if (!query.isEmpty()) {
-                searchViewModel.setLastQuery(query);
-                searchTracks(query);
+                searchViewModel.searchTracks(query);
             }
         });
 
@@ -74,6 +74,8 @@ public class SearchFragment extends Fragment {
         searchViewModel.getSearchResults().observe(getViewLifecycleOwner(), tracks -> {
             if (tracks != null) {
                 searchAdapter.updateData(tracks);
+            } else {
+                Toast.makeText(getContext(), "Ошибка поиска треков", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -86,28 +88,28 @@ public class SearchFragment extends Fragment {
         return view;
     }
 
-    private void searchTracks(String query) {
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<List<Track>> call = apiService.searchTracks(query);
-        call.enqueue(new Callback<List<Track>>() {
-            @Override
-            public void onResponse(Call<List<Track>> call, Response<List<Track>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Track> searchResults = response.body();
-
-                    searchViewModel.setSearchResults(searchResults);
-                } else {
-                    Toast.makeText(getContext(), "Ошибка поиска треков", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Track>> call, Throwable t) {
-                Log.e("SearchTracks", "Ошибка сети", t);
-                Toast.makeText(getContext(), "Ошибка сети: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+//    private void searchTracks(String query) {
+//        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+//        Call<List<Track>> call = apiService.searchTracks(query);
+//        call.enqueue(new Callback<List<Track>>() {
+//            @Override
+//            public void onResponse(Call<List<Track>> call, Response<List<Track>> response) {
+//                if (response.isSuccessful() && response.body() != null) {
+//                    List<Track> searchResults = response.body();
+//
+//                    searchViewModel.setSearchResults(searchResults);
+//                } else {
+//                    Toast.makeText(getContext(), "Ошибка поиска треков", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<Track>> call, Throwable t) {
+//                Log.e("SearchTracks", "Ошибка сети", t);
+//                Toast.makeText(getContext(), "Ошибка сети: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
 
     private void onTrackSelected(Track track) {
         String trackUrl = getTrackStreamUrl(track.getId()+"");

@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 
 import com.example.music.FavoriteManager;
-import com.example.music.FavoriteRepository;
+import com.example.music.repository.FavoriteRepository;
 import com.example.music.PlayerViewModel;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;

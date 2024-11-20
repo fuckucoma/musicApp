@@ -9,7 +9,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.music.FavoriteRepository;
+import com.example.music.repository.FavoriteRepository;
 import com.example.music.models.Track;
 import com.example.test.R;
 import com.squareup.picasso.Picasso;
