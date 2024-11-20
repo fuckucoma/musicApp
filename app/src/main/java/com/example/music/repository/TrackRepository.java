@@ -1,4 +1,4 @@
-package com.example.music;
+package com.example.music.repository;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

@@ -1,4 +1,4 @@
-package com.example.music;
+package com.example.music.repository;
 
 import android.content.Context;
 import android.util.Log;
@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.music.FavoriteRequest;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
 import com.example.music.response.FavoriteResponse;
@@ -79,9 +80,6 @@ public class FavoriteRepository {
             @Override
             public void onResponse(Call<FavoriteResponse> call, Response<FavoriteResponse> response) {
                 if (response.isSuccessful()) {
-                    List<Integer> currentFavorites = new ArrayList<>(favoriteTrackIds.getValue());
-                    currentFavorites.add(track.getId());
-                    favoriteTrackIds.postValue(currentFavorites);
                     fetchFavorites();
                 } else {
                     Log.e("FavoriteRepository", "Ошибка добавления в избранное: " + response.message());

@@ -5,26 +5,29 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.music.models.Track;
+import com.example.music.repository.SearchRepository;
 
 import java.util.List;
 
 public class SearchViewModel extends ViewModel {
-    private MutableLiveData<List<Track>> searchResults = new MutableLiveData<>();
+
+    private final SearchRepository searchRepository;
     private String lastQuery = null;
 
-    public LiveData<List<Track>> getSearchResults() {
-        return searchResults;
+    public SearchViewModel() {
+        searchRepository = new SearchRepository();
     }
 
-    public void setSearchResults(List<Track> results) {
-        searchResults.postValue(results);
+    public LiveData<List<Track>> getSearchResults() {
+        return searchRepository.getSearchResults();
+    }
+
+    public void searchTracks(String query) {
+        lastQuery = query;
+        searchRepository.searchTracks(query);
     }
 
     public String getLastQuery() {
         return lastQuery;
-    }
-
-    public void setLastQuery(String query) {
-        lastQuery = query;
     }
 }

@@ -90,7 +90,7 @@ public class PlayerViewModel extends AndroidViewModel {
     public void setTrackList(List<Track> tracks) {
         this.trackList.clear();
         this.trackList.addAll(tracks);
-        currentTrackIndex = !tracks.isEmpty() ? 0 : -1; // Устанавливаем индекс первого трека
+        currentTrackIndex = -1;
     }
 
     public LiveData<Long> getCurrentPosition() {
@@ -102,7 +102,7 @@ public class PlayerViewModel extends AndroidViewModel {
     }
 
     public void playNextTrack() {
-        if (currentTrackIndex >= 0 && currentTrackIndex < trackList.size() - 1) {
+        if (currentTrackIndex < trackList.size() - 1) {
             currentTrackIndex++;
             Track nextTrack = trackList.get(currentTrackIndex);
             String url = generateStreamUrl(nextTrack.getId());
