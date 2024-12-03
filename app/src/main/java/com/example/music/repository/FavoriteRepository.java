@@ -45,11 +45,11 @@ public class FavoriteRepository {
 
                     List<FavoriteResponse.FavoriteTrack> favoriteTracks = response.body().getFavoriteTracks();
 
-                    // Сортируем список треков по createdAt
-                    Collections.sort(favoriteTracks, (track1, track2) -> {
-                        // Преобразуем строки createdAt в тип Date, если они в формате, поддерживающем сравнение
-                        return track2.getCreatedAt().compareTo(track1.getCreatedAt()); // Отсортируем по убыванию
-                    });
+//                    // Сортируем список треков по createdAt
+//                    Collections.sort(favoriteTracks, (track1, track2) -> {
+//                        // Преобразуем строки createdAt в тип Date, если они в формате, поддерживающем сравнение
+//                        return track2.getCreatedAt().compareTo(track1.getCreatedAt()); // Отсортируем по убыванию
+//                    });
 
 
                     List<Integer> trackIds = new ArrayList<>();
@@ -100,9 +100,9 @@ public class FavoriteRepository {
                 if (response.isSuccessful()) {
                     List<FavoriteResponse.FavoriteTrack> favoriteTracks = response.body().getFavoriteTracks();
 
-                    List<Integer> currentFavorites = new ArrayList<>(favoriteTrackIds.getValue());
-                    currentFavorites.remove((Integer) track.getId());
-                    favoriteTrackIds.postValue(currentFavorites);
+//                    List<Integer> currentFavorites = new ArrayList<>(favoriteTrackIds.getValue());
+//                    currentFavorites.remove((Integer) track.getId());
+//                    favoriteTrackIds.postValue(currentFavorites);
                     fetchFavorites();
                 } else {
                     Log.e("FavoriteRepository", "Ошибка удаления из избранного: " + response.message());

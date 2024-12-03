@@ -85,16 +85,9 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
         String authToken = sharedPreferences.getString("authToken", null);
-        Boolean admin = sharedPreferences.getBoolean("admin" , false);
+        boolean isAdmin = sharedPreferences.getBoolean("isAdmin", false);
 
         Log.d("MainActivity", "Token найден: " + authToken);
-
-        if(admin)
-        {
-            Intent intent = new Intent(MainActivity.this, AdminActivity.class);
-            startActivity(intent);
-            finish();
-        }
 
         if (authToken == null) {
             openLoginActivity();
@@ -104,8 +97,9 @@ public class MainActivity extends AppCompatActivity {
 
         this.authToken = authToken;
 
-
-
+        if (isAdmin) {
+            openAdminActivity();
+        }
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
@@ -147,6 +141,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         favoriteRepository.fetchFavorites();
+    }
+
+    private void openAdminActivity() {
+        Intent intent = new Intent(this, AdminActivity.class);
+        startActivity(intent);
     }
 
     private void openLoginActivity() {
@@ -200,7 +199,6 @@ public class MainActivity extends AppCompatActivity {
                 bar_name_artist.setText(track.getArtist());
                 Picasso.get().load(track.getImageUrl()).into(trackImageBar);
 
-                // Подписываемся на изменения избранного
                 favoriteRepository.getFavoriteTrackIds().observe(this, favoriteIds -> {
                     if (favoriteIds.contains(track.getId())) {
                         favoriteButton.setImageResource(R.drawable.ic_heart__24);
@@ -208,6 +206,8 @@ public class MainActivity extends AppCompatActivity {
                         favoriteButton.setImageResource(R.drawable.ic_favorite_24px);
                     }
                 });
+
+                updateFavoriteButtonState(track);
             }
         });
 

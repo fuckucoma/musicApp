@@ -18,19 +18,19 @@
             android:id="@+id/media_player_bar_bg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#424242" />
+            android:background="@color/black" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingHorizontal="6dp"
+            android:paddingHorizontal="9dp"
             android:orientation="vertical">
 
             <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/seek_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:progress="45"
+                android:progress="16"
                 app:trackThickness="2dp"
                 app:trackCornerRadius="6dp"
                 app:trackColor="#3E3E3E"
@@ -49,7 +49,7 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:elevation="0dp"
-                    app:cardBackgroundColor="@color/bg_light_gray"
+                    app:cardBackgroundColor="@color/black"
                     app:cardCornerRadius="6dp"
                     app:cardElevation="0dp"
                     app:layout_constraintDimensionRatio="H,1:1"
@@ -61,7 +61,8 @@
                         android:id="@+id/track_image_bar"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:src="@drawable/placeholder_image"/>
+                        android:src="@drawable/placeholder_image"
+                        android:scaleType="centerCrop"/>
 
                 </androidx.cardview.widget.CardView>
 
@@ -81,7 +82,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Hope"
-                        android:textSize="14sp"
+                        android:textSize="12sp"
                         android:textStyle="bold"
                         android:textColor="#FFF"
                         android:maxLines="1"
@@ -92,7 +93,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="NF"
-                        android:textSize="12sp"
+                        android:textSize="10sp"
                         android:textColor="#989898"
                         android:maxLines="1"
                         android:marqueeRepeatLimit="marquee_forever"/>

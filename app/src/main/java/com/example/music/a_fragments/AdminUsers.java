@@ -14,11 +14,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.music.adapters.UsersAdapter;
+import com.example.music.adapters.AUsersAdapter;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
-import com.example.music.models.User;
-import com.example.music.response.UserProfileResponse;
+import com.example.music.models.Users;
 import com.example.music.response.UsersResponse;
 import com.example.test.R;
 
@@ -29,21 +28,20 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class UsersFragment extends Fragment {
+public class AdminUsers extends Fragment {
 
     private RecyclerView recyclerView;
     private EditText search_user;
     private Button search_button;
-    private UsersAdapter adapter;
-    private List<User> users = new ArrayList<>();
+    private AUsersAdapter adapter;
+    private List<Users> users = new ArrayList<>();
     private ApiService apiService;
-    private UserProfileResponse userProfileResponse;
 
     @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_users, container, false);
+        View view = inflater.inflate(R.layout.fragment_admin_users, container, false);
 
         recyclerView = view.findViewById(R.id.users);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -53,9 +51,9 @@ public class UsersFragment extends Fragment {
 
         apiService = ApiClient.getClient().create(ApiService.class);
 
-        adapter = new UsersAdapter(users, this::deleteUser);
+        adapter = new AUsersAdapter(users, this::deleteUser);
         recyclerView.setAdapter(adapter);
-
+        fetchUsers();
         return view;
     }
 
@@ -64,33 +62,38 @@ public class UsersFragment extends Fragment {
         call.enqueue(new Callback<UsersResponse>() {
             @Override
             public void onResponse(Call<UsersResponse> call, Response<UsersResponse> response) {
-                UsersResponse usersResponse = response.body();
-//                users.clear();
-//                users.add(usersResponse.)
-//                adapter.notifyDataSetChanged();
+                if (response.isSuccessful() && response.body() != null) {
+                    UsersResponse usersResponse = response.body();
+                    adapter.updateData(usersResponse.getUsers());
+                } else {
+                    Toast.makeText(getContext(), "Ошибка получения данных", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
             public void onFailure(Call<UsersResponse> call, Throwable t) {
                 Toast.makeText(getContext(), "Ошибка загрузки пользователей", Toast.LENGTH_SHORT).show();
             }
-
-
         });
     }
 
     private void deleteUser(int userId) {
-       Call<User> call = apiService.deleteUser();
-       call.enqueue(new Callback<User>() {
-           @Override
-           public void onResponse(Call<User> call, Response<User> response) {
-               adapter.notifyDataSetChanged();
-           }
+        Call<Void> call = apiService.deleteUser(userId);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(getContext(), "Пользователь удален", Toast.LENGTH_SHORT).show();
+                    fetchUsers(); // Обновляем список пользователей
+                } else {
+                    Toast.makeText(getContext(), "Ошибка удаления пользователя", Toast.LENGTH_SHORT).show();
+                }
+            }
 
-           @Override
-           public void onFailure(Call<User> call, Throwable t) {
-
-           }
-       });
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(getContext(), "Ошибка удаления пользователя", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

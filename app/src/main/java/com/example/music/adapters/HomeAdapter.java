@@ -33,7 +33,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TrackViewHolde
     }
 
     public interface OnFavoriteClickListener {
-        void onFavoriteClicked(Track track, boolean isFavorite);
+        void onFavoriteClicked(Track track, int position);
     }
 
     public HomeAdapter(Context context, List<Track> trackList, FavoriteRepository favoriteRepository,OnItemClickListener listener ,OnFavoriteClickListener favoriteClickListener) {
@@ -74,16 +74,20 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TrackViewHolde
             }
         });
 
-
-
         boolean isFavorite = favoriteRepository.isTrackFavorite(track.getId());
         holder.favoriteButton.setImageResource(isFavorite ? R.drawable.ic_heart__24 : R.drawable.ic_favorite_24px);
 
+
         holder.favoriteButton.setOnClickListener(v -> {
-            favoriteClickListener.onFavoriteClicked(track, isFavorite);
-            notifyItemChanged(position);
+            favoriteClickListener.onFavoriteClicked(track, position);
         });
 
+    }
+
+    public void updateFavoriteState() {
+        for (int i = 0; i < trackList.size(); i++) {
+            notifyItemChanged(i);
+        }
     }
 
     @Override

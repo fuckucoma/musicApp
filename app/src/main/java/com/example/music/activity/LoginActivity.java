@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
                     LoginResponse loginResponse = response.body();
                     if (loginResponse != null && loginResponse.getToken() != null) {
                         Toast.makeText(LoginActivity.this, "Вход выполнен успешно", Toast.LENGTH_SHORT).show();
-                        saveAuthToken(loginResponse.getToken());
+                        saveAuthToken(loginResponse.getToken(), loginResponse.getAdmin());
 
                         Intent intent;
                         if (!loginResponse.getAdmin()) {
@@ -117,10 +117,11 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void saveAuthToken(String token) {
+    private void saveAuthToken(String token , boolean admin) {
         SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("authToken", token);
+        editor.putBoolean("isAdmin", admin);
         editor.apply();
     }
 

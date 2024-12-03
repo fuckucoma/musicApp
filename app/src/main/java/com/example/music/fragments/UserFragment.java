@@ -90,9 +90,9 @@ public class UserFragment extends Fragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove("authToken");
+        editor.remove("isAdmin");
         editor.apply();
 
-        // Перейти к экрану входа
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         startActivity(intent);
         getActivity().finish();
@@ -110,9 +110,7 @@ public class UserFragment extends Fragment {
         if (requestCode == 1001 && resultCode == getActivity().RESULT_OK && data != null) {
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), data.getData());
-                // Отображение выбранного изображения
                 ivProfilePicture.setImageBitmap(bitmap);
-                // Загрузка изображения на сервер
                 uploadProfileImage(bitmap);
             } catch (IOException e) {
                 Log.e(TAG, "Error selecting image: " + e.getMessage());
@@ -131,16 +129,13 @@ public class UserFragment extends Fragment {
             return;
         }
 
-        // Преобразование изображения в байты
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] imageBytes = baos.toByteArray();
 
-        // Создание RequestBody
         RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"), imageBytes);
         MultipartBody.Part body = MultipartBody.Part.createFormData("profileImage", "profile.jpg", requestFile);
 
-        // Вызов API без передачи токена, так как он добавляется автоматически через Interceptor
         Call<RegisterResponse> call = apiService.uploadProfileImage(body);
         call.enqueue(new Callback<RegisterResponse>() {
             @Override

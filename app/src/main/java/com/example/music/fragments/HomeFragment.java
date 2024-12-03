@@ -79,21 +79,26 @@ public class HomeFragment extends Fragment {
             }
         });
 
+
+        favoriteRepository.getFavoriteTrackIds().observe(getViewLifecycleOwner(), favoriteIds -> {
+            homeAdapter.updateFavoriteState();
+        });
+
         fetchTracks();
 
         return view;
     }
 
-    private void onFavoriteClicked(Track track, boolean isFavorite) {
+    private void onFavoriteClicked(Track track, int position) {
+        boolean isFavorite = favoriteRepository.isTrackFavorite(track.getId());
         if (isFavorite) {
             favoriteRepository.removeTrackFromFavorites(track);
             Toast.makeText(getContext(), "Removed from favorites", Toast.LENGTH_SHORT).show();
-            fetchTracks();
         } else {
             favoriteRepository.addTrackToFavorites(track);
             Toast.makeText(getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
-            fetchTracks();
         }
+        homeAdapter.notifyItemChanged(position);
     }
 
     private void fetchTracks() {
@@ -133,10 +138,11 @@ public class HomeFragment extends Fragment {
                                         data.getCreatedAt()
                                 ));
                             }
-                            Collections.shuffle(trackList);
+//                          Collections.shuffle(trackList);
                             playerViewModel.setTrackList(trackList);
                             Log.d("PlayerViewModel", "setTrackList: trackList size = " + trackList.size());
                             homeAdapter.notifyDataSetChanged();
+
                         });
                     }
                 } else {

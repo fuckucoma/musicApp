@@ -6,6 +6,7 @@ import com.example.music.response.LoginResponse;
 import com.example.music.response.RegisterResponse;
 import com.example.music.models.Track;
 import com.example.music.models.User;
+import com.example.music.response.TrackResponse;
 import com.example.music.response.UserProfileResponse;
 import com.example.music.response.UsersResponse;
 
@@ -19,6 +20,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiService {
@@ -43,8 +45,14 @@ public interface ApiService {
     @GET("users/all")
     Call<UsersResponse> getAllUsers();
 
-    @DELETE("/users/delete/:id")
-    Call<User> deleteUser();
+    @GET("tracks/")
+    Call<List<Track>> getAllTracks();
+
+    @DELETE("tracks/delete/{id}") // Замените на ваш конечный путь
+    Call<Void> deleteTrack(@Path("id") int id);
+
+    @DELETE("users/delete/{id}")
+    Call<Void>deleteUser(@Path("id") int id);
 
     @GET("/favorites/get")
     Call<FavoriteResponse> getFavorites();
