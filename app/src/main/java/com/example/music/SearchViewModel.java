@@ -6,28 +6,29 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.music.models.Track;
 import com.example.music.repository.SearchRepository;
+import com.example.music.repository.TrackRepository;
 
 import java.util.List;
 
 public class SearchViewModel extends ViewModel {
-
-    private final SearchRepository searchRepository;
-    private String lastQuery = null;
+    private TrackRepository trackRepository;
+    private MutableLiveData<String> errorMessage = new MutableLiveData<>();
 
     public SearchViewModel() {
-        searchRepository = new SearchRepository();
+        trackRepository = TrackRepository.getInstance();
     }
 
-    public LiveData<List<Track>> getSearchResults() {
-        return searchRepository.getSearchResults();
+    public LiveData<List<Track>> getSearchTracks() {
+        return trackRepository.getSearchTracks();
+    }
+
+    public LiveData<String> getErrorMessage() {
+        return errorMessage;
     }
 
     public void searchTracks(String query) {
-        lastQuery = query;
-        searchRepository.searchTracks(query);
-    }
-
-    public String getLastQuery() {
-        return lastQuery;
+        trackRepository.searchTracks(query);
+        // Аналогично, можно расширить репозиторий,
+        // чтобы при ошибке postValue в errorMessage
     }
 }

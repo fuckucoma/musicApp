@@ -1,7 +1,10 @@
 package com.example.music.activity;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -78,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         seekBar = findViewById(R.id.seek_bar);
         bar_name_artist=findViewById(R.id.bar_name_artist);
 
-        favoriteRepository = new FavoriteRepository(this);
+        favoriteRepository = FavoriteRepository.getInstance(this);
 
 
         apiService = ApiClient.getClient().create(ApiService.class);
@@ -100,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
         if (isAdmin) {
             openAdminActivity();
         }
+
+
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
@@ -166,10 +171,10 @@ public class MainActivity extends AppCompatActivity {
             mediaPlayerBottomBar.setVisibility(View.VISIBLE);
             Log.d("MainActivity", "Media bar shown in other fragment");
         }
-//        else {
-//            mediaPlayerBottomBar.setVisibility(View.GONE);
-//            Log.d("MainActivity", "Media bar hidden, music not playing");
-//        }
+        else {
+            mediaPlayerBottomBar.setVisibility(View.GONE);
+            Log.d("MainActivity", "Media bar hidden, music not playing");
+        }
     }
 
     private void setupMediaPlayerControls() {
@@ -311,35 +316,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateSeekBar() {
-        if (playerViewModel.getPlayerInstance() != null) {
-            long duration = playerViewModel.getPlayerInstance().getDuration();
-            if (duration != C.TIME_UNSET && duration > 0) {
-                seekBar.setMax((int) duration);
-
-                handler.postDelayed(updateRunnable, 1000);
-            }
-            else {
-                handler.postDelayed(this::updateSeekBar, 500);
-            }
+        Long duration = playerViewModel.getDuration().getValue();
+        if (duration != null && duration > 0) {
+            seekBar.setMax(duration.intValue());
+            handler.postDelayed(updateRunnable, 1000);
+        } else {
+            handler.postDelayed(this::updateSeekBar, 500);
         }
     }
 
     private Runnable updateRunnable = new Runnable() {
         @Override
         public void run() {
-            if (playerViewModel.getPlayerInstance() != null && playerViewModel.getPlayerInstance().isPlaying()) {
+            Boolean isPlaying = playerViewModel.isPlaying().getValue();
+            if (isPlaying != null && isPlaying) {
+                Long currentPosition = playerViewModel.getCurrentPosition().getValue();
+                Long duration = playerViewModel.getDuration().getValue();
 
-                long currentPosition = playerViewModel.getPlayerInstance().getCurrentPosition();
-                long duration = playerViewModel.getPlayerInstance().getDuration();
-
-                if (duration != C.TIME_UNSET && duration > 0) {
-                    seekBar.setMax((int) duration);
-                    seekBar.setProgress((int) currentPosition);
+                if (duration != null && duration > 0) {
+                    seekBar.setMax(duration.intValue());
+                    if (currentPosition != null) {
+                        seekBar.setProgress(currentPosition.intValue());
+                    }
                     handler.postDelayed(this, 1000);
                 }
-            }
-            else{
-                handler.removeCallbacks(updateRunnable);
+            } else {
+                handler.removeCallbacks(this);
             }
         }
     };
@@ -347,7 +349,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        playerViewModel.releasePlayers();
+//        playerViewModel.releasePlayers();
         handler.removeCallbacks(updateRunnable);
     }
 }

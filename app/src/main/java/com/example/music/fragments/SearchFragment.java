@@ -1,6 +1,7 @@
 package com.example.music.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,16 +10,20 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.music.FeedPlayerViewModel;
+import com.example.music.PlaybackSource;
 import com.example.music.PlayerViewModel;
 import com.example.music.adapters.SearchAdapter;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
 import com.example.music.models.Track;
 import com.example.music.SearchViewModel;
+import com.example.music.service.MusicService;
 import com.example.test.BuildConfig;
 import com.example.test.R;
 import com.google.android.material.button.MaterialButton;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,9 +43,11 @@ public class SearchFragment extends Fragment {
     private SearchViewModel searchViewModel;
     private SearchAdapter searchAdapter;
     private RecyclerView recyclerView;
+    private FeedPlayerViewModel feedPlayerViewModel;
     private EditText searchInput;
     private MaterialButton searchButton;
-    private ApiService apiService;
+
+    private List<Track> currentSearchTracks = new ArrayList<>();
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -49,19 +56,31 @@ public class SearchFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
-        searchViewModel = new ViewModelProvider(this).get(SearchViewModel.class);
-
+        searchViewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
+        feedPlayerViewModel = new ViewModelProvider(requireActivity()).get(FeedPlayerViewModel.class);
 
         recyclerView = view.findViewById(R.id.search_results);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         searchInput = view.findViewById(R.id.search_input);
         searchButton = view.findViewById(R.id.search_button);
 
-        searchAdapter = new SearchAdapter(getContext(), new ArrayList<>(), this::onTrackSelected);
+        searchAdapter = new SearchAdapter(getContext(), new ArrayList<>(), track -> {
+            String trackUrl = BuildConfig.BASE_URL + "/tracks/" + track.getId() + "/stream";
+            feedPlayerViewModel.pauseFeedTrack();
+//            playerViewModel.SetCurrentTrack(track);
+            //playerViewModel.playTrack(trackUrl, track, PlaybackSource.SEARCH);
+            //,PlaybackSource.SEARCH,currentSearchTracks
+//            Intent intent = new Intent(getContext(), MusicService.class);
+//            intent.setAction("PLAY_TRACK");
+//            intent.putExtra("TRACK_ID", track.getId());
+//            intent.putExtra("PLAYBACK_SOURCE", PlaybackSource.SEARCH.name()); // Указываем источник
+//            ContextCompat.startForegroundService(getContext(), intent);
+
+            PlaybackSource source = PlaybackSource.SEARCH;
+            playerViewModel.playTrack(track, source);
+
+        });
         recyclerView.setAdapter(searchAdapter);
-
-        apiService = ApiClient.getClient().create(ApiService.class);
-
 
         searchButton.setOnClickListener(v -> {
             String query = searchInput.getText().toString();
@@ -70,59 +89,16 @@ public class SearchFragment extends Fragment {
             }
         });
 
-        // Наблюдаем за результатами поиска
-        searchViewModel.getSearchResults().observe(getViewLifecycleOwner(), tracks -> {
+        searchViewModel.getSearchTracks().observe(getViewLifecycleOwner(), tracks -> {
             if (tracks != null) {
+                currentSearchTracks.clear();
+                currentSearchTracks.addAll(tracks);
                 searchAdapter.updateData(tracks);
             } else {
                 Toast.makeText(getContext(), "Ошибка поиска треков", Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Если были предыдущие результаты поиска, отображаем их
-        if (searchViewModel.getSearchResults().getValue() != null && !searchViewModel.getSearchResults().getValue().isEmpty()) {
-            searchAdapter.updateData(searchViewModel.getSearchResults().getValue());
-            searchInput.setText(searchViewModel.getLastQuery());
-        }
-
         return view;
-    }
-
-//    private void searchTracks(String query) {
-//        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-//        Call<List<Track>> call = apiService.searchTracks(query);
-//        call.enqueue(new Callback<List<Track>>() {
-//            @Override
-//            public void onResponse(Call<List<Track>> call, Response<List<Track>> response) {
-//                if (response.isSuccessful() && response.body() != null) {
-//                    List<Track> searchResults = response.body();
-//
-//                    searchViewModel.setSearchResults(searchResults);
-//                } else {
-//                    Toast.makeText(getContext(), "Ошибка поиска треков", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<Track>> call, Throwable t) {
-//                Log.e("SearchTracks", "Ошибка сети", t);
-//                Toast.makeText(getContext(), "Ошибка сети: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
-
-    private void onTrackSelected(Track track) {
-        String trackUrl = getTrackStreamUrl(track.getId()+"");
-        playerViewModel.playTrack(trackUrl, track);
-        Log.d("PlayerFragment", "Track selected: " + track.getTitle());
-    }
-
-    private String getTrackStreamUrl(String trackId) {
-        return BuildConfig.BASE_URL + "/tracks/" + trackId + "/stream";
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 }

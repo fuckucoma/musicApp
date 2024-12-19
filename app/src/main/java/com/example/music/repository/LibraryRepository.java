@@ -37,7 +37,7 @@ public class LibraryRepository {
     }
 
     public void fetchLibraryTracks() {
-        apiService.getFavorites().enqueue(new Callback<FavoriteResponse>() {
+        apiService.getLibraryTracks().enqueue(new Callback<FavoriteResponse>() {
             @Override
             public void onResponse(Call<FavoriteResponse> call, Response<FavoriteResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {

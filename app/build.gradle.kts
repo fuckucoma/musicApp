@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.example.test"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.test"
@@ -43,6 +43,8 @@ dependencies {
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
     implementation (libs.logging.interceptor.v491)
+    implementation (libs.media)
+    implementation (libs.core.ktx)
 
     implementation (libs.glide)
     implementation(libs.shimmer)
@@ -56,6 +58,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.lifecycle.service)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

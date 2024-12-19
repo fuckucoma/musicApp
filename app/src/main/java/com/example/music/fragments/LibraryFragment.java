@@ -3,9 +3,11 @@ package com.example.music.fragments;
 import android.annotation.SuppressLint;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,7 +23,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.music.FeedPlayerViewModel;
 import com.example.music.LibraryViewModel;
+import com.example.music.PlaybackSource;
 import com.example.music.repository.FavoriteRepository;
 import com.example.music.activity.MainActivity;
 import com.example.music.PlayerViewModel;
@@ -31,6 +35,7 @@ import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
 import com.example.music.response.FavoriteResponse;
 import com.example.music.models.Track;
+import com.example.music.service.MusicService;
 import com.example.test.BuildConfig;
 import com.example.test.R;
 
@@ -55,6 +60,7 @@ public class LibraryFragment extends Fragment {
     private PlayerViewModel playerViewModel;
     private ApiService apiService;
     private FavoriteRepository favoriteRepository;
+    private FeedPlayerViewModel feedPlayerViewModel;
 
     private RecyclerView recyclerView;
     private LibraryAdapter libraryAdapter;
@@ -62,8 +68,9 @@ public class LibraryFragment extends Fragment {
     private ProgressBar progressBar;
     private LibraryViewModel libraryViewModel;
 
-    private List<Track> currentTracks = new ArrayList<>();
+    private List<Track> libraryTracks = new ArrayList<>();
     private Set<Integer> favoriteIds = new HashSet<>();
+
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -74,6 +81,7 @@ public class LibraryFragment extends Fragment {
         // Инициализация ViewModel и API
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
         libraryViewModel = new ViewModelProvider(this).get(LibraryViewModel.class);
+        feedPlayerViewModel = new ViewModelProvider(requireActivity()).get(FeedPlayerViewModel.class);
         apiService = ApiClient.getClient().create(ApiService.class);
 
         // Инициализация FavoriteRepository из MainActivity
@@ -94,11 +102,13 @@ public class LibraryFragment extends Fragment {
 
         libraryViewModel.getLibraryTracks().observe(getViewLifecycleOwner(), tracks -> {
             if (tracks != null) {
-                currentTracks = tracks;
+                libraryTracks.clear();
+                libraryTracks.addAll(tracks);
                 updateAdapterData();
             }
         });
 
+        // Подписываемся на избранные ID
         libraryViewModel.getFavoriteTrackIds().observe(getViewLifecycleOwner(), ids -> {
             if (ids != null) {
                 favoriteIds.clear();
@@ -107,11 +117,7 @@ public class LibraryFragment extends Fragment {
             }
         });
 
-        if (favoriteRepository != null) {
-            favoriteRepository.getFavoriteTrackIds().observe(getViewLifecycleOwner(), ids -> {
-                libraryViewModel.refreshLibraryTracks();
-            });
-        }
+        libraryViewModel.loadLibraryTracks();
 
         btnUploadTrack.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), UploadTrackActivity.class);
@@ -120,24 +126,23 @@ public class LibraryFragment extends Fragment {
 
         ivProfile.setOnClickListener(v -> openUserProfile());
 
-
         return view;
     }
 
     private void updateAdapterData() {
-        libraryAdapter.updateData(currentTracks, favoriteIds);
-        playerViewModel.setTrackList(currentTracks);
+        libraryAdapter.updateData(libraryTracks, favoriteIds);
+//        playerViewModel.setTrackList(currentTracks);
+        //playerViewModel.setTrackList(currentTracks, PlaybackSource.LIBRARY);
         libraryAdapter.notifyDataSetChanged();
     }
 
     private void onFavoriteClick(Track track, boolean isFavorite) {
-        FavoriteRepository favoriteRepository = ((MainActivity) requireActivity()).getFavoriteRepository();
         if (isFavorite) {
-            favoriteRepository.removeTrackFromFavorites(track);
+            libraryViewModel.removeFromFavorites(track);
         } else {
-            favoriteRepository.addTrackToFavorites(track);
+            libraryViewModel.addToFavorites(track);
         }
-        libraryViewModel.refreshLibraryTracks();
+//        libraryViewModel.refreshLibraryTracks();
     }
 
     private void openUserProfile() {
@@ -151,8 +156,18 @@ public class LibraryFragment extends Fragment {
 
     private void onTrackSelected(Track track) {
             String trackUrl = getTrackStreamUrl(track.getId() + "");
-            playerViewModel.playTrack(trackUrl, track);
+            feedPlayerViewModel.pauseFeedTrack();
+        PlaybackSource source = PlaybackSource.LIBRARY;
+        playerViewModel.playTrack(track, source);
+//            playerViewModel.SetCurrentTrack(track);
+            //playerViewModel.playTrack(trackUrl, track,PlaybackSource.LIBRARY);
 
+            //,PlaybackSource.LIBRARY,currentTracks
+//        Intent intent = new Intent(getContext(), MusicService.class);
+//        intent.setAction("PLAY_TRACK");
+//        intent.putExtra("TRACK_ID", track.getId());
+//        intent.putExtra("PLAYBACK_SOURCE", PlaybackSource.LIBRARY.name()); // Указываем источник
+//        ContextCompat.startForegroundService(getContext(), intent);
     }
 
     private String getTrackStreamUrl(String trackId) {

@@ -4,6 +4,7 @@ package com.example.music.fragments;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,7 +20,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.music.PlayerViewModel;
+import com.example.music.activity.MainActivity;
 import com.example.music.models.Track;
+import com.example.music.repository.FavoriteRepository;
 import com.example.test.R;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -28,7 +31,7 @@ import com.squareup.picasso.Picasso;
 public class PlayerFragment extends Fragment {
 
     private ImageView albumArt;
-    private TextView trackTitle,name_artist;
+    private TextView trackTitle, name_artist, current_duration, song_max_duration;
     private SeekBar seekBar;
     private FloatingActionButton playPauseButton;
     private ImageButton btn_favorite;
@@ -36,12 +39,29 @@ public class PlayerFragment extends Fragment {
     private ExtendedFloatingActionButton btnSkipNext;
 
     private PlayerViewModel playerViewModel;
-    private Handler handler = new Handler();
+    private FavoriteRepository favoriteRepository;
+
+    private Handler handler = new Handler(Looper.getMainLooper());
+
+    private Runnable updateSeekBarRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Long currentPosition = playerViewModel.getCurrentPosition().getValue();
+            if (currentPosition != null) {
+                seekBar.setProgress(currentPosition.intValue());
+            }
+            if (playerViewModel.isPlaying().getValue() != null && playerViewModel.isPlaying().getValue()) {
+                handler.postDelayed(this, 1000); // Обновляем каждые 1000 мс
+            }
+        }
+    };
 
     @SuppressLint("MissingInflatedId")
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.layout_media_player_view, container, false);
 
         albumArt = view.findViewById(R.id.player_track_image);
@@ -52,8 +72,18 @@ public class PlayerFragment extends Fragment {
         name_artist = view.findViewById(R.id.name_artist);
         btnSkipPrevious = view.findViewById(R.id.btn_skip_previous);
         btnSkipNext = view.findViewById(R.id.btn_skip_next);
+        current_duration = view.findViewById(R.id.current_duration); // NEW
+        song_max_duration = view.findViewById(R.id.song_max_duration); // NEW
 
+        // Получаем PlayerViewModel (основной плеер)
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
+        // Получаем FavoriteRepository, например, через MainActivity
+        if (requireActivity() instanceof MainActivity) {
+            favoriteRepository = ((MainActivity) requireActivity()).getFavoriteRepository();
+        } else {
+            // Либо напрямую
+            favoriteRepository = FavoriteRepository.getInstance(requireContext());
+        }
 
         setupPlayerControls();
 
@@ -68,51 +98,95 @@ public class PlayerFragment extends Fragment {
                 name_artist.setText(track.getArtist());
                 Picasso.get().load(track.getImageUrl()).into(albumArt);
 
-                playerViewModel.getDuration().observe(getViewLifecycleOwner(), duration -> {
-                    if (duration != null) {
-                        seekBar.setMax(duration.intValue());
-                    }
-                });
+                // Обновляем SeekBar (максимальное значение)
+                Long duration = playerViewModel.getDuration().getValue();
+                if (duration != null) {
+                    seekBar.setMax(duration.intValue());
+                    song_max_duration.setText(formatTime(duration));
+                }
 
-                playerViewModel.getCurrentPosition().observe(getViewLifecycleOwner(), position -> {
-                    if (position != null) {
-                        seekBar.setProgress(position.intValue());
-                    }
-                });
+                Long position = playerViewModel.getCurrentPosition().getValue();
+                if (position != null) {
+                    seekBar.setProgress(position.intValue());
+                    current_duration.setText(formatTime(position));
+                }
+
+                // Обновляем иконку избранного
+                updateFavoriteButton(track);
             } else {
                 Log.e("PlayerFragment", "currentTrack == null");
+                trackTitle.setText("");
+                name_artist.setText("");
+                albumArt.setImageResource(R.drawable.placeholder_image);
+                seekBar.setMax(0);
+                seekBar.setProgress(0);
+                current_duration.setText("00:00"); // NEW
+                song_max_duration.setText("00:00"); // NEW
+                btn_favorite.setImageResource(R.drawable.ic_favorite_24px);
             }
-
         });
 
+        // Наблюдаем за состоянием воспроизведения
         playerViewModel.isPlaying().observe(getViewLifecycleOwner(), isPlaying -> {
             playPauseButton.setImageResource(isPlaying ? R.drawable.ic_pause_24px : R.drawable.ic_play_arrow_24px);
         });
 
+        // Наблюдаем за изменениями избранных треков (список ID)
+        favoriteRepository.getFavoriteTrackIds().observe(getViewLifecycleOwner(), ids -> {
+            Track currentTrack = playerViewModel.getCurrentTrack().getValue();
+            if (currentTrack != null) {
+                updateFavoriteButton(currentTrack);
+            }
+        });
+
+        // Кнопка Play/Pause
         playPauseButton.setOnClickListener(v -> {
-            if (playerViewModel.isPlaying().getValue() != null && playerViewModel.isPlaying().getValue()) {
+            Boolean playing = playerViewModel.isPlaying().getValue();
+            if (playing != null && playing) {
                 playerViewModel.pauseTrack();
             } else {
                 playerViewModel.resumeTrack();
             }
         });
 
-        // Кнопка "Следующий трек"
+        // Кнопки "Следующий" / "Предыдущий" трек
         btnSkipNext.setOnClickListener(v -> playerViewModel.playNextTrack());
-
-        // Кнопка "Предыдущий трек"
         btnSkipPrevious.setOnClickListener(v -> playerViewModel.playPreviousTrack());
 
-        btn_favorite.setOnClickListener(v->{
-
+        // Кнопка "Избранное"
+        btn_favorite.setOnClickListener(v -> {
+            Track currentTrack = playerViewModel.getCurrentTrack().getValue();
+            if (currentTrack != null) {
+                boolean isFavorite = favoriteRepository.isTrackFavorite(currentTrack.getId());
+                if (isFavorite) {
+                    favoriteRepository.removeTrackFromFavorites(currentTrack);
+                } else {
+                    favoriteRepository.addTrackToFavorites(currentTrack);
+                }
+            }
         });
 
+        playerViewModel.getDuration().observe(getViewLifecycleOwner(), duration -> {
+            if (duration != null) {
+                seekBar.setMax(duration.intValue());
+                song_max_duration.setText(formatTime(duration)); // NEW
+            }
+        });
 
+        // Наблюдаем за изменениями текущей позиции
+        playerViewModel.getCurrentPosition().observe(getViewLifecycleOwner(), position -> {
+            if (position != null) {
+                seekBar.setProgress(position.intValue());
+                current_duration.setText(formatTime(position)); // NEW
+            }
+        });
+
+        // Настройка SeekBar
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    playerViewModel.getPlayerInstance().seekTo(progress);
+                    playerViewModel.seekTo(progress);
                 }
             }
 
@@ -128,24 +202,16 @@ public class PlayerFragment extends Fragment {
         });
     }
 
+    // Метод обновления иконки "Избранное"
+    private void updateFavoriteButton(Track track) {
+        boolean isFavorite = favoriteRepository.isTrackFavorite(track.getId());
+        btn_favorite.setImageResource(isFavorite ? R.drawable.ic_heart__24 : R.drawable.ic_favorite_24px);
+    }
 
     private void updateSeekBar() {
         handler.postDelayed(updateSeekBarRunnable, 1000);
     }
 
-    private Runnable updateSeekBarRunnable = new Runnable() {
-        @Override
-        public void run() {
-            Long currentPosition = playerViewModel.getCurrentPosition().getValue();
-            if (currentPosition != null) {
-                seekBar.setProgress(currentPosition.intValue());
-            }
-
-            if (playerViewModel.isPlaying().getValue() != null && playerViewModel.isPlaying().getValue()) {
-                handler.postDelayed(this, 1000); // Обновляем каждые 1000 мс
-            }
-        }
-    };
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -162,22 +228,30 @@ public class PlayerFragment extends Fragment {
             name_artist.setText(currentTrack.getArtist());
             Picasso.get().load(currentTrack.getImageUrl()).into(albumArt);
 
-            // Восстанавливаем SeekBar
             Long duration = playerViewModel.getDuration().getValue();
             if (duration != null) {
                 seekBar.setMax(duration.intValue());
+               song_max_duration.setText(formatTime(duration));
             }
             Long position = playerViewModel.getCurrentPosition().getValue();
             if (position != null) {
                 seekBar.setProgress(position.intValue());
+                current_duration.setText(formatTime(duration));
             }
+            updateFavoriteButton(currentTrack);
         }
+        updateSeekBar();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        handler.removeCallbacks(updateSeekBarRunnable);
+    }
 
-
+    private String formatTime(long millis) {
+        int seconds = (int) (millis / 1000) % 60 ;
+        int minutes = (int) ((millis / (1000*60)) % 60);
+        return String.format("%02d:%02d", minutes, seconds);
     }
 }

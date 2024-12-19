@@ -55,7 +55,7 @@ public interface ApiService {
     Call<Void>deleteUser(@Path("id") int id);
 
     @GET("/favorites/get")
-    Call<FavoriteResponse> getFavorites();
+    Call<FavoriteResponse> getLibraryTracks();
 
     @POST("/favorites/remove")
     Call<FavoriteResponse> removeFavorite(@Body FavoriteRequest favoriteRequest);

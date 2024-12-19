@@ -135,17 +135,17 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.TrackVie
             this.favoriteTrackIds.addAll(updatedFavorites); // Обновляем избранное
         }
 
-        // Сортировка треков по дате создания
-        trackList.sort((track1, track2) -> {
-            Date date1 = track1.getCreatedAtDate();
-            Date date2 = track2.getCreatedAtDate();
-
-            if (date1 == null && date2 == null) return 0;
-            if (date1 == null) return 1;
-            if (date2 == null) return -1;
-
-            return date2.compareTo(date1);
-        });
+//        // Сортировка треков по дате создания
+//        trackList.sort((track1, track2) -> {
+//            Date date1 = track1.getCreatedAtDate();
+//            Date date2 = track2.getCreatedAtDate();
+//
+//            if (date1 == null && date2 == null) return 0;
+//            if (date1 == null) return 1;
+//            if (date2 == null) return -1;
+//
+//            return date2.compareTo(date1);
+//        });
 
         notifyDataSetChanged();
     }

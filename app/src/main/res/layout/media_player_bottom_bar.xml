@@ -28,11 +28,11 @@
 
                 <com.google.android.material.progressindicator.LinearProgressIndicator
                     android:id="@+id/seek_bar"
-                    android:layout_width="432dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:progress="48"
                     app:indicatorColor="#FFF"
-                    app:trackColor="#3E3E3E"
+                    app:trackColor="#3E3E3F"
                     app:trackCornerRadius="6dp"
                     app:trackThickness="2dp" />
 

@@ -2,6 +2,7 @@
 agp = "8.6.0"
 converterGson = "2.9.0"
 core = "4.8.7"
+coreKtx = "1.15.0"
 coreVersion = "4.8.9"
 exoplayer = "2.19.1"
 glide = "4.15.1"
@@ -16,13 +17,16 @@ loggingInterceptorVersion = "4.9.1"
 material = "1.12.0"
 activity = "1.9.2"
 constraintlayout = "2.1.4"
+media = "1.7.0"
 okhttp = "4.12.0"
 picasso = "2.71828"
 shimmer = "0.5.0"
+lifecycleService = "2.8.7"
 
 [libraries]
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 core = { module = "implementation 'org.web3j:core", version.ref = "core" }
+core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 exoplayer = { module = "com.google.android.exoplayer:exoplayer", version.ref = "exoplayer" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
@@ -36,11 +40,13 @@ logging-interceptor-v491 = { module = "com.squareup.okhttp3:logging-interceptor"
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+media = { module = "androidx.media:media", version.ref = "media" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converterGson" }
 shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
 web3j-core = { module = "org.web3j:core", version.ref = "coreVersion" }
+lifecycle-service = { group = "androidx.lifecycle", name = "lifecycle-service", version.ref = "lifecycleService" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
