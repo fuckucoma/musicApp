@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.music.FeedPlayerViewModel;
 import com.example.music.MyApp;
 import com.example.music.PlaybackSource;
 import com.example.music.api.ApiClient;
@@ -25,6 +26,8 @@ public class TrackRepository {
     private static TrackRepository instance;
     private ApiService apiService;
 
+
+
     private MutableLiveData<List<Track>> feedTracksLiveData = new MutableLiveData<>(new ArrayList<>());
     private MutableLiveData<List<Track>> searchTracksLiveData = new MutableLiveData<>(new ArrayList<>());
     private MutableLiveData<List<Track>> libraryTracksLiveData = new MutableLiveData<>(new ArrayList<>());
@@ -39,8 +42,10 @@ public class TrackRepository {
     private MutableLiveData<Long> currentPositionLiveData = new MutableLiveData<>(0L);
 
 
+
     private TrackRepository() {
         apiService = ApiClient.getClient().create(ApiService.class);
+
     }
 
     public static synchronized TrackRepository getInstance() {

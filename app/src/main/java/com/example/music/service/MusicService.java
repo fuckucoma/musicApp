@@ -26,6 +26,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DecodeFormat;
@@ -33,7 +34,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.example.music.FeedPlayerViewModel;
 import com.example.music.PlaybackSource;
+import com.example.music.activity.MainActivity;
 import com.example.music.models.Track;
 import com.example.music.repository.TrackRepository;
 import com.example.test.BuildConfig;
@@ -62,6 +65,7 @@ public class MusicService extends LifecycleService {
     private Handler positionUpdateHandler;
     private Runnable positionUpdateRunnable;
 
+
     @SuppressLint("ForegroundServiceType")
     @Override
     public void onCreate() {
@@ -70,14 +74,14 @@ public class MusicService extends LifecycleService {
 
         exoPlayer = new ExoPlayer.Builder(this).build();
 
+
         mediaSession = new MediaSessionCompat(this, "MusicService");
         mediaSession.setFlags(
                 MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
                         MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
         );
         mediaSession.setActive(true);
-
-        // Добавляем ACTION_SEEK_TO для поддержки перемотки
+        
         stateBuilder = new PlaybackStateCompat.Builder()
                 .setActions(
                         PlaybackStateCompat.ACTION_PLAY |
@@ -359,10 +363,29 @@ public class MusicService extends LifecycleService {
                 .into(new CustomTarget<Bitmap>() {
                     @SuppressLint("MissingPermission")
                     @Override
-                    public void onResourceReady(@androidx.annotation.NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                         boolean isPlaying = exoPlayer.isPlaying();
 
                         updateMediaSessionMetadata(track, resource);
+
+                        // 1) Создаём Intent для открытия MainActivity
+                        //    с уникальным action (например, "ACTION_OPEN_PLAYER") и передаём trackId
+                        Intent notificationIntent = new Intent(MusicService.this, MainActivity.class);
+                        notificationIntent.setAction("ACTION_OPEN_PLAYER");
+                        notificationIntent.putExtra("TRACK_ID", track.getId());
+                        // Можно добавить и PlaybackSource, если нужно
+                        // notificationIntent.putExtra("PLAYBACK_SOURCE", ...);
+
+                        // Флаги (опционально): чтобы при повторных нажатиях не создавались новые экземпляры Activity
+                        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                        // 2) Создаём PendingIntent для запуска Activity
+                        PendingIntent contentPendingIntent = PendingIntent.getActivity(
+                                MusicService.this,
+                                0,
+                                notificationIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                        );
 
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(MusicService.this, CHANNEL_ID)
                                 .setSmallIcon(R.drawable.icon)
@@ -375,14 +398,16 @@ public class MusicService extends LifecycleService {
                                 .addAction(generateAction(R.drawable.ic_skip_previous_24px, "Previous", "PREVIOUS"))
                                 .addAction(action)
                                 .addAction(generateAction(R.drawable.ic_skip_next_24px, "Next", "NEXT"))
-                                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+                                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                                // ВАЖНО: устанавливаем PendingIntent на само уведомление
+                                .setContentIntent(contentPendingIntent)
+                                .setAutoCancel(false); // Обычно для плееров = false, чтоб уведомление не скрывалось
 
-                        // Сборка и запуск уведомления
                         Notification notification = builder.build();
                         startForeground(NOTIFICATION_ID, notification);
 
                         // Обновляем playback state для гарантии отображения seek bar
-                        updatePlaybackStateCompat(isPlaying); // NEW
+                        updatePlaybackStateCompat(isPlaying);
                     }
 
                     @Override
@@ -393,6 +418,19 @@ public class MusicService extends LifecycleService {
                         super.onLoadFailed(errorDrawable);
                         Bitmap fallback = BitmapFactory.decodeResource(getResources(), R.drawable.placeholder_image);
                         updateMediaSessionMetadata(track, fallback);
+
+                        // Аналогичные шаги, что и выше, включая создание contentIntent
+                        Intent notificationIntent = new Intent(MusicService.this, MainActivity.class);
+                        notificationIntent.setAction("ACTION_OPEN_PLAYER");
+                        notificationIntent.putExtra("TRACK_ID", track.getId());
+                        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                        PendingIntent contentPendingIntent = PendingIntent.getActivity(
+                                MusicService.this,
+                                0,
+                                notificationIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                        );
 
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(MusicService.this, CHANNEL_ID)
                                 .setSmallIcon(R.drawable.icon)
@@ -405,13 +443,14 @@ public class MusicService extends LifecycleService {
                                 .addAction(generateAction(R.drawable.ic_skip_previous_24px, "Previous", "PREVIOUS"))
                                 .addAction(action)
                                 .addAction(generateAction(R.drawable.ic_skip_next_24px, "Next", "NEXT"))
-                                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+                                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                                .setContentIntent(contentPendingIntent)
+                                .setAutoCancel(false);
 
                         Notification notification = builder.build();
                         startForeground(NOTIFICATION_ID, notification);
 
-                        // Обновляем playback state
-                        updatePlaybackStateCompat(exoPlayer.isPlaying()); // NEW
+                        updatePlaybackStateCompat(exoPlayer.isPlaying());
                     }
                 });
     }

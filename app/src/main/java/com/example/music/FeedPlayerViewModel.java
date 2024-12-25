@@ -4,10 +4,12 @@ import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.example.music.models.Track;
 import com.example.music.repository.TrackRepository;
@@ -32,6 +34,7 @@ public class FeedPlayerViewModel extends AndroidViewModel {
         trackRepository = TrackRepository.getInstance();
         feedPlayer = new ExoPlayer.Builder(application.getApplicationContext()).build();
         initializeFeedPlayerListeners();
+        initializePlaybackStateObserver();
     }
 
     private void initializeFeedPlayerListeners() {
@@ -62,6 +65,24 @@ public class FeedPlayerViewModel extends AndroidViewModel {
                 }
             }
         });
+    }
+
+    private final Observer<Boolean> isPlayingObserver = new Observer<Boolean>() {
+        @Override
+        public void onChanged(Boolean isPlaying) {
+            Log.d("Feed", "isPlaying изменилось: " + isPlaying);
+            if (isPlaying != null && isPlaying) {
+                if (feedPlayer != null && feedPlayer.isPlaying()) {
+                    Log.d("Feed", "MusicService начал воспроизведение. Ставлю FeedPlayer на паузу.");
+                    pauseFeedTrack();
+                }
+            }
+        }
+    };
+
+    private void initializePlaybackStateObserver() {
+        // Подписываемся на изменения isPlaying из TrackRepository
+        trackRepository.isPlaying().observeForever(isPlayingObserver);
     }
 
     public LiveData<Boolean> isFeedPlaying() {

@@ -1,10 +1,7 @@
 package com.example.music.activity;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.example.music.AdminPanel.AdminActivity;
 import com.example.music.FavoriteManager;
 import com.example.music.repository.FavoriteRepository;
 import com.example.music.PlayerViewModel;
@@ -25,8 +23,8 @@ import com.example.music.fragments.LibraryFragment;
 import com.example.music.fragments.PlayerFragment;
 import com.example.music.fragments.SearchFragment;
 import com.example.music.models.Track;
+import com.example.music.repository.TrackRepository;
 import com.example.test.R;
-import com.google.android.exoplayer2.C;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.squareup.picasso.Picasso;
@@ -63,6 +61,11 @@ public class MainActivity extends AppCompatActivity {
 
     private String authToken;
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +149,28 @@ public class MainActivity extends AppCompatActivity {
 
 
         favoriteRepository.fetchFavorites();
+        handleIntent(getIntent());
+    }
+
+    private void handleIntent(Intent intent) {
+        if (intent == null) return;
+
+        String action = intent.getAction();
+        if ("ACTION_OPEN_PLAYER".equals(action)) {
+            int trackId = intent.getIntExtra("TRACK_ID", -1);
+            if (trackId != -1) {
+                Track currentTrack = playerViewModel.getCurrentTrack().getValue();
+                if (currentTrack != null && currentTrack.getId() == trackId) {
+                    openPlayerFragment();
+                    return;
+                }
+                Track newTrack = TrackRepository.getInstance().getTrackById(trackId);
+                if (newTrack != null) {
+                    playerViewModel.SetCurrentTrack(newTrack);
+                }
+                openPlayerFragment();
+            }
+        }
     }
 
     private void openAdminActivity() {

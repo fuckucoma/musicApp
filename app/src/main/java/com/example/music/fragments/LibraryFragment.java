@@ -159,15 +159,6 @@ public class LibraryFragment extends Fragment {
             feedPlayerViewModel.pauseFeedTrack();
         PlaybackSource source = PlaybackSource.LIBRARY;
         playerViewModel.playTrack(track, source);
-//            playerViewModel.SetCurrentTrack(track);
-            //playerViewModel.playTrack(trackUrl, track,PlaybackSource.LIBRARY);
-
-            //,PlaybackSource.LIBRARY,currentTracks
-//        Intent intent = new Intent(getContext(), MusicService.class);
-//        intent.setAction("PLAY_TRACK");
-//        intent.putExtra("TRACK_ID", track.getId());
-//        intent.putExtra("PLAYBACK_SOURCE", PlaybackSource.LIBRARY.name()); // Указываем источник
-//        ContextCompat.startForegroundService(getContext(), intent);
     }
 
     private String getTrackStreamUrl(String trackId) {
