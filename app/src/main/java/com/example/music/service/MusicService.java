@@ -155,8 +155,8 @@ public class MusicService extends LifecycleService {
                         }
                     }
                 } else if (playbackState == Player.STATE_ENDED) {
-                    stopForeground(true);
-                    stopSelf();
+//                    stopForeground(true);
+//                    stopSelf();
                     TrackRepository.getInstance().updatePlaybackState(false);
                     TrackRepository.getInstance().playNextTrack();
 
