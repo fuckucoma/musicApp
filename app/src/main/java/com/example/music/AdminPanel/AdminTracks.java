@@ -1,4 +1,4 @@
-package com.example.music.a_fragments;
+package com.example.music.AdminPanel;
 
 import android.os.Bundle;
 
@@ -17,7 +17,6 @@ import com.example.music.adapters.ATracksAdapter;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
 import com.example.music.models.Track;
-import com.example.music.response.TrackResponse;
 import com.example.test.R;
 
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public class AdminTracks extends Fragment {
         recyclerView = view.findViewById(R.id.tracks);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Инициализация ApiService
+
         apiService = ApiClient.getClient().create(ApiService.class);
 
         adapter = new ATracksAdapter(tracks, this::deleteTrack);

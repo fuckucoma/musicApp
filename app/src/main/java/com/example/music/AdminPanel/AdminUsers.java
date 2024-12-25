@@ -1,4 +1,4 @@
-package com.example.music.a_fragments;
+package com.example.music.AdminPanel;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;

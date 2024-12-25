@@ -1,12 +1,10 @@
-package com.example.music.activity;
+package com.example.music.AdminPanel;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.example.music.a_fragments.AdminTracks;
-import com.example.music.a_fragments.AdminUsers;
 import com.example.music.fragments.UserFragment;
 import com.example.test.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -45,6 +43,14 @@ public class AdminActivity extends AppCompatActivity {
 
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, selectedFragment)
+                        .commit();
+            }
+
+            if (savedInstanceState == null) {
+                if (adminTracksFragment == null) adminTracksFragment = new AdminTracks();
+                currentFragment = adminTracksFragment;
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container,adminTracksFragment)
                         .commit();
             }
 

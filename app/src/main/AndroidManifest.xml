@@ -61,7 +61,7 @@
             android:exported="true"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name="com.example.music.activity.AdminActivity"
+            android:name="com.example.music.AdminPanel.AdminActivity"
             android:exported="true"
             android:screenOrientation="portrait"></activity>
         <activity
