@@ -1,5 +1,6 @@
 package com.example.music.activity;
 
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -55,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private Fragment searchFragment = null;
     private Fragment libraryFragment = null;
 
+    private boolean isMediaBarAnimated = false;
+
 
     private boolean isPlayerFragmentVisible = false;
     private ApiService apiService;
@@ -105,9 +108,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (isAdmin) {
             openAdminActivity();
+            finish();
         }
-
-
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
@@ -191,10 +193,18 @@ public class MainActivity extends AppCompatActivity {
         }
         if (currentFragment instanceof HomeFragment) {
             mediaPlayerBottomBar.setVisibility(View.GONE);
+
             Log.d("MainActivity", "Media bar hidden in HomeFragment");
         } else if (playerViewModel.getCurrentTrack().getValue() != null) {
-            mediaPlayerBottomBar.setVisibility(View.VISIBLE);
-            Log.d("MainActivity", "Media bar shown in other fragment");
+            if (!isMediaBarAnimated) {
+                // Если анимация еще не выполнялась, запускаем её
+                mediaPlayerBottomBar.setVisibility(View.VISIBLE);
+                ObjectAnimator.ofFloat(mediaPlayerBottomBar, "translationY", mediaPlayerBottomBar.getHeight(), 0).start();
+                isMediaBarAnimated = true; // Устанавливаем флаг
+            } else {
+                // Если анимация уже выполнялась, просто показываем панель
+                mediaPlayerBottomBar.setVisibility(View.VISIBLE);
+            }
         }
         else {
             mediaPlayerBottomBar.setVisibility(View.GONE);
@@ -317,7 +327,6 @@ public class MainActivity extends AppCompatActivity {
 
             BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
             bottomNavigationView.setVisibility(View.VISIBLE);
-
             updateMediaPlayerVisibility();
         } else {
             super.onBackPressed();

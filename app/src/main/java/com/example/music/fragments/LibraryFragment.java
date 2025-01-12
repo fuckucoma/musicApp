@@ -3,11 +3,9 @@ package com.example.music.fragments;
 import android.annotation.SuppressLint;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.example.music.FeedPlayerViewModel;
 import com.example.music.LibraryViewModel;
@@ -33,24 +30,14 @@ import com.example.music.activity.UploadTrackActivity;
 import com.example.music.adapters.LibraryAdapter;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
-import com.example.music.response.FavoriteResponse;
 import com.example.music.models.Track;
-import com.example.music.service.MusicService;
 import com.example.test.BuildConfig;
 import com.example.test.R;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class LibraryFragment extends Fragment {
@@ -147,9 +134,9 @@ public class LibraryFragment extends Fragment {
 
     private void openUserProfile() {
         Log.d(TAG, "Opening UserFragment");
-        UserFragment userFragment = new UserFragment();
+        ProfileFragment profileFragment = new ProfileFragment();
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, userFragment);
+        transaction.replace(R.id.fragment_container, profileFragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }

@@ -44,10 +44,7 @@ import com.example.test.R;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
-import com.squareup.picasso.MemoryPolicy;
-import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -97,8 +94,7 @@ public class MusicService extends LifecycleService {
             @Override
             public void onSeekTo(long pos) {
                 super.onSeekTo(pos);
-                // Когда пользователь нажимает на seek bar в уведомлении,
-                // система вызывает этот метод.
+
                 exoPlayer.seekTo(pos);
                 TrackRepository.getInstance().updateCurrentPosition(pos);
                 updatePlaybackStateCompat(exoPlayer.isPlaying());
@@ -106,9 +102,6 @@ public class MusicService extends LifecycleService {
         });
 
         createNotificationChannel();
-
-        Notification baseNotification = createBaseNotification();
-        startForeground(NOTIFICATION_ID, baseNotification);
 
         executorService = Executors.newSingleThreadExecutor();
 
@@ -129,37 +122,21 @@ public class MusicService extends LifecycleService {
         exoPlayer.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
-                PlaybackSource source = TrackRepository.getInstance().getCurrentPlaybackSource().getValue();
                 if (playbackState == Player.STATE_READY) {
                     long duration = exoPlayer.getDuration();
                     if (duration > 0) {
                         TrackRepository.getInstance().updateDuration(duration);
                         TrackRepository.getInstance().updateIsPlayerReady(true);
-
-                        // Обновляем метаданные с длительностью для seek bar
                         updateMediaSessionMetadata(currentTrack, null);
                     }
-
-                    if (exoPlayer.isPlaying()) {
-                        if (source == PlaybackSource.SEARCH || source == PlaybackSource.LIBRARY) {
-                            if (currentTrack != null) {
-                                TrackRepository.getInstance().updatePlaybackState(true);
-                            }
-                        }
-                    } else {
-                        if (source == PlaybackSource.SEARCH || source == PlaybackSource.LIBRARY) {
-                            if (currentTrack != null) {
-                                buildNotification(currentTrack, generateAction(R.drawable.ic_play_arrow_24px, "Play", "PLAY"));
-                                TrackRepository.getInstance().updatePlaybackState(false);
-                            }
-                        }
-                    }
                 } else if (playbackState == Player.STATE_ENDED) {
-//                    stopForeground(true);
-//                    stopSelf();
-                    TrackRepository.getInstance().updatePlaybackState(false);
-                    TrackRepository.getInstance().playNextTrack();
-
+                    Boolean isRepeatEnabled = TrackRepository.getInstance().isRepeatEnabled().getValue();
+                    if (isRepeatEnabled != null && isRepeatEnabled) {
+                        exoPlayer.seekTo(0);
+                        exoPlayer.play();
+                    } else {
+                        TrackRepository.getInstance().playNextTrack();
+                    }
                 }
             }
 
@@ -173,10 +150,7 @@ public class MusicService extends LifecycleService {
                             isPlaying ? "PAUSE" : "PLAY"
                     ));
                 }
-
-                // При изменении состояния также обновляем состояние плеера
-                updatePlaybackStateCompat(isPlaying); // NEW
-
+                updatePlaybackStateCompat(isPlaying);
                 if (isPlaying) {
                     positionUpdateHandler.removeCallbacks(positionUpdateRunnable);
                     positionUpdateHandler.post(positionUpdateRunnable);
@@ -198,8 +172,6 @@ public class MusicService extends LifecycleService {
             }
         });
     }
-
-    // NEW: метод для обновления PlaybackStateCompat актуальными позицией и состоянием
     private void updatePlaybackStateCompat(boolean isPlaying) {
         if (exoPlayer == null) return;
 
@@ -368,18 +340,15 @@ public class MusicService extends LifecycleService {
 
                         updateMediaSessionMetadata(track, resource);
 
-                        // 1) Создаём Intent для открытия MainActivity
-                        //    с уникальным action (например, "ACTION_OPEN_PLAYER") и передаём trackId
                         Intent notificationIntent = new Intent(MusicService.this, MainActivity.class);
                         notificationIntent.setAction("ACTION_OPEN_PLAYER");
                         notificationIntent.putExtra("TRACK_ID", track.getId());
-                        // Можно добавить и PlaybackSource, если нужно
-                        // notificationIntent.putExtra("PLAYBACK_SOURCE", ...);
 
-                        // Флаги (опционально): чтобы при повторных нажатиях не создавались новые экземпляры Activity
+
+
                         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                        // 2) Создаём PendingIntent для запуска Activity
+
                         PendingIntent contentPendingIntent = PendingIntent.getActivity(
                                 MusicService.this,
                                 0,
@@ -399,14 +368,14 @@ public class MusicService extends LifecycleService {
                                 .addAction(action)
                                 .addAction(generateAction(R.drawable.ic_skip_next_24px, "Next", "NEXT"))
                                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                                // ВАЖНО: устанавливаем PendingIntent на само уведомление
+
                                 .setContentIntent(contentPendingIntent)
-                                .setAutoCancel(false); // Обычно для плееров = false, чтоб уведомление не скрывалось
+                                .setAutoCancel(false);
 
                         Notification notification = builder.build();
                         startForeground(NOTIFICATION_ID, notification);
 
-                        // Обновляем playback state для гарантии отображения seek bar
+
                         updatePlaybackStateCompat(isPlaying);
                     }
 
@@ -419,7 +388,7 @@ public class MusicService extends LifecycleService {
                         Bitmap fallback = BitmapFactory.decodeResource(getResources(), R.drawable.placeholder_image);
                         updateMediaSessionMetadata(track, fallback);
 
-                        // Аналогичные шаги, что и выше, включая создание contentIntent
+
                         Intent notificationIntent = new Intent(MusicService.this, MainActivity.class);
                         notificationIntent.setAction("ACTION_OPEN_PLAYER");
                         notificationIntent.putExtra("TRACK_ID", track.getId());
@@ -468,7 +437,7 @@ public class MusicService extends LifecycleService {
     }
 
     private String generateStreamUrl(int trackId) {
-        return BuildConfig.BASE_URL + "/tracks/" + trackId + "/stream";
+        return  BuildConfig.BASE_URL + "/tracks/" + trackId + "/stream";
     }
 
     private void createNotificationChannel() {

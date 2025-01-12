@@ -1,4 +1,4 @@
-package com.example.music;
+package com.example.music.models;
 
 public class FavoriteRequest {
     private int trackId;

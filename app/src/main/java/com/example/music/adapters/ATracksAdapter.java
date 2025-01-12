@@ -65,7 +65,7 @@ public class ATracksAdapter extends RecyclerView.Adapter<ATracksAdapter.TrackVie
 
         holder.deleteButton.setOnClickListener(v -> {
             if (deleteListener != null) {
-                deleteListener.onDelete(track.getId());
+                deleteListener.onDelete(Integer.parseInt(track.getId()+""));
             }
         });
     }
@@ -75,7 +75,6 @@ public class ATracksAdapter extends RecyclerView.Adapter<ATracksAdapter.TrackVie
         return tracks.size();
     }
 
-    // ViewHolder класса
     public static class TrackViewHolder extends RecyclerView.ViewHolder {
         ImageView trackImage;
         TextView trackTitle;

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/userFragment"
+    android:id="@+id/profileFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp"
-    tools:context="com.example.music.fragments.UserFragment">
+    android:padding="12dp"
+    tools:context="com.example.music.fragments.ProfileFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -66,13 +66,49 @@
             android:text="Загрузить изображение профиля"
             android:layout_marginTop="16dp" />
 
+        <EditText
+            android:id="@+id/et_current_password"
+            android:hint="Текущий пароль"
+            android:inputType="textPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20sp"/>
+
+        <EditText
+            android:id="@+id/et_new_password"
+            android:hint="Новый пароль"
+            android:inputType="textPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btn_change_password"
+            android:text="Изменить пароль"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/et_new_username"
+            android:hint="Новое имя пользователя"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20sp"/>
+
+        <Button
+            android:id="@+id/btn_change_username"
+            android:text="Изменить имя пользователя"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Выйти из системы"
-            android:layout_marginTop="300dp"/>
+            android:layout_marginTop="10dp"/>
 
     </LinearLayout>
 
-</ScrollView>
+
+
+</FrameLayout>

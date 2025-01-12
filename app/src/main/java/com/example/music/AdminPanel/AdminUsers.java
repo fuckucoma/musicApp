@@ -46,8 +46,8 @@ public class AdminUsers extends Fragment {
         recyclerView = view.findViewById(R.id.users);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        search_user = view.findViewById(R.id.search_user);
-        search_button = view.findViewById(R.id.search_button);
+//        search_user = view.findViewById(R.id.search_user);
+//        search_button = view.findViewById(R.id.search_button);
 
         apiService = ApiClient.getClient().create(ApiService.class);
 

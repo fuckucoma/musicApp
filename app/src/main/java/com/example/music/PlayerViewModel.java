@@ -22,6 +22,7 @@ public class PlayerViewModel extends AndroidViewModel {
     private LiveData<Long> currentPosition;
     private Handler seekBarHandler = new Handler(Looper.getMainLooper());
     private List<Track> currentTrackList = new ArrayList<>();
+    private LiveData<Boolean> isRepeatEnabled;
 
     public PlayerViewModel(@NonNull Application application) {
         super(application);
@@ -31,6 +32,17 @@ public class PlayerViewModel extends AndroidViewModel {
         isPlayerReady = trackRepository.isPlayerReady();
         duration = trackRepository.getDuration();
         currentPosition = trackRepository.getCurrentPosition();
+        isRepeatEnabled = trackRepository.isRepeatEnabled();
+    }
+
+
+    public LiveData<Boolean> isRepeatModeEnabled() {
+        return isRepeatEnabled;
+    }
+
+    public void toggleRepeatMode() {
+        boolean currentState = isRepeatEnabled.getValue() != null && isRepeatEnabled.getValue();
+        TrackRepository.getInstance().setRepeatEnabled(!currentState);
     }
 
     public LiveData<Track> getCurrentTrack() {

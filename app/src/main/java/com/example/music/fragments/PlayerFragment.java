@@ -37,10 +37,11 @@ public class PlayerFragment extends Fragment {
     private ImageButton btn_favorite;
     private ExtendedFloatingActionButton btnSkipPrevious;
     private ExtendedFloatingActionButton btnSkipNext;
+    private ExtendedFloatingActionButton repeat_btn;
 
     private PlayerViewModel playerViewModel;
     private FavoriteRepository favoriteRepository;
-
+    private boolean isRepeatEnabled = false;
     private Handler handler = new Handler(Looper.getMainLooper());
 
     private Runnable updateSeekBarRunnable = new Runnable() {
@@ -74,8 +75,8 @@ public class PlayerFragment extends Fragment {
         btnSkipNext = view.findViewById(R.id.btn_skip_next);
         current_duration = view.findViewById(R.id.current_duration); // NEW
         song_max_duration = view.findViewById(R.id.song_max_duration); // NEW
+        repeat_btn = view.findViewById(R.id.btn_repeat);
 
-        // Получаем PlayerViewModel (основной плеер)
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
         // Получаем FavoriteRepository, например, через MainActivity
         if (requireActivity() instanceof MainActivity) {
@@ -149,11 +150,18 @@ public class PlayerFragment extends Fragment {
             }
         });
 
-        // Кнопки "Следующий" / "Предыдущий" трек
+
+        playerViewModel.isRepeatModeEnabled().observe(getViewLifecycleOwner(), isEnabled -> {
+            repeat_btn.setIconResource(isEnabled ? R.drawable.ic_repeat_one_24px : R.drawable.ic_repeat_24px);
+        });
+
+        // Обработчик нажатий на кнопку повтора
+        repeat_btn.setOnClickListener(v -> playerViewModel.toggleRepeatMode());
+
         btnSkipNext.setOnClickListener(v -> playerViewModel.playNextTrack());
         btnSkipPrevious.setOnClickListener(v -> playerViewModel.playPreviousTrack());
 
-        // Кнопка "Избранное"
+
         btn_favorite.setOnClickListener(v -> {
             Track currentTrack = playerViewModel.getCurrentTrack().getValue();
             if (currentTrack != null) {

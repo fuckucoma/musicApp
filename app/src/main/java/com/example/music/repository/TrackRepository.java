@@ -42,6 +42,7 @@ public class TrackRepository {
     private MutableLiveData<Long> currentPositionLiveData = new MutableLiveData<>(0L);
 
 
+    private MutableLiveData<Boolean> isRepeatEnabled = new MutableLiveData<>(false);
 
     private TrackRepository() {
         apiService = ApiClient.getClient().create(ApiService.class);
@@ -53,6 +54,14 @@ public class TrackRepository {
             instance = new TrackRepository();
         }
         return instance;
+    }
+
+    public LiveData<Boolean> isRepeatEnabled() {
+        return isRepeatEnabled;
+    }
+
+    public void setRepeatEnabled(boolean isEnabled) {
+        isRepeatEnabled.postValue(isEnabled);
     }
 
     public LiveData<PlaybackSource> getCurrentPlaybackSource() {
@@ -292,32 +301,4 @@ public class TrackRepository {
         }
         return null;
     }
-
-//    public void playNextTrack() {
-//        List<Track> currentList = searchTracksLiveData.getValue();
-//        Track currentTrack = currentTrackLiveData.getValue();
-//        if (currentList != null && currentTrack != null) {
-//            int index = currentList.indexOf(currentTrack);
-//            if (index < currentList.size() - 1) {
-//                setCurrentTrack(currentList.get(index + 1));
-//            } else {
-//                Log.d("TrackRepository", "Reached end of list");
-//                setCurrentTrack(null);
-//            }
-//        }
-//    }
-//
-//    public void playPreviousTrack() {
-//        List<Track> currentList = searchTracksLiveData.getValue();
-//        Track currentTrack = currentTrackLiveData.getValue();
-//        if (currentList != null && currentTrack != null) {
-//            int index = currentList.indexOf(currentTrack);
-//            if (index > 0) {
-//                setCurrentTrack(currentList.get(index - 1));
-//            } else {
-//                Log.d("TrackRepository", "At start of list");
-//                setCurrentTrack(null);
-//            }
-//        }
-//    }
 }

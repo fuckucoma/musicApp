@@ -49,8 +49,6 @@ public class AdminTracks extends Fragment {
         recyclerView.setAdapter(adapter);
 
         fetchTracks();
-
-
         return view;
     }
 

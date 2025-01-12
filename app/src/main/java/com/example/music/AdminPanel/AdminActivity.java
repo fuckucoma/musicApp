@@ -5,7 +5,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.example.music.fragments.UserFragment;
+import com.example.music.fragments.ProfileFragment;
 import com.example.test.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -13,7 +13,7 @@ public class AdminActivity extends AppCompatActivity {
 
 
     private Fragment adminTracksFragment = null;
-    private Fragment userFragment = null;
+    private Fragment profileFragment = null;
     private Fragment usersFragment = null;
     private Fragment currentFragment;
 
@@ -34,8 +34,8 @@ public class AdminActivity extends AppCompatActivity {
                 if (usersFragment == null) usersFragment = new AdminUsers();
                 selectedFragment = usersFragment;
             } else if (item.getItemId() == R.id.navigation_profile) {
-                if (userFragment == null) userFragment = new UserFragment();
-                selectedFragment = userFragment;
+                if (profileFragment == null) profileFragment = new ProfileFragment();
+                selectedFragment = profileFragment;
             }
 
             if (selectedFragment != null) {
@@ -46,16 +46,16 @@ public class AdminActivity extends AppCompatActivity {
                         .commit();
             }
 
-            if (savedInstanceState == null) {
-                if (adminTracksFragment == null) adminTracksFragment = new AdminTracks();
-                currentFragment = adminTracksFragment;
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container,adminTracksFragment)
-                        .commit();
-            }
-
             return true;
         });
+
+        if (savedInstanceState == null) {
+            if (adminTracksFragment == null) adminTracksFragment = new AdminTracks();
+            currentFragment = adminTracksFragment;
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container,adminTracksFragment)
+                    .commit();
+        }
 
     }
 }

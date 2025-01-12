@@ -1,0 +1,61 @@
+@startuml
+
+' -- Базовые настройки оформления (опционально)
+skinparam classAttributeIconSize 0
+skinparam classFontSize 12
+skinparam classAttributeFontSize 11
+skinparam classMethodFontSize 11
+
+'===================== МОДЕЛИ И ОТВЕТЫ (DTO) =====================
+class User
+class RegisterResponse
+class LoginResponse
+class Track
+enum PlaybackSource
+class FavoriteTrack
+class FavoriteResponse
+
+'===================== СЕТЕВОЙ СЛОЙ =====================
+interface ApiService
+class ApiClient
+
+'===================== REPOSITORIES =====================
+class TrackRepository
+class FavoriteRepository
+class FavoriteManager
+
+'===================== VIEWMODEL =====================
+class PlayerViewModel
+
+'===================== SERVICE =====================
+class MusicService
+
+'===================== ACTIVITY =====================
+class RegisterActivity
+class LoginActivity
+class MainActivity
+
+'===================== ОТНОШЕНИЯ =====================
+
+' -- Использование в Activities
+RegisterActivity --> ApiService : uses
+LoginActivity --> ApiService : uses
+MainActivity --> ApiService : uses
+
+' -- ViewModel, репозитории
+MainActivity --> PlayerViewModel : has-a
+MainActivity --> FavoriteRepository : has-a
+MainActivity --> FavoriteManager : has-a
+
+' -- TrackRepository взаимодействует с ApiService и MusicService
+PlayerViewModel --> TrackRepository : uses
+TrackRepository --> ApiService : uses
+TrackRepository --> MusicService : starts (via Intent)
+MusicService --> TrackRepository : accesses
+
+' -- Дополнительные связи
+FavoriteRepository --> Track : manages
+FavoriteManager --> FavoriteRepository : uses
+ApiClient --> ApiService : creates (via Retrofit)
+
+@enduml
