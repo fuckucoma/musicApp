@@ -1,4 +1,4 @@
-package com.example.music.models;
+package com.example.music.request;
 
 public class passRequest {
 

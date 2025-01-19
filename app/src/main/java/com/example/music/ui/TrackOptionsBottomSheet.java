@@ -1,0 +1,98 @@
+package com.example.music.ui;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+
+import com.example.test.R;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
+public class TrackOptionsBottomSheet extends BottomSheetDialogFragment {
+
+    private static final String ARG_TRACK_ID = "arg_track_id";
+    private int trackId;
+
+    public static TrackOptionsBottomSheet newInstance(int trackId) {
+        TrackOptionsBottomSheet fragment = new TrackOptionsBottomSheet();
+        Bundle args = new Bundle();
+        args.putInt(ARG_TRACK_ID, trackId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            trackId = getArguments().getInt(ARG_TRACK_ID, -1);
+        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.bottom_sheet_track_options, container, false);
+
+        // Найдём наши пункты меню
+        View btnAddReview = view.findViewById(R.id.btn_add_review);
+        View btnComplain  = view.findViewById(R.id.btn_complain);
+
+        btnAddReview.setOnClickListener(v -> {
+            // Закрываем BottomSheet, затем показываем диалог для добавления отзыва
+            dismiss();
+            showAddReviewDialog(trackId);
+        });
+
+        btnComplain.setOnClickListener(v -> {
+            // Закрываем BottomSheet, затем показываем диалог для жалобы
+            dismiss();
+            showComplaintDialog(trackId);
+        });
+
+        return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) getDialog();
+        if (bottomSheetDialog != null) {
+            FrameLayout bottomSheet = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+
+
+            if (bottomSheet != null) {
+                BottomSheetBehavior<FrameLayout> behavior = BottomSheetBehavior.from(bottomSheet);
+
+                // 1) Отключаем подгонку под контент
+                behavior.setFitToContents(true);
+
+                // 2) Задаем долю экрана, на которой хотим сделать half-expanded
+//                behavior.setHalfExpandedRatio(0.5f); // 50% экрана
+
+                // 3) Задаём начальное состояние - половина экрана
+//                behavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
+
+                // 4) (Опционально) если используете Material 1.6.0+
+                //    чтобы гарантированно можно было перетаскивать
+                behavior.setDraggable(true);
+
+                // 5) (Опционально) если не хотите, чтобы лист сворачивался в "пик"
+                //    а сразу скрывался при свайпе вниз, можно:
+                // behavior.setSkipCollapsed(true);
+            }
+        }
+    }
+
+
+    private void showAddReviewDialog(int trackId) {
+        AddReviewDialog.show(requireActivity().getSupportFragmentManager(), trackId);
+    }
+
+    private void showComplaintDialog(int trackId) {
+        AddComplaintDialog.show(requireActivity().getSupportFragmentManager(), trackId);
+    }
+}

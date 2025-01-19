@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -30,11 +31,15 @@ android {
 
     buildFeatures {
         buildConfig = true
+        viewBinding = true
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
 
@@ -46,6 +51,8 @@ dependencies {
     implementation (libs.media)
     implementation (libs.core.ktx)
 
+    implementation (libs.material)
+
     implementation (libs.glide)
     implementation(libs.shimmer)
     implementation(libs.json)
@@ -55,10 +62,11 @@ dependencies {
     implementation(libs.exoplayer)
     implementation(libs.picasso)
     implementation(libs.appcompat)
-    implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.lifecycle.service)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.music.adapters.ATracksAdapter;
+import com.example.music.adapters.TrackAdapter;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
 import com.example.music.models.Track;
@@ -29,7 +29,7 @@ import retrofit2.Response;
 public class AdminTracks extends Fragment {
 
     private RecyclerView recyclerView;
-    private ATracksAdapter adapter;
+    private TrackAdapter adapter;
     private List<Track> tracks = new ArrayList<>();
     private ApiService apiService;
 
@@ -45,10 +45,10 @@ public class AdminTracks extends Fragment {
 
         apiService = ApiClient.getClient().create(ApiService.class);
 
-        adapter = new ATracksAdapter(tracks, this::deleteTrack);
-        recyclerView.setAdapter(adapter);
+//        adapter = new TrackAdapter(tracks, this::deleteTrack);
+//        recyclerView.setAdapter(adapter);
 
-        fetchTracks();
+//        fetchTracks();
         return view;
     }
 

@@ -23,6 +23,8 @@ import com.example.music.PlayerViewModel;
 import com.example.music.activity.MainActivity;
 import com.example.music.models.Track;
 import com.example.music.repository.FavoriteRepository;
+//import com.example.music.ui.BottomSheetFragment;
+import com.example.music.ui.TrackOptionsBottomSheet;
 import com.example.test.R;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -34,7 +36,7 @@ public class PlayerFragment extends Fragment {
     private TextView trackTitle, name_artist, current_duration, song_max_duration;
     private SeekBar seekBar;
     private FloatingActionButton playPauseButton;
-    private ImageButton btn_favorite;
+    private ImageButton btn_favorite, btn_more;
     private ExtendedFloatingActionButton btnSkipPrevious;
     private ExtendedFloatingActionButton btnSkipNext;
     private ExtendedFloatingActionButton repeat_btn;
@@ -76,6 +78,8 @@ public class PlayerFragment extends Fragment {
         current_duration = view.findViewById(R.id.current_duration); // NEW
         song_max_duration = view.findViewById(R.id.song_max_duration); // NEW
         repeat_btn = view.findViewById(R.id.btn_repeat);
+        btn_more = view.findViewById(R.id.btn_more);
+
 
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
         // Получаем FavoriteRepository, например, через MainActivity
@@ -150,6 +154,12 @@ public class PlayerFragment extends Fragment {
             }
         });
 
+        btn_more.setOnClickListener(v -> {
+            Track currentTrack = playerViewModel.getCurrentTrack().getValue();
+            int trackId = currentTrack.getId();
+            TrackOptionsBottomSheet bottomSheet = TrackOptionsBottomSheet.newInstance(trackId);
+            bottomSheet.show(getParentFragmentManager(), "TrackOptionsBottomSheet");
+        });
 
         playerViewModel.isRepeatModeEnabled().observe(getViewLifecycleOwner(), isEnabled -> {
             repeat_btn.setIconResource(isEnabled ? R.drawable.ic_repeat_one_24px : R.drawable.ic_repeat_24px);

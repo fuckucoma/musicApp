@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.MaterialComponents.BottomSheet.Modal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="?attr/colorSurface"
+    android:clipToPadding="true"
+    android:clipToOutline="true">
+
+    <!-- Пример кнопки/текста "Добавить отзыв" -->
+    <TextView
+        android:id="@+id/btn_add_review"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="12dp"
+        android:text="Добавить отзыв"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+
+    <!-- Пример кнопки/текста "Пожаловаться" -->
+    <TextView
+        android:id="@+id/btn_complain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="12dp"
+        android:text="Пожаловаться"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+
+</LinearLayout>

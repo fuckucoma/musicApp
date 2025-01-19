@@ -1,0 +1,34 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="200dp">
+
+    <!-- Изображение профиля -->
+    <ImageView
+        android:id="@+id/profile_image"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_profile_24" />
+
+    <!-- Имя пользователя -->
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="moonheller"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/user_profile_action"
+        android:layout_width="wrap_content"
+        android:layout_height="29dp"
+        android:layout_gravity="center"
+        android:text="Посмотреть профиль"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
+
+</LinearLayout>

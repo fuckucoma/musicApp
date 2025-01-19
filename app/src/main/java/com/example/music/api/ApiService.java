@@ -1,8 +1,14 @@
 package com.example.music.api;
 
-import com.example.music.models.FavoriteRequest;
-import com.example.music.models.passRequest;
-import com.example.music.models.usernameRequest;
+import com.example.music.models.Complaint;
+import com.example.music.request.ComplaintRequest;
+import com.example.music.models.DashboardData;
+import com.example.music.request.FavoriteRequest;
+import com.example.music.models.Review;
+import com.example.music.request.ReviewRequest;
+import com.example.music.request.TrackUpdateRequest;
+import com.example.music.request.passRequest;
+import com.example.music.request.usernameRequest;
 import com.example.music.response.FavoriteResponse;
 import com.example.music.response.LoginResponse;
 import com.example.music.response.RegisterResponse;
@@ -58,8 +64,8 @@ public interface ApiService {
     @GET("tracks/")
     Call<List<Track>> getAllTracks();
 
-    @DELETE("tracks/delete/{id}")
-    Call<Void> deleteTrack(@Path("id") int id);
+//    @DELETE("tracks/delete/{id}")
+//    Call<Void> deleteTrack(@Path("id") int id);
 
     @DELETE("users/delete/{id}")
     Call<Void>deleteUser(@Path("id") int id);
@@ -75,4 +81,33 @@ public interface ApiService {
 
     @GET("/tracks/search")
     Call<List<Track>> searchTracks(@Query("query") String query);
+
+    // ======= АДМИН (dashboard, complaints, reviews, tracks) =======
+    @GET("/api/admin/dashboard")
+    Call<DashboardData> getDashboardData();
+
+    @GET("/api/admin/complaints")
+    Call<List<Complaint>> getAllComplaints();
+
+    @PUT("/api/admin/complaints/{id}")
+    Call<Void> updateComplaint(@Path("id") int id, @Body ComplaintRequest request);
+
+    @GET("/api/admin/reviews")
+    Call<List<Review>> getAllReviews();
+
+    @DELETE("/api/admin/reviews/{id}")
+    Call<Void> deleteReview(@Path("id") int id);
+
+    @PUT("/api/admin/tracks/{id}")
+    Call<Void> updateTrack(@Path("id") int id, @Body TrackUpdateRequest request);
+
+    @DELETE("/api/admin/tracks/{id}")
+    Call<Void> deleteTrack(@Path("id") int id);
+
+
+    @POST("/reviews/create")
+    Call<Void> createReview(@Body ReviewRequest reviewRequest);
+
+    @POST("/complaints/create")
+    Call<Void> createComplaint(@Body ComplaintRequest complaintRequest);
 }

@@ -1,5 +1,6 @@
 package com.example.music.adapters;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,23 +17,16 @@ import com.example.test.R;
 
 import java.util.List;
 
-public class ATracksAdapter extends RecyclerView.Adapter<ATracksAdapter.TrackViewHolder> {
+public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHolder> {
 
     private List<Track> tracks;
-    private OnTrackDeleteListener deleteListener;
+    private Context context;
 
-    // Интерфейс для обработки удаления трека
-    public interface OnTrackDeleteListener {
-        void onDelete(int trackId);
-    }
-
-    // Конструктор адаптера
-    public ATracksAdapter(List<Track> tracks, OnTrackDeleteListener deleteListener) {
+    public TrackAdapter(Context context,List<Track> tracks) {
         this.tracks = tracks;
-        this.deleteListener = deleteListener;
+        this.context = context;
     }
 
-    // Метод для обновления данных
     public void updateData(List<Track> newTracks) {
         tracks.clear();
         tracks.addAll(newTracks);
@@ -63,11 +57,11 @@ public class ATracksAdapter extends RecyclerView.Adapter<ATracksAdapter.TrackVie
             holder.trackImage.setImageResource(R.drawable.placeholder_image); // Замените на ваш ресурс по умолчанию
         }
 
-        holder.deleteButton.setOnClickListener(v -> {
-            if (deleteListener != null) {
-                deleteListener.onDelete(Integer.parseInt(track.getId()+""));
-            }
-        });
+//        holder.deleteButton.setOnClickListener(v -> {
+//            if (deleteListener != null) {
+//                deleteListener.onDelete(Integer.parseInt(track.getId()+""));
+//            }
+//        });
     }
 
     @Override

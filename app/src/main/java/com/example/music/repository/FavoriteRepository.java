@@ -6,7 +6,7 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.music.models.FavoriteRequest;
+import com.example.music.request.FavoriteRequest;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
 import com.example.music.response.FavoriteResponse;
