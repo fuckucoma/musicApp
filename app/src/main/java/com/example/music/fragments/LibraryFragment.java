@@ -2,10 +2,13 @@ package com.example.music.fragments;
 
 import android.annotation.SuppressLint;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
@@ -19,13 +22,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
-import com.example.music.FeedPlayerViewModel;
-import com.example.music.LibraryViewModel;
+import com.example.music.view_model.FeedPlayerViewModel;
+import com.example.music.view_model.LibraryViewModel;
 import com.example.music.PlaybackSource;
 import com.example.music.repository.FavoriteRepository;
 import com.example.music.activity.MainActivity;
-import com.example.music.PlayerViewModel;
+import com.example.music.view_model.PlayerViewModel;
 import com.example.music.activity.UploadTrackActivity;
 import com.example.music.adapters.LibraryAdapter;
 import com.example.music.api.ApiClient;
@@ -58,6 +62,8 @@ public class LibraryFragment extends Fragment {
     private List<Track> libraryTracks = new ArrayList<>();
     private Set<Integer> favoriteIds = new HashSet<>();
 
+    private ActivityResultLauncher<Intent> uploadTrackLauncher;
+
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -65,13 +71,11 @@ public class LibraryFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_library, container, false);
 
-        // Инициализация ViewModel и API
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
         libraryViewModel = new ViewModelProvider(this).get(LibraryViewModel.class);
         feedPlayerViewModel = new ViewModelProvider(requireActivity()).get(FeedPlayerViewModel.class);
         apiService = ApiClient.getClient().create(ApiService.class);
 
-        // Инициализация FavoriteRepository из MainActivity
         if (getActivity() instanceof MainActivity) {
             favoriteRepository = ((MainActivity) getActivity()).getFavoriteRepository();
         }
@@ -83,7 +87,7 @@ public class LibraryFragment extends Fragment {
 
 
         Button btnUploadTrack = view.findViewById(R.id.upload_track);
-        ImageView ivProfile = view.findViewById(R.id.ivProfile);
+//        ImageView ivProfile = view.findViewById(R.id.ivProfile);
         progressBar = view.findViewById(R.id.progress_bar);
 
 
@@ -95,7 +99,6 @@ public class LibraryFragment extends Fragment {
             }
         });
 
-        // Подписываемся на избранные ID
         libraryViewModel.getFavoriteTrackIds().observe(getViewLifecycleOwner(), ids -> {
             if (ids != null) {
                 favoriteIds.clear();
@@ -108,18 +111,25 @@ public class LibraryFragment extends Fragment {
 
         btnUploadTrack.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), UploadTrackActivity.class);
-            startActivity(intent);
+            uploadTrackLauncher.launch(intent);
         });
 
-        ivProfile.setOnClickListener(v -> openUserProfile());
+//        ivProfile.setOnClickListener(v -> openUserProfile());
+
+        uploadTrackLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Toast.makeText(getContext(), "Трек успешно загружен", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
 
         return view;
     }
 
     private void updateAdapterData() {
         libraryAdapter.updateData(libraryTracks, favoriteIds);
-//        playerViewModel.setTrackList(currentTracks);
-        //playerViewModel.setTrackList(currentTracks, PlaybackSource.LIBRARY);
         libraryAdapter.notifyDataSetChanged();
     }
 
@@ -132,18 +142,18 @@ public class LibraryFragment extends Fragment {
 //        libraryViewModel.refreshLibraryTracks();
     }
 
-    private void openUserProfile() {
-        Log.d(TAG, "Opening UserFragment");
-        ProfileFragment profileFragment = new ProfileFragment();
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, profileFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
+//    private void openUserProfile() {
+//        Log.d(TAG, "Opening UserFragment");
+//        ProfileFragment profileFragment = new ProfileFragment();
+//        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+//        transaction.replace(R.id.fragment_container, profileFragment);
+//        transaction.addToBackStack(null);
+//        transaction.commit();
+//    }
 
     private void onTrackSelected(Track track) {
-            String trackUrl = getTrackStreamUrl(track.getId() + "");
-            feedPlayerViewModel.pauseFeedTrack();
+        String trackUrl = getTrackStreamUrl(track.getId() + "");
+        feedPlayerViewModel.pauseFeedTrack();
         PlaybackSource source = PlaybackSource.LIBRARY;
         playerViewModel.playTrack(track, source);
     }

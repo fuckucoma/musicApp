@@ -7,31 +7,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.music.FeedPlayerViewModel;
-import com.example.music.HomeViewModel;
+import com.example.music.view_model.FeedPlayerViewModel;
+import com.example.music.view_model.HomeViewModel;
 import com.example.music.repository.FavoriteRepository;
 import com.example.music.activity.MainActivity;
-import com.example.music.PlayerViewModel;
+import com.example.music.view_model.PlayerViewModel;
 import com.example.music.adapters.HomeAdapter;
 import com.example.music.models.Track;
-import com.example.music.response.TrackResponse;
-import com.example.test.BuildConfig;
 import com.example.test.R;
-import com.google.gson.Gson;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class HomeFragment extends Fragment {
 
@@ -90,7 +81,6 @@ public class HomeFragment extends Fragment {
             homeAdapter.updateFavoriteState();
         });
 
-
         homeViewModel.getFeedTracks().observe(getViewLifecycleOwner(), tracks -> {
             trackList.clear();
             trackList.addAll(tracks);
@@ -129,7 +119,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        // Если хотите паузить при сворачивании
         if (feedPlayerViewModel.isHomePlaying()) {
             feedPlayerViewModel.pauseFeedTrack();
         }

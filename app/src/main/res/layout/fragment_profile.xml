@@ -9,20 +9,19 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:layout_height="664dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
         <!-- Заголовок "Профиль" -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="16dp"
             android:text="Профиль"
             android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_gravity="center"
-            android:layout_marginBottom="16dp"
-            android:layout_marginRight="130dp"/>
+            android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/ivProfilePicture"
@@ -37,10 +36,10 @@
             android:id="@+id/tvUsername"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:text="Имя пользователя"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            android:textStyle="bold" />
 
         <!--<TextView
             android:id="@+id/tvEmail"
@@ -53,49 +52,46 @@
             android:id="@+id/btnUploadImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Загрузить изображение профиля"
-            />
+            android:text="Загрузить изображение профиля" />
 
         <EditText
             android:id="@+id/et_current_password"
-            android:hint="Текущий пароль"
-            android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            />
+            android:hint="Текущий пароль"
+            android:inputType="textPassword" />
 
         <EditText
             android:id="@+id/et_new_password"
-            android:hint="Новый пароль"
-            android:inputType="textPassword"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:hint="Новый пароль"
+            android:inputType="textPassword" />
 
         <Button
             android:id="@+id/btn_change_password"
-            android:text="Изменить пароль"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="Изменить пароль" />
 
         <EditText
             android:id="@+id/et_new_username"
-            android:hint="Новое имя пользователя"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            />
+            android:hint="Новое имя пользователя" />
 
         <Button
             android:id="@+id/btn_change_username"
-            android:text="Изменить имя пользователя"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="Изменить имя пользователя" />
 
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Выйти из системы"
-            android:layout_marginTop="10dp"/>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:text="Выйти из системы" />
 
     </LinearLayout>
 

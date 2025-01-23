@@ -40,7 +40,6 @@ public class FavoriteRepository {
     }
 
     public void fetchFavorites() {
-        // Так как getLibraryTracks() возвращает избранные треки, используем его
         apiService.getLibraryTracks().enqueue(new Callback<FavoriteResponse>() {
             @Override
             public void onResponse(Call<FavoriteResponse> call, Response<FavoriteResponse> response) {

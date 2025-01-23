@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.music.adapters.TrackAdapter;
 import com.example.music.models.Track;
@@ -18,6 +19,10 @@ import com.example.music.repository.AdminRepository;
 import com.example.test.R;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TrackManagmentFragment extends Fragment {
 
@@ -40,7 +45,7 @@ public class TrackManagmentFragment extends Fragment {
         AdminRepository.getInstance().fetchTracks(new AdminRepository.MyCallback<List<Track>>() {
             @Override
             public void onSuccess(List<Track> data) {
-                TrackAdapter adapter = new TrackAdapter(requireContext(), data);
+                TrackAdapter adapter = new TrackAdapter(requireContext(), data, trackId -> deleteTrack(trackId));
                 tracksRecyclerView.setAdapter(adapter);
             }
 
@@ -50,4 +55,20 @@ public class TrackManagmentFragment extends Fragment {
             }
         });
     }
+
+    private void deleteTrack(int trackId) {
+        AdminRepository.getInstance().deleteTrack(trackId, new AdminRepository.MyCallback<Void>() {
+            @Override
+            public void onSuccess(Void data) {
+                Log.d("TrackManagementFragment", "Трек успешно удалён");
+                fetchTracks(); // Обновляем список треков
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                Log.e("TrackManagementFragment", "Ошибка удаления трека: " + t.getMessage());
+            }
+        });
+    }
+
 }

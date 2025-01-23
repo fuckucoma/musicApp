@@ -2,6 +2,7 @@ package com.example.music.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -183,6 +184,8 @@ public class UploadTrackActivity extends AppCompatActivity {
                 public void onResponse(Call call, Response response) throws IOException {
                     if (response.isSuccessful()) {
                         runOnUiThread(() -> Toast.makeText(UploadTrackActivity.this, "Трек успешно загружен", Toast.LENGTH_SHORT).show());
+                        setResult(Activity.RESULT_OK);
+                        finish();
                     } else {
                         runOnUiThread(() -> Toast.makeText(UploadTrackActivity.this, "Ошибка при загрузке", Toast.LENGTH_SHORT).show());
                     }

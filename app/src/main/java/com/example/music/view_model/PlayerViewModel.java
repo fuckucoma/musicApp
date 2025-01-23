@@ -1,4 +1,4 @@
-package com.example.music;
+package com.example.music.view_model;
 
 import android.app.Application;
 import android.os.Handler;
@@ -7,9 +7,10 @@ import android.support.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.example.music.PlaybackSource;
 import com.example.music.models.Track;
 import com.example.music.repository.TrackRepository;
-import com.example.test.BuildConfig;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -5,14 +5,12 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
@@ -23,10 +21,7 @@ import android.util.TypedValue;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.LifecycleService;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DecodeFormat;
@@ -34,7 +29,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.example.music.FeedPlayerViewModel;
 import com.example.music.PlaybackSource;
 import com.example.music.activity.MainActivity;
 import com.example.music.models.Track;
@@ -192,7 +186,7 @@ public class MusicService extends LifecycleService {
 
         long duration = exoPlayer.getDuration();
         if (duration > 0) {
-            metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration); // Важный момент для seek bar
+            metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration);
         }
 
         if (albumArt != null) {
@@ -246,8 +240,10 @@ public class MusicService extends LifecycleService {
                         long position = intent.getLongExtra("POSITION", 0L);
                         exoPlayer.seekTo(position);
                         TrackRepository.getInstance().updateCurrentPosition(position);
-                        // После перемотки тоже обновим состояние
-                        updatePlaybackStateCompat(exoPlayer.isPlaying()); // NEW
+                        updatePlaybackStateCompat(exoPlayer.isPlaying());
+                        break;
+                    case "STOP_SERVICE":
+                        stopMusicService();
                         break;
                     default:
                         break;
@@ -454,16 +450,6 @@ public class MusicService extends LifecycleService {
         }
     }
 
-    private Notification createBaseNotification() {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Music Player")
-                .setContentText("Initializing...")
-                .setSmallIcon(R.drawable.icon)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
-        return builder.build();
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -473,6 +459,23 @@ public class MusicService extends LifecycleService {
         stopForeground(true);
         executorService.shutdown();
         positionUpdateHandler.removeCallbacks(positionUpdateRunnable);
+    }
+
+    public void stopMusicService() {
+        stopForeground(true);
+        stopSelf();
+        if (exoPlayer != null) {
+            exoPlayer.release();
+        }
+        if (mediaSession != null) {
+            mediaSession.release();
+        }
+        if (executorService != null) {
+            executorService.shutdown();
+        }
+        if (positionUpdateHandler != null && positionUpdateRunnable != null) {
+            positionUpdateHandler.removeCallbacks(positionUpdateRunnable);
+        }
     }
 }
 

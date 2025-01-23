@@ -21,10 +21,12 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
 
     private List<Track> tracks;
     private Context context;
+    private TrackActionListener actionListener;
 
-    public TrackAdapter(Context context,List<Track> tracks) {
+    public TrackAdapter(Context context, List<Track> tracks, TrackActionListener actionListener) {
         this.tracks = tracks;
         this.context = context;
+        this.actionListener = actionListener;
     }
 
     public void updateData(List<Track> newTracks) {
@@ -37,7 +39,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
     @Override
     public TrackViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.admin_tracks_item, parent, false); // Предположим, что ваш элемент называется item_track.xml
+                .inflate(R.layout.admin_tracks_item, parent, false);
         return new TrackViewHolder(view);
     }
 
@@ -51,17 +53,18 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         if (track.getImageUrl() != null && !track.getImageUrl().isEmpty()) {
             Glide.with(holder.trackImage.getContext())
                     .load(track.getImageUrl())
-                    .placeholder(R.drawable.placeholder_image) // Замените на ваш ресурс по умолчанию
+                    .placeholder(R.drawable.placeholder_image)
                     .into(holder.trackImage);
         } else {
-            holder.trackImage.setImageResource(R.drawable.placeholder_image); // Замените на ваш ресурс по умолчанию
+            holder.trackImage.setImageResource(R.drawable.placeholder_image);
         }
 
-//        holder.deleteButton.setOnClickListener(v -> {
-//            if (deleteListener != null) {
-//                deleteListener.onDelete(Integer.parseInt(track.getId()+""));
-//            }
-//        });
+        // Удаление трека
+        holder.deleteButton.setOnClickListener(v -> {
+            if (actionListener != null) {
+                actionListener.onDeleteTrack(track.getId());
+            }
+        });
     }
 
     @Override
@@ -84,4 +87,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         }
     }
 
+    public interface TrackActionListener {
+        void onDeleteTrack(int trackId);
+    }
 }

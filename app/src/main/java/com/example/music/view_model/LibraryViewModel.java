@@ -1,15 +1,12 @@
-package com.example.music;
+package com.example.music.view_model;
 
-import android.app.Application;
-
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.music.MyApp;
 import com.example.music.models.Track;
 import com.example.music.repository.FavoriteRepository;
-import com.example.music.repository.LibraryRepository;
 import com.example.music.repository.TrackRepository;
 
 import java.util.List;

@@ -1,11 +1,10 @@
 package com.example.music.fragments;
 
-// PlayerFragment.java
-import android.annotation.SuppressLint;
+
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,12 +17,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.music.PlayerViewModel;
+import com.example.music.view_model.PlayerViewModel;
 import com.example.music.activity.MainActivity;
 import com.example.music.models.Track;
 import com.example.music.repository.FavoriteRepository;
-//import com.example.music.ui.BottomSheetFragment;
 import com.example.music.ui.TrackOptionsBottomSheet;
 import com.example.test.R;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -36,7 +36,7 @@ public class PlayerFragment extends Fragment {
     private TextView trackTitle, name_artist, current_duration, song_max_duration;
     private SeekBar seekBar;
     private FloatingActionButton playPauseButton;
-    private ImageButton btn_favorite, btn_more;
+    private ImageButton btn_favorite, btn_more, btn_back;
     private ExtendedFloatingActionButton btnSkipPrevious;
     private ExtendedFloatingActionButton btnSkipNext;
     private ExtendedFloatingActionButton repeat_btn;
@@ -54,12 +54,12 @@ public class PlayerFragment extends Fragment {
                 seekBar.setProgress(currentPosition.intValue());
             }
             if (playerViewModel.isPlaying().getValue() != null && playerViewModel.isPlaying().getValue()) {
-                handler.postDelayed(this, 1000); // Обновляем каждые 1000 мс
+                handler.postDelayed(this, 1000);
             }
         }
     };
 
-    @SuppressLint("MissingInflatedId")
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -75,18 +75,19 @@ public class PlayerFragment extends Fragment {
         name_artist = view.findViewById(R.id.name_artist);
         btnSkipPrevious = view.findViewById(R.id.btn_skip_previous);
         btnSkipNext = view.findViewById(R.id.btn_skip_next);
-        current_duration = view.findViewById(R.id.current_duration); // NEW
-        song_max_duration = view.findViewById(R.id.song_max_duration); // NEW
+        current_duration = view.findViewById(R.id.current_duration);
+        song_max_duration = view.findViewById(R.id.song_max_duration);
         repeat_btn = view.findViewById(R.id.btn_repeat);
         btn_more = view.findViewById(R.id.btn_more);
+        btn_back = view.findViewById(R.id.btn_back);
 
 
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
-        // Получаем FavoriteRepository, например, через MainActivity
+
         if (requireActivity() instanceof MainActivity) {
             favoriteRepository = ((MainActivity) requireActivity()).getFavoriteRepository();
         } else {
-            // Либо напрямую
+
             favoriteRepository = FavoriteRepository.getInstance(requireContext());
         }
 
@@ -96,14 +97,13 @@ public class PlayerFragment extends Fragment {
     }
 
     private void setupPlayerControls() {
-        // Наблюдаем за изменениями текущего трека
+
         playerViewModel.getCurrentTrack().observe(getViewLifecycleOwner(), track -> {
             if (track != null) {
                 trackTitle.setText(track.getTitle());
                 name_artist.setText(track.getArtist());
                 Picasso.get().load(track.getImageUrl()).into(albumArt);
 
-                // Обновляем SeekBar (максимальное значение)
                 Long duration = playerViewModel.getDuration().getValue();
                 if (duration != null) {
                     seekBar.setMax(duration.intValue());
@@ -116,7 +116,6 @@ public class PlayerFragment extends Fragment {
                     current_duration.setText(formatTime(position));
                 }
 
-                // Обновляем иконку избранного
                 updateFavoriteButton(track);
             } else {
                 Log.e("PlayerFragment", "currentTrack == null");
@@ -125,18 +124,16 @@ public class PlayerFragment extends Fragment {
                 albumArt.setImageResource(R.drawable.placeholder_image);
                 seekBar.setMax(0);
                 seekBar.setProgress(0);
-                current_duration.setText("00:00"); // NEW
-                song_max_duration.setText("00:00"); // NEW
+                current_duration.setText("00:00");
+                song_max_duration.setText("00:00");
                 btn_favorite.setImageResource(R.drawable.ic_favorite_24px);
             }
         });
 
-        // Наблюдаем за состоянием воспроизведения
         playerViewModel.isPlaying().observe(getViewLifecycleOwner(), isPlaying -> {
             playPauseButton.setImageResource(isPlaying ? R.drawable.ic_pause_24px : R.drawable.ic_play_arrow_24px);
         });
 
-        // Наблюдаем за изменениями избранных треков (список ID)
         favoriteRepository.getFavoriteTrackIds().observe(getViewLifecycleOwner(), ids -> {
             Track currentTrack = playerViewModel.getCurrentTrack().getValue();
             if (currentTrack != null) {
@@ -144,7 +141,6 @@ public class PlayerFragment extends Fragment {
             }
         });
 
-        // Кнопка Play/Pause
         playPauseButton.setOnClickListener(v -> {
             Boolean playing = playerViewModel.isPlaying().getValue();
             if (playing != null && playing) {
@@ -161,16 +157,19 @@ public class PlayerFragment extends Fragment {
             bottomSheet.show(getParentFragmentManager(), "TrackOptionsBottomSheet");
         });
 
+        btn_back.setOnClickListener(v->{
+            NavController navController = NavHostFragment.findNavController(PlayerFragment.this);
+            navController.popBackStack();
+        });
+
         playerViewModel.isRepeatModeEnabled().observe(getViewLifecycleOwner(), isEnabled -> {
             repeat_btn.setIconResource(isEnabled ? R.drawable.ic_repeat_one_24px : R.drawable.ic_repeat_24px);
         });
 
-        // Обработчик нажатий на кнопку повтора
         repeat_btn.setOnClickListener(v -> playerViewModel.toggleRepeatMode());
 
         btnSkipNext.setOnClickListener(v -> playerViewModel.playNextTrack());
         btnSkipPrevious.setOnClickListener(v -> playerViewModel.playPreviousTrack());
-
 
         btn_favorite.setOnClickListener(v -> {
             Track currentTrack = playerViewModel.getCurrentTrack().getValue();
@@ -187,19 +186,17 @@ public class PlayerFragment extends Fragment {
         playerViewModel.getDuration().observe(getViewLifecycleOwner(), duration -> {
             if (duration != null) {
                 seekBar.setMax(duration.intValue());
-                song_max_duration.setText(formatTime(duration)); // NEW
+                song_max_duration.setText(formatTime(duration));
             }
         });
 
-        // Наблюдаем за изменениями текущей позиции
         playerViewModel.getCurrentPosition().observe(getViewLifecycleOwner(), position -> {
             if (position != null) {
                 seekBar.setProgress(position.intValue());
-                current_duration.setText(formatTime(position)); // NEW
+                current_duration.setText(formatTime(position));
             }
         });
 
-        // Настройка SeekBar
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -220,7 +217,6 @@ public class PlayerFragment extends Fragment {
         });
     }
 
-    // Метод обновления иконки "Избранное"
     private void updateFavoriteButton(Track track) {
         boolean isFavorite = favoriteRepository.isTrackFavorite(track.getId());
         btn_favorite.setImageResource(isFavorite ? R.drawable.ic_heart__24 : R.drawable.ic_favorite_24px);

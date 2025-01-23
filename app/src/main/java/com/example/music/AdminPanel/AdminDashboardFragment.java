@@ -64,13 +64,13 @@ public class AdminDashboardFragment extends Fragment {
     private void logoutUser() {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyAppPrefs", getContext().MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove("authToken");  // Удаление токена
-        editor.remove("isAdmin");    // Удаление флага администратора
+        editor.remove("authToken");
+        editor.remove("isAdmin");
         editor.apply();
 
         // Переход к экрану входа
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         startActivity(intent);
-        getActivity().finish();  // Закрытие текущей активности
+        getActivity().finish();
     }
 }

@@ -36,19 +36,15 @@ public class TrackOptionsBottomSheet extends BottomSheetDialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bottom_sheet_track_options, container, false);
-
-        // Найдём наши пункты меню
         View btnAddReview = view.findViewById(R.id.btn_add_review);
         View btnComplain  = view.findViewById(R.id.btn_complain);
 
         btnAddReview.setOnClickListener(v -> {
-            // Закрываем BottomSheet, затем показываем диалог для добавления отзыва
             dismiss();
             showAddReviewDialog(trackId);
         });
 
         btnComplain.setOnClickListener(v -> {
-            // Закрываем BottomSheet, затем показываем диалог для жалобы
             dismiss();
             showComplaintDialog(trackId);
         });
@@ -66,23 +62,8 @@ public class TrackOptionsBottomSheet extends BottomSheetDialogFragment {
 
             if (bottomSheet != null) {
                 BottomSheetBehavior<FrameLayout> behavior = BottomSheetBehavior.from(bottomSheet);
-
-                // 1) Отключаем подгонку под контент
                 behavior.setFitToContents(true);
-
-                // 2) Задаем долю экрана, на которой хотим сделать half-expanded
-//                behavior.setHalfExpandedRatio(0.5f); // 50% экрана
-
-                // 3) Задаём начальное состояние - половина экрана
-//                behavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
-
-                // 4) (Опционально) если используете Material 1.6.0+
-                //    чтобы гарантированно можно было перетаскивать
                 behavior.setDraggable(true);
-
-                // 5) (Опционально) если не хотите, чтобы лист сворачивался в "пик"
-                //    а сразу скрывался при свайпе вниз, можно:
-                // behavior.setSkipCollapsed(true);
             }
         }
     }

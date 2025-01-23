@@ -11,6 +11,10 @@
 
     <item
         android:id="@+id/nav_settings"
-        android:title="Настройки и конфиденциальность"
+        android:title="Настройки"
          />
+    <item
+        android:id="@+id/nav_exit"
+        android:title="Выйти из аккаунта"
+        android:icon="@drawable/exit"/>
 </menu>

@@ -1,34 +1,45 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="200dp">
+    android:layout_height="110dp"
+    android:background="@color/bg_gray"
+    android:id="@+id/header_linear_layout">
 
-    <!-- Изображение профиля -->
-    <ImageView
-        android:id="@+id/profile_image"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="16dp"
-        android:layout_gravity="center"
-        android:src="@drawable/ic_profile_24" />
-
-    <!-- Имя пользователя -->
-    <TextView
-        android:id="@+id/user_name"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="moonheller"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        android:layout_gravity="center"/>
+        android:orientation="horizontal"
+        android:padding="1dp">
 
-    <TextView
-        android:id="@+id/user_profile_action"
-        android:layout_width="wrap_content"
-        android:layout_height="29dp"
-        android:layout_gravity="center"
-        android:text="Посмотреть профиль"
-        android:textColor="@android:color/white"
-        android:textSize="14sp" />
+        <androidx.cardview.widget.CardView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="45dp"
+            app:cardElevation="0dp">
+
+            <ImageView
+                android:id="@+id/profile_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_profile_24" />
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginStart="10dp"
+            android:text="moonheller"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+
+    </LinearLayout>
 
 </LinearLayout>

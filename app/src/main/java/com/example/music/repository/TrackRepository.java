@@ -6,7 +6,6 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.music.FeedPlayerViewModel;
 import com.example.music.MyApp;
 import com.example.music.PlaybackSource;
 import com.example.music.api.ApiClient;
@@ -26,8 +25,6 @@ public class TrackRepository {
     private static TrackRepository instance;
     private ApiService apiService;
 
-
-
     private MutableLiveData<List<Track>> feedTracksLiveData = new MutableLiveData<>(new ArrayList<>());
     private MutableLiveData<List<Track>> searchTracksLiveData = new MutableLiveData<>(new ArrayList<>());
     private MutableLiveData<List<Track>> libraryTracksLiveData = new MutableLiveData<>(new ArrayList<>());
@@ -35,12 +32,10 @@ public class TrackRepository {
 
     private MutableLiveData<PlaybackSource> currentPlaybackSourceLiveData = new MutableLiveData<>(null);
 
-
     private MutableLiveData<Boolean> isPlayingLiveData = new MutableLiveData<>(false);
     private MutableLiveData<Boolean> isPlayerReadyLiveData = new MutableLiveData<>(false);
     private MutableLiveData<Long> durationLiveData = new MutableLiveData<>(0L);
     private MutableLiveData<Long> currentPositionLiveData = new MutableLiveData<>(0L);
-
 
     private MutableLiveData<Boolean> isRepeatEnabled = new MutableLiveData<>(false);
 
@@ -250,8 +245,7 @@ public class TrackRepository {
         MyApp.getInstance().startService(intent);
     }
 
-
-        public Track getNextTrack(PlaybackSource playbackSource, Track currentTrack) {
+    public Track getNextTrack(PlaybackSource playbackSource, Track currentTrack) {
         List<Track> trackList = getTrackListBySource(playbackSource);
         if (trackList == null || trackList.isEmpty() || currentTrack == null) return null;
 

@@ -1,4 +1,4 @@
-package com.example.music;
+package com.example.music.view_model;
 
 import android.app.Application;
 import android.os.Handler;
