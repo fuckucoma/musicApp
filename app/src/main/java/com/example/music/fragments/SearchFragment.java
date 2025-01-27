@@ -2,6 +2,8 @@ package com.example.music.fragments;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +64,28 @@ public class SearchFragment extends Fragment {
 
         });
         recyclerView.setAdapter(searchAdapter);
+
+        searchInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+                // Можно использовать для каких-то действий перед изменением текста
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                // Выполняем поиск, если текст изменился
+                if (charSequence.length() > 0) {
+                    searchViewModel.searchTracks(charSequence.toString());  // Здесь вызываешь метод поиска
+                } else {
+                    searchAdapter.updateData(new ArrayList<>());  // Если текст пустой, очистить результаты
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // Действия после изменения текста
+            }
+        });
 
         search_icon.setOnClickListener(v -> {
             String query = searchInput.getText().toString();

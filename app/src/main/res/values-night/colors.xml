@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
     <color name="colorPlaying">#FFCC00</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -14,8 +14,9 @@
     <color name="active_color">#2196F3</color>
     <color name="cursor_color_light">#800000</color>
     <color name="cursor_color_dark">#FFFFFF</color>
-    <color name="track_color">#3E3E3E</color>
-    <color name="text_color">#FFFFFF</color>
-    <color name="button_color">#000000</color>
+    <color name="track_color">#A08B8B</color>
+    <color name="text_color">#000000</color>
+    <color name="button_color">#FFFFFF</color>
+
 
 </resources>

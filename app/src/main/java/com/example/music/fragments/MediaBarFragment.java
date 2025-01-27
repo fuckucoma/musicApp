@@ -84,7 +84,6 @@ public class MediaBarFragment extends Fragment {
             }
         });
 
-
         playerViewModel.isPlaying().observe(getViewLifecycleOwner(), isPlaying -> {
             if (isPlaying != null && isPlaying) {
                 playPauseButtonBar.setImageResource(R.drawable.ic_pause_24px);

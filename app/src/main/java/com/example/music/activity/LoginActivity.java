@@ -18,6 +18,8 @@ import com.example.music.models.User;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
 import com.example.test.R;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.IOException;
 
@@ -29,10 +31,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
 
-    private EditText etUsername, etPassword;
-    private Button btnLogin;
+    private TextInputLayout etUsername,etPassword;
     private ApiService apiService;
-    private TextView tvRegisterLink;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,8 +47,8 @@ public class LoginActivity extends AppCompatActivity {
         apiService = ApiClient.getClient().create(ApiService.class);
 
         btnLogin.setOnClickListener(v -> {
-            String username = etUsername.getText().toString().trim();
-            String password = etPassword.getText().toString().trim();
+            String username = etUsername.getEditText().getText().toString().trim();
+            String password = etPassword.getEditText().getText().toString().trim();
 
             if (validateInput(username, password)) {
                 User user = new User(username, password);
@@ -64,6 +64,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean validateInput(String username, String password) {
+        if (username.isEmpty() && password.isEmpty()) {
+            etUsername.setError("Введите имя пользователя");
+            etPassword.setError("Введите пароль");
+            return false;
+        }
         if (username.isEmpty()) {
             etUsername.setError("Введите имя пользователя");
             return false;

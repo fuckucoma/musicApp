@@ -50,10 +50,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Загрузка трека"
+            android:textColor="@color/text_color"
+            android:backgroundTint="@color/button_color"
             android:layout_marginBottom="16dp" />
 
-
-        <!-- RecyclerView для отображения треков в библиотеке -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/library_recycler_view"
             android:layout_width="match_parent"
@@ -61,7 +61,6 @@
             android:layout_weight="1"
             />
 
-        <!-- Кнопка Logout -->
         <ProgressBar
             android:id="@+id/progress_bar"
             android:visibility="gone"

@@ -1,0 +1,10 @@
+<resources>
+    <style name="CustomTextInputEditText.Light" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="android:textCursorDrawable">@drawable/cursor_light</item>
+    </style>
+
+    <style name="CustomTextInputEditText.Dark" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="android:textCursorDrawable">@drawable/cursor_dark</item>
+    </style>
+
+</resources>

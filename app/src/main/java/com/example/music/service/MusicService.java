@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -52,6 +53,9 @@ public class MusicService extends LifecycleService {
     private PlaybackStateCompat.Builder stateBuilder;
     private Track currentTrack;
 
+    private AudioManager audioManager;
+    private AudioManager.OnAudioFocusChangeListener audioFocusChangeListener;
+
     private ExecutorService executorService;
     private Handler positionUpdateHandler;
     private Runnable positionUpdateRunnable;
@@ -84,6 +88,7 @@ public class MusicService extends LifecycleService {
                 );
         mediaSession.setPlaybackState(stateBuilder.build());
 
+
         mediaSession.setCallback(new MediaSessionCompat.Callback() {
             @Override
             public void onSeekTo(long pos) {
@@ -94,6 +99,23 @@ public class MusicService extends LifecycleService {
                 updatePlaybackStateCompat(exoPlayer.isPlaying());
             }
         });
+
+        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        audioFocusChangeListener = focusChange -> {
+            switch (focusChange) {
+                case AudioManager.AUDIOFOCUS_LOSS:
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    if (exoPlayer.isPlaying()) {
+                        exoPlayer.pause();
+                    }
+                    break;
+                case AudioManager.AUDIOFOCUS_GAIN:
+                    if (!exoPlayer.isPlaying()) {
+                        exoPlayer.play();
+                    }
+                    break;
+            }
+        };
 
         createNotificationChannel();
 
