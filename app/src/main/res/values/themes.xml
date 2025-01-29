@@ -2,6 +2,11 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Test" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/bg_light_gray</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+    </style>
+
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
 
     </style>
 

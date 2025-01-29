@@ -2,12 +2,11 @@ package com.example.music.models;
 
 public class Review {
     private int id;
-    private User user; // Пользователь, оставивший отзыв
-    private Track track; // Трек, к которому относится отзыв
-    private String content; // Текст отзыва
-    private int rating; // Рейтинг (1-5)
+    private User user;
+    private Track track;
+    private String content;
+    private int rating;
 
-    // Конструкторы
     public Review(int id, User user, Track track, String content, int rating) {
         this.id = id;
         this.user = user;
@@ -16,7 +15,6 @@ public class Review {
         this.rating = rating;
     }
 
-    // Геттеры и сеттеры
     public int getId() {
         return id;
     }

@@ -12,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.music.adapters.ReviewAdapter;
+import com.example.music.adapters.AdminReviewAdapter;
 import com.example.music.models.Review;
 import com.example.music.repository.AdminRepository;
 import com.example.test.R;
@@ -40,7 +40,7 @@ public class ReviewFragment extends Fragment {
         AdminRepository.getInstance().fetchReviews(new AdminRepository.MyCallback<List<Review>>() {
             @Override
             public void onSuccess(List<Review> data) {
-                ReviewAdapter adapter = new ReviewAdapter(getContext(), data);
+                AdminReviewAdapter adapter = new AdminReviewAdapter(getContext(), data);
                 reviewsRecyclerView.setAdapter(adapter);
             }
 

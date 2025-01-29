@@ -12,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.music.adapters.ComplaintAdapter;
+import com.example.music.adapters.AdminComplaintAdapter;
 import com.example.music.models.Complaint;
 import com.example.music.repository.AdminRepository;
 import com.example.test.R;
@@ -40,7 +40,7 @@ public class ComplaintFragment extends Fragment {
         AdminRepository.getInstance().fetchComplaints(new AdminRepository.MyCallback<List<Complaint>>() {
             @Override
             public void onSuccess(List<Complaint> data) {
-                ComplaintAdapter adapter = new ComplaintAdapter(getContext(), data);
+                AdminComplaintAdapter adapter = new AdminComplaintAdapter(getContext(), data);
                 complaintsRecyclerView.setAdapter(adapter);
             }
 

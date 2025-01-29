@@ -10,23 +10,19 @@
     android:clickable="true"
     android:focusable="true">
 
-    <!-- Изображение трека -->
     <ImageView
         android:id="@+id/track_image"
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:scaleType="centerCrop"
-        android:layout_gravity="center_horizontal"
         android:contentDescription="track_image" />
 
-    <!-- Горизонтальная секция для текста и кнопки -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="8dp">
 
-        <!-- Текстовая информация о треке -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -51,7 +47,6 @@
                 android:paddingStart="8dp" />
         </LinearLayout>
 
-        <!-- Кнопка избранного -->
         <ImageButton
             android:id="@+id/btn_favorite"
             android:layout_width="48dp"

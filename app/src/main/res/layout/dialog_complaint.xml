@@ -13,6 +13,7 @@
         android:hint="Опишите проблему"
         android:inputType="textMultiLine"
         android:minLines="3"
-        android:maxLines="5"/>
+        android:maxLines="5"
+        />
 
 </LinearLayout>

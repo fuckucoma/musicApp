@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.music.view_model.FeedPlayerViewModel;
@@ -55,7 +56,6 @@ public class SearchFragment extends Fragment {
         recyclerView = view.findViewById(R.id.search_results);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         searchInput = view.findViewById(R.id.search_input);
-        search_icon = view.findViewById(R.id.search_icon);
 
         searchAdapter = new SearchAdapter(getContext(), new ArrayList<>(), track -> {
             feedPlayerViewModel.pauseFeedTrack();
@@ -76,6 +76,17 @@ public class SearchFragment extends Fragment {
                 // Выполняем поиск, если текст изменился
                 if (charSequence.length() > 0) {
                     searchViewModel.searchTracks(charSequence.toString());  // Здесь вызываешь метод поиска
+
+                    searchViewModel.getSearchTracks().observe(getViewLifecycleOwner(), tracks -> {
+                        if (tracks != null) {
+                            currentSearchTracks.clear();
+                            currentSearchTracks.addAll(tracks);
+                            searchAdapter.updateData(tracks);
+                        } else {
+                            Toast.makeText(getContext(), "Ошибка поиска треков", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
                 } else {
                     searchAdapter.updateData(new ArrayList<>());  // Если текст пустой, очистить результаты
                 }
@@ -83,27 +94,8 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                // Действия после изменения текста
             }
         });
-
-        search_icon.setOnClickListener(v -> {
-            String query = searchInput.getText().toString();
-            if (!query.isEmpty()) {
-                searchViewModel.searchTracks(query);
-            }
-        });
-
-        searchViewModel.getSearchTracks().observe(getViewLifecycleOwner(), tracks -> {
-            if (tracks != null) {
-                currentSearchTracks.clear();
-                currentSearchTracks.addAll(tracks);
-                searchAdapter.updateData(tracks);
-            } else {
-                Toast.makeText(getContext(), "Ошибка поиска треков", Toast.LENGTH_SHORT).show();
-            }
-        });
-
         return view;
     }
 }

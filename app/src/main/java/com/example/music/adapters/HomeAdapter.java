@@ -9,6 +9,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.music.repository.FavoriteRepository;
 import com.example.music.models.Track;
 import com.example.test.R;
@@ -59,7 +60,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TrackViewHolde
         holder.trackArtist.setText(track.getArtist());
 
         if (track.getImageUrl() != null && !track.getImageUrl().isEmpty()) {
-            Picasso.get()
+            Glide.with(context)
                     .load(track.getImageUrl())
                     .placeholder(R.drawable.placeholder_image)
                     .error(R.drawable.placeholder_image)

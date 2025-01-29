@@ -19,16 +19,26 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.example.music.adapters.ReviewAdapter;
+import com.example.music.models.Review;
+import com.example.music.repository.ReviewRepository;
 import com.example.music.view_model.PlayerViewModel;
 import com.example.music.activity.MainActivity;
 import com.example.music.models.Track;
 import com.example.music.repository.FavoriteRepository;
 import com.example.music.ui.TrackOptionsBottomSheet;
+import com.example.music.view_model.ReviewViewModel;
 import com.example.test.R;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerFragment extends Fragment {
 
@@ -40,6 +50,10 @@ public class PlayerFragment extends Fragment {
     private ExtendedFloatingActionButton btnSkipPrevious;
     private ExtendedFloatingActionButton btnSkipNext;
     private ExtendedFloatingActionButton repeat_btn;
+    private RecyclerView reviewsRecyclerView;
+    private ReviewAdapter reviewAdapter;
+    private List<Review> reviewList = new ArrayList<>();
+    private ReviewViewModel reviewViewModel;
 
     private PlayerViewModel playerViewModel;
     private FavoriteRepository favoriteRepository;
@@ -81,6 +95,11 @@ public class PlayerFragment extends Fragment {
         btn_more = view.findViewById(R.id.btn_more);
         btn_back = view.findViewById(R.id.btn_back);
 
+        reviewsRecyclerView = view.findViewById(R.id.reviews_recyclerview);
+        reviewsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        reviewAdapter = new ReviewAdapter(getContext(), reviewList);
+        reviewsRecyclerView.setAdapter(reviewAdapter);
+        reviewViewModel = new ViewModelProvider(this).get(ReviewViewModel.class);
 
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
 
@@ -93,6 +112,14 @@ public class PlayerFragment extends Fragment {
 
         setupPlayerControls();
 
+
+        reviewViewModel.getReviewsLiveData().observe(getViewLifecycleOwner(), reviews -> {
+            reviewList.clear();
+            reviewList.addAll(reviews);
+            reviewAdapter.notifyDataSetChanged();
+
+        });
+
         return view;
     }
 
@@ -102,7 +129,8 @@ public class PlayerFragment extends Fragment {
             if (track != null) {
                 trackTitle.setText(track.getTitle());
                 name_artist.setText(track.getArtist());
-                Picasso.get().load(track.getImageUrl()).into(albumArt);
+                Glide.with(this).load(track.getImageUrl()).into(albumArt);
+                reviewViewModel.fetchReviewsForTrack(track.getId());
 
                 Long duration = playerViewModel.getDuration().getValue();
                 if (duration != null) {

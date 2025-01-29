@@ -16,6 +16,7 @@ import com.example.music.models.User;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
 import com.example.test.R;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.IOException;
 
@@ -27,7 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private static final String TAG = "RegisterActivity";
 
-    private EditText etUsername, etPassword, etConfirmPassword;
+    private TextInputLayout etUsername, etPassword, etConfirmPassword;
     private Button btnRegister;
     private ApiService apiService;
 
@@ -47,9 +48,9 @@ public class RegisterActivity extends AppCompatActivity {
         apiService = ApiClient.getClient().create(ApiService.class);
 
         btnRegister.setOnClickListener(v -> {
-            String username = etUsername.getText().toString().trim();
-            String password = etPassword.getText().toString().trim();
-            String confirmPassword = etConfirmPassword.getText().toString().trim();
+            String username = etUsername.getEditText().getText().toString().trim();
+            String password = etPassword.getEditText().getText().toString().trim();
+            String confirmPassword = etConfirmPassword.getEditText().getText().toString().trim();
 
             if (validateInput(username, password, confirmPassword)) {
                 User user = new User(username, password);
@@ -66,8 +67,10 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean validateInput(String username, String password, String confirmPassword) {
-        if (username.isEmpty()) {
+        if (username.isEmpty() && password.isEmpty() && confirmPassword.isEmpty()) {
             etUsername.setError("Введите имя пользователя");
+            etPassword.setError("Введите пароль");
+            etConfirmPassword.setError("Пароли не совпадают");
             return false;
         }
 
@@ -99,7 +102,6 @@ public class RegisterActivity extends AppCompatActivity {
                     if (registerResponse != null && registerResponse.getToken() != null) {
                         Toast.makeText(RegisterActivity.this, "Регистрация успешна", Toast.LENGTH_SHORT).show();
                         saveAuthToken(registerResponse.getToken());
-
                         // Переход к основной активности
                         Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
                         startActivity(intent);

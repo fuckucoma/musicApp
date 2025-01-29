@@ -15,10 +15,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Пример с использованием интерфейса MyCallback<T>,
- * чтобы не плодить два коллбэка (успешный/ошибочный) в каждом методе.
- */
 public class AdminRepository {
 
     private static AdminRepository instance;

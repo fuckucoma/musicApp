@@ -172,7 +172,6 @@ public class ProfileFragment extends Fragment {
             Glide.with(this)
                     .load(imageUrl)
                     .placeholder(R.drawable.ic_profile_24)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(ivProfilePicture);
         } else {
             ivProfilePicture.setImageResource(R.drawable.ic_profile_24);

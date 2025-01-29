@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.music.models.Track;
 import com.example.test.R;
 import com.squareup.picasso.Picasso;
@@ -27,7 +28,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.TrackViewH
     public interface OnTrackSelectedListener {
         void onTrackSelected(Track track);
     }
-
 
     public SearchAdapter(Context context, List<Track> trackList, OnTrackSelectedListener listener) {
         this.context = context;
@@ -56,7 +56,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.TrackViewH
         holder.trackArtist.setText(track.getArtist());
 
         if (track.getImageUrl() != null && !track.getImageUrl().isEmpty()) {
-            Picasso.get()
+            Glide.with(context)
                     .load(track.getImageUrl())
                     .placeholder(R.drawable.placeholder_image)
                     .error(R.drawable.placeholder_image)
@@ -66,8 +66,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.TrackViewH
         }
 
         holder.itemView.setOnClickListener(v -> listener.onTrackSelected(track));
-
-
     }
 
     @Override

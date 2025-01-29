@@ -5,11 +5,13 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context; // ADF (AudioFocus)
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.media.AudioManager;
+import android.media.AudioFocusRequest; // ADF (AudioFocus)
+import android.media.AudioManager;       // ADF (AudioFocus)
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -36,6 +38,7 @@ import com.example.music.models.Track;
 import com.example.music.repository.TrackRepository;
 import com.example.test.BuildConfig;
 import com.example.test.R;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
@@ -53,13 +56,45 @@ public class MusicService extends LifecycleService {
     private PlaybackStateCompat.Builder stateBuilder;
     private Track currentTrack;
 
-    private AudioManager audioManager;
-    private AudioManager.OnAudioFocusChangeListener audioFocusChangeListener;
-
     private ExecutorService executorService;
     private Handler positionUpdateHandler;
     private Runnable positionUpdateRunnable;
 
+    // ADF (AudioFocus) : Добавляем поля для управления аудио-фокусом
+    private AudioManager audioManager;
+    private AudioFocusRequest audioFocusRequest;
+
+    // Обработчик изменения аудио-фокуса
+    private final AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = focusChange -> {
+        switch (focusChange) {
+            case AudioManager.AUDIOFOCUS_LOSS:
+                // Полная потеря фокуса: останавливаем воспроизведение
+                pauseTrack();
+                // Часто при потере фокуса надолго мы освобождаем его совсем.
+                abandonAudioFocus();
+                break;
+
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                // Временная потеря фокуса (например, звонок) — ставим на паузу
+                pauseTrack();
+                break;
+
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                // Можно «продолжать, но потише». При желании:
+                // exoPlayer.setVolume(0.2f);
+                // Но можно и просто сделать паузу.
+                pauseTrack();
+                break;
+
+            case AudioManager.AUDIOFOCUS_GAIN:
+                // Фокус вернулся: восстанавливаем громкость и/или продолжаем воспроизведение
+                // exoPlayer.setVolume(1.0f);
+                if (!exoPlayer.isPlaying()) {
+                    exoPlayer.play();
+                }
+                break;
+        }
+    };
 
     @SuppressLint("ForegroundServiceType")
     @Override
@@ -68,7 +103,13 @@ public class MusicService extends LifecycleService {
         Log.d("MusicService", "onCreate called");
 
         exoPlayer = new ExoPlayer.Builder(this).build();
-
+        // Установим атрибуты звука для ExoPlayer. handleAudioFocus=false, т.к. мы сами фокус берём вручную:
+        com.google.android.exoplayer2.audio.AudioAttributes audioAttributes =
+                new com.google.android.exoplayer2.audio.AudioAttributes.Builder()
+                        .setUsage(com.google.android.exoplayer2.C.USAGE_MEDIA)
+                        .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+                        .build();
+        exoPlayer.setAudioAttributes(audioAttributes, /* handleAudioFocus= */ false);
 
         mediaSession = new MediaSessionCompat(this, "MusicService");
         mediaSession.setFlags(
@@ -76,7 +117,7 @@ public class MusicService extends LifecycleService {
                         MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
         );
         mediaSession.setActive(true);
-        
+
         stateBuilder = new PlaybackStateCompat.Builder()
                 .setActions(
                         PlaybackStateCompat.ACTION_PLAY |
@@ -88,34 +129,15 @@ public class MusicService extends LifecycleService {
                 );
         mediaSession.setPlaybackState(stateBuilder.build());
 
-
         mediaSession.setCallback(new MediaSessionCompat.Callback() {
             @Override
             public void onSeekTo(long pos) {
                 super.onSeekTo(pos);
-
                 exoPlayer.seekTo(pos);
                 TrackRepository.getInstance().updateCurrentPosition(pos);
                 updatePlaybackStateCompat(exoPlayer.isPlaying());
             }
         });
-
-        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        audioFocusChangeListener = focusChange -> {
-            switch (focusChange) {
-                case AudioManager.AUDIOFOCUS_LOSS:
-                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                    if (exoPlayer.isPlaying()) {
-                        exoPlayer.pause();
-                    }
-                    break;
-                case AudioManager.AUDIOFOCUS_GAIN:
-                    if (!exoPlayer.isPlaying()) {
-                        exoPlayer.play();
-                    }
-                    break;
-            }
-        };
 
         createNotificationChannel();
 
@@ -129,7 +151,7 @@ public class MusicService extends LifecycleService {
                     long currentPos = exoPlayer.getCurrentPosition();
                     TrackRepository.getInstance().updateCurrentPosition(currentPos);
                     // Обновляем состояние плеера (в т.ч. позицию) для отображения seek bar
-                    updatePlaybackStateCompat(true); // NEW
+                    updatePlaybackStateCompat(true);
                     positionUpdateHandler.postDelayed(this, 1000);
                 }
             }
@@ -187,7 +209,58 @@ public class MusicService extends LifecycleService {
                 buildNotification(null, generateAction(R.drawable.ic_play, "Play", "PLAY"));
             }
         });
+
+        // ADF (AudioFocus): Инициализируем AudioManager
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        initAudioFocusRequest(); // создадим (или подготовим) audioFocusRequest
     }
+
+    // ADF (AudioFocus): Инициализируем AudioFocusRequest для Android O и выше
+    private void initAudioFocusRequest() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                    .setAudioAttributes(
+                            new android.media.AudioAttributes.Builder()
+                                    .setUsage(android.media.AudioAttributes.USAGE_MEDIA)
+                                    .setContentType(android.media.AudioAttributes.CONTENT_TYPE_MUSIC)
+                                    .build()
+                    )
+                    .setAcceptsDelayedFocusGain(true)
+                    .setOnAudioFocusChangeListener(audioFocusChangeListener)
+                    .build();
+        }
+    }
+
+    // ADF (AudioFocus): Запрашиваем аудио-фокус
+    private boolean requestAudioFocus() {
+        if (audioManager == null) return false;
+        int result;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (audioFocusRequest == null) return false;
+            result = audioManager.requestAudioFocus(audioFocusRequest);
+        } else {
+            // Для более ранних версий
+            result = audioManager.requestAudioFocus(
+                    audioFocusChangeListener,
+                    AudioManager.STREAM_MUSIC,
+                    AudioManager.AUDIOFOCUS_GAIN
+            );
+        }
+        return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
+    }
+
+    // ADF (AudioFocus): Освобождаем фокус
+    private void abandonAudioFocus() {
+        if (audioManager == null) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (audioFocusRequest != null) {
+                audioManager.abandonAudioFocusRequest(audioFocusRequest);
+            }
+        } else {
+            audioManager.abandonAudioFocus(audioFocusChangeListener);
+        }
+    }
+
     private void updatePlaybackStateCompat(boolean isPlaying) {
         if (exoPlayer == null) return;
 
@@ -291,6 +364,13 @@ public class MusicService extends LifecycleService {
     }
 
     private void playTrack(Track track) {
+        // ADF (AudioFocus) : Запрашиваем фокус перед воспроизведением
+        if (!requestAudioFocus()) {
+            // Если фокус не дали, не начинаем воспроизведение
+            Log.d("MusicService", "AudioFocus NOT granted, skipping play.");
+            return;
+        }
+
         String trackUrl = generateStreamUrl(track.getId());
         Log.d("MusicService", "Playing track: " + track.getTitle() + " URL: " + trackUrl);
         Log.d("MusicService", "Track image URL: " + track.getImageUrl());
@@ -313,7 +393,10 @@ public class MusicService extends LifecycleService {
         if (exoPlayer.isPlaying()) {
             exoPlayer.pause();
         } else {
-            exoPlayer.play();
+            // ADF (AudioFocus) : При нажатии Play — опять нужно убедиться, что у нас есть фокус
+            if (requestAudioFocus()) {
+                exoPlayer.play();
+            }
         }
     }
 
@@ -361,11 +444,7 @@ public class MusicService extends LifecycleService {
                         Intent notificationIntent = new Intent(MusicService.this, MainActivity.class);
                         notificationIntent.setAction("ACTION_OPEN_PLAYER");
                         notificationIntent.putExtra("TRACK_ID", track.getId());
-
-
-
                         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
 
                         PendingIntent contentPendingIntent = PendingIntent.getActivity(
                                 MusicService.this,
@@ -386,13 +465,11 @@ public class MusicService extends LifecycleService {
                                 .addAction(action)
                                 .addAction(generateAction(R.drawable.ic_skip_next_24px, "Next", "NEXT"))
                                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-
                                 .setContentIntent(contentPendingIntent)
                                 .setAutoCancel(false);
 
                         Notification notification = builder.build();
                         startForeground(NOTIFICATION_ID, notification);
-
 
                         updatePlaybackStateCompat(isPlaying);
                     }
@@ -405,7 +482,6 @@ public class MusicService extends LifecycleService {
                         super.onLoadFailed(errorDrawable);
                         Bitmap fallback = BitmapFactory.decodeResource(getResources(), R.drawable.placeholder_image);
                         updateMediaSessionMetadata(track, fallback);
-
 
                         Intent notificationIntent = new Intent(MusicService.this, MainActivity.class);
                         notificationIntent.setAction("ACTION_OPEN_PLAYER");
@@ -455,7 +531,7 @@ public class MusicService extends LifecycleService {
     }
 
     private String generateStreamUrl(int trackId) {
-        return  BuildConfig.BASE_URL + "/tracks/" + trackId + "/stream";
+        return BuildConfig.BASE_URL + "/tracks/" + trackId + "/stream";
     }
 
     private void createNotificationChannel() {
@@ -476,11 +552,21 @@ public class MusicService extends LifecycleService {
     public void onDestroy() {
         super.onDestroy();
         Log.d("MusicService", "onDestroy called");
-        exoPlayer.release();
-        mediaSession.release();
+        if (exoPlayer != null) {
+            exoPlayer.release();
+        }
+        if (mediaSession != null) {
+            mediaSession.release();
+        }
         stopForeground(true);
-        executorService.shutdown();
-        positionUpdateHandler.removeCallbacks(positionUpdateRunnable);
+        if (executorService != null) {
+            executorService.shutdown();
+        }
+        if (positionUpdateHandler != null && positionUpdateRunnable != null) {
+            positionUpdateHandler.removeCallbacks(positionUpdateRunnable);
+        }
+        // ADF (AudioFocus) : Освобождаем фокус в onDestroy()
+        abandonAudioFocus();
     }
 
     public void stopMusicService() {
@@ -498,6 +584,8 @@ public class MusicService extends LifecycleService {
         if (positionUpdateHandler != null && positionUpdateRunnable != null) {
             positionUpdateHandler.removeCallbacks(positionUpdateRunnable);
         }
+        // ADF (AudioFocus) : Освобождаем фокус
+        abandonAudioFocus();
     }
 }
 

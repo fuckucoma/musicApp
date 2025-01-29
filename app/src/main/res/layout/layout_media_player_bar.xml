@@ -18,7 +18,7 @@
             android:id="@+id/media_player_bar_bg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/bg_gray" />
+            android:background="@color/black" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -62,6 +62,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop"
+                        android:layout_gravity="center_vertical"
                         android:src="@drawable/placeholder_image" />
 
                 </androidx.cardview.widget.CardView>

@@ -12,37 +12,31 @@ public class Track {
     private int id;
     private String title;
     private String artist;
-//    private String album;
+    private String album;
     private String imageUrl;
     private String filename;
     private String createdAt;
 
-
-
-
     public Date getCreatedAtDate() {
         if (createdAt == null) return null;
 
-        // Парсим строку в объект Date
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
         try {
             return dateFormat.parse(createdAt);
         } catch (ParseException e) {
             e.printStackTrace();
-            return null; // Если ошибка парсинга, возвращаем null
+            return null;
         }
     }
 
-    // Конструктор без аргументов (по умолчанию)
     public Track() {
     }
 
-    // Полный конструктор для удобства
     public Track(int id, String title, String artist, String imageUrl, String filename, String createdAt) {
         this.id = id;
         this.title = title;
         this.artist = artist;
-//        this.album = album;
+        this.album = album;
         this.imageUrl = imageUrl;
         this.filename = filename;
         this.createdAt = createdAt;
@@ -57,9 +51,9 @@ public class Track {
     public String getArtist() {
         return artist;
     }
-//    public String getAlbum() {
-//        return album;
-//    }
+    public String getAlbum() {
+        return album;
+    }
     public String getImageUrl() {
         return imageUrl;
     }
@@ -79,9 +73,9 @@ public class Track {
     public void setArtist(String artist) {
         this.artist = artist;
     }
-//    public void setAlbum(String album) {
-//        this.album = album;
-//    }
+    public void setAlbum(String album) {
+        this.album = album;
+    }
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }

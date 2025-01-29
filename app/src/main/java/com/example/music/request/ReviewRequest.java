@@ -11,5 +11,15 @@ public class ReviewRequest {
         this.rating = rating;
     }
 
-    // getters / setters ...
+    public int getTrackId() {
+        return trackId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public int getRating() {
+        return rating;
+    }
 }

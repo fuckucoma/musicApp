@@ -269,17 +269,18 @@
                     android:elevation="0dp"
                     style="?attr/borderlessButtonStyle"
                     android:scaleType="center"
-                    android:shadowColor="#000000"
+                    android:shadowColor="@color/player_color"
                     android:src="@drawable/ic_pause_24px"
                     app:backgroundTint="#C8C8C8"
                     app:fabCustomSize="74dp"
                     app:fabSize="normal"
-                    app:iconTint="#3C3B3B"
+                    app:iconTint="@color/white"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/btn_skip_next"
                     app:layout_constraintStart_toEndOf="@id/btn_skip_previous"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:maxImageSize="74dp" />
+                    app:maxImageSize="74dp"/>
+                <!-- app:iconTint="#3C3B3B"-->
 
                 <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
                     android:id="@+id/btn_skip_next"
@@ -345,6 +346,7 @@
             android:clipToPadding="false" />
 
     </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
 
 

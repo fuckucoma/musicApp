@@ -16,12 +16,12 @@ import com.example.test.R;
 
 import java.util.List;
 
-public class ComplaintAdapter extends RecyclerView.Adapter<ComplaintAdapter.ComplaintViewHolder> {
+public class AdminComplaintAdapter extends RecyclerView.Adapter<AdminComplaintAdapter.ComplaintViewHolder> {
 
     private final Context context;
     private final List<Complaint> complaintList;
 
-    public ComplaintAdapter(Context context, List<Complaint> complaintList) {
+    public AdminComplaintAdapter(Context context, List<Complaint> complaintList) {
         this.context = context;
         this.complaintList = complaintList;
     }

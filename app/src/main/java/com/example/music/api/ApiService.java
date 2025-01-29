@@ -61,6 +61,8 @@ public interface ApiService {
     @GET("users/all")
     Call<UsersResponse> getAllUsers();
 
+    // ========== Треки
+
     @GET("tracks/")
     Call<List<Track>> getAllTracks();
 
@@ -104,9 +106,12 @@ public interface ApiService {
     @DELETE("/api/admin/tracks/{id}")
     Call<Void> deleteTrack(@Path("id") int id);
 
-
+    // ============== отзывы и жалобы
     @POST("/reviews/create")
     Call<Void> createReview(@Body ReviewRequest reviewRequest);
+
+    @GET("/reviews/track/{trackId}")
+    Call<List<Review>> getReviewsForTrack(@Path("trackId") int trackId);
 
     @POST("/complaints/create")
     Call<Void> createComplaint(@Body ComplaintRequest complaintRequest);

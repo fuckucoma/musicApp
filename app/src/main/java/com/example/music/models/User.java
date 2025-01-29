@@ -4,6 +4,7 @@ public class User {
     private String username;
     private String password;
    //private String email;
+    private String profileImageUrl;
     private int id;
 
     public int getId() {
@@ -13,7 +14,6 @@ public class User {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
-        //this.email = email;
     }
 
     public String getUsername() {
@@ -26,6 +26,10 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getProfileImageUrl(){
+        return profileImageUrl;
     }
 
     public void setPassword(String password) {
