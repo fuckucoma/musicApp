@@ -10,6 +10,15 @@
     <color name="teal_700">#FF018786</color>
     <color name="bg_gray">#1B1B1B</color>
 
+    <color name="active_color_indicator">#878787</color>
+    <color name="true_text_color">#000000</color>
+
+    <color name="icon_text_label_color_inactive">#858585</color>
+    <color name="icon_text_label_color_active">#FFFFFF</color>
+
+
+
+
     <color name="bg_light_gray">#323232</color>
     <color name="active_color">#2196F3</color>
     <color name="cursor_color_light">#800000</color>

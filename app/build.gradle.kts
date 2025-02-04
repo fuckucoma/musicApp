@@ -50,9 +50,7 @@ dependencies {
     implementation (libs.logging.interceptor.v491)
     implementation (libs.media)
     implementation (libs.core.ktx)
-
     implementation (libs.material)
-
     implementation (libs.glide)
     implementation(libs.shimmer)
     implementation(libs.json)

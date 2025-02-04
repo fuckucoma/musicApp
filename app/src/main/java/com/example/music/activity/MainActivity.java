@@ -56,12 +56,10 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Log.d(TAG, "onCreate()");
 
-        // 1) Инициализируем ViewModel-ы и Repos
         playerViewModel = new ViewModelProvider(this).get(PlayerViewModel.class);
         profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
         favoriteRepository = FavoriteRepository.getInstance(this);
 
-        // 2) Находим DrawerLayout, NavigationView, BottomNav и NavController
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navView = findViewById(R.id.nav_view);
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
@@ -70,7 +68,6 @@ public class MainActivity extends AppCompatActivity
                 getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         NavController navController = navHostFragment.getNavController();
 
-        // 3) Создаём менеджеры
         appNavigationManager = new AppNavigationManager(
                 this,
                 drawerLayout,
@@ -91,11 +88,9 @@ public class MainActivity extends AppCompatActivity
                 favoriteRepository
         );
 
-        // 4) Настраиваем менеджеры
         appNavigationManager.setupNavigation();
         drawerHeaderManager.setupDrawer();
 
-        // 5) Проверка токена, admin
         SharedPreferences sp = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
         String authToken = sp.getString("authToken", null);
         boolean isAdmin = sp.getBoolean("isAdmin", false);
@@ -111,18 +106,15 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
-        // 6) Загружаем избранное + профиль
         favoriteRepository.fetchFavorites();
         profileViewModel.fetchUserProfile();
 
-        // 7) Добавляем MediaBarFragment, если ещё нет
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.media_bar_container, new MediaBarFragment())
                     .commit();
         }
 
-        // 8) Обработка Intent (например, ACTION_OPEN_PLAYER)
         handleIntent(getIntent());
     }
 

@@ -12,10 +12,14 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.music.repository.FavoriteRepository;
 import com.example.music.models.Track;
+import com.example.music.view_model.FeedPlayerViewModel;
 import com.example.test.R;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.progressindicator.LinearProgressIndicatorSpec;
 import com.squareup.picasso.Picasso;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -27,7 +31,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TrackViewHolde
     private OnItemClickListener listener;
     private OnFavoriteClickListener favoriteClickListener;
     private FavoriteRepository favoriteRepository;
-
 
     public interface OnItemClickListener {
         void onItemClicked(Track track);
@@ -43,6 +46,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TrackViewHolde
         this.listener = listener;
         this.favoriteRepository = favoriteRepository;
         this.favoriteClickListener = favoriteClickListener;
+
     }
 
     @NonNull
@@ -82,7 +86,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TrackViewHolde
         holder.favoriteButton.setOnClickListener(v -> {
             favoriteClickListener.onFavoriteClicked(track, position);
         });
-
     }
 
     public void updateFavoriteState() {

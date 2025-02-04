@@ -1,12 +1,9 @@
 package com.example.music.ui;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
-import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
@@ -14,11 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.music.models.Track;
-import com.example.music.repository.RevComRepository;
-import com.example.music.repository.ReviewRepository;
 import com.example.music.request.ReviewRequest;
-import com.example.music.view_model.PlayerViewModel;
 import com.example.music.view_model.ReviewViewModel;
 import com.example.test.R;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;

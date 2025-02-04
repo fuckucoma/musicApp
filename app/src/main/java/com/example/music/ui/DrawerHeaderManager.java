@@ -58,13 +58,11 @@ public class DrawerHeaderManager {
     }
 
     public void setupDrawer() {
-        // Получаем headerView
         View headerView = navigationView.getHeaderView(0);
         LinearLayout headerLinearLayout = headerView.findViewById(R.id.header_linear_layout);
         ImageView profileImageView = headerView.findViewById(R.id.profile_image);
         TextView userNameTextView = headerView.findViewById(R.id.user_name);
 
-        // Подписываемся на ProfileViewModel, чтобы обновлять имя и аватар
         profileViewModel.getUserProfile().observe((LifecycleOwner) activity, userProfile -> {
             if (userProfile != null) {
                 userNameTextView.setText(userProfile.getUsername());
@@ -84,7 +82,6 @@ public class DrawerHeaderManager {
             }
         });
 
-        // Клик на шапку -> открыть профиль
         headerLinearLayout.setOnClickListener(v -> {
             drawerLayout.closeDrawer(GravityCompat.START);
 
@@ -95,7 +92,6 @@ public class DrawerHeaderManager {
             navController.navigate(R.id.profileFragment);
         });
 
-        // Пункты меню Drawer (logout и т.д.)
         navigationView.setNavigationItemSelectedListener(item -> {
             drawerLayout.closeDrawer(GravityCompat.START);
 
@@ -111,14 +107,13 @@ public class DrawerHeaderManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove("authToken");
         editor.remove("isAdmin");
+        editor.remove("history");
         editor.apply();
 
-        // Останавливаем MusicService
         Intent stopServiceIntent = new Intent(activity, MusicService.class);
         stopServiceIntent.setAction("STOP_SERVICE");
         activity.startService(stopServiceIntent);
 
-        // Переходим на экран логина
         Intent intent = new Intent(activity, LoginActivity.class);
         activity.startActivity(intent);
         activity.finish();

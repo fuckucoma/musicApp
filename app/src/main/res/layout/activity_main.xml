@@ -39,8 +39,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:labelVisibilityMode="labeled"
-            />
+            app:labelVisibilityMode="labeled" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -50,6 +49,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        app:itemIconTint="@color/true_text_color"
+        app:itemTextColor="@color/true_text_color"
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/drawer_menu" />
 </androidx.drawerlayout.widget.DrawerLayout>

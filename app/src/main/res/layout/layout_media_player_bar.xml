@@ -52,7 +52,7 @@
                     app:cardBackgroundColor="@color/black"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="0dp"
-                    app:layout_constraintDimensionRatio="H,1:1"
+
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent">

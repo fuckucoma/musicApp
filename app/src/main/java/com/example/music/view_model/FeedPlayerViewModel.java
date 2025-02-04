@@ -29,6 +29,7 @@ public class FeedPlayerViewModel extends AndroidViewModel {
     private MutableLiveData<Long> feedDuration = new MutableLiveData<>(0L);
     private MutableLiveData<Long> feedCurrentPosition = new MutableLiveData<>(0L);
 
+
     public FeedPlayerViewModel(@NonNull Application application) {
         super(application);
         trackRepository = TrackRepository.getInstance();

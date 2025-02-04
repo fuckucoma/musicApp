@@ -1,5 +1,7 @@
 package com.example.music.fragments;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +17,8 @@ import com.example.music.view_model.PlayerViewModel;
 import com.example.music.adapters.HomeAdapter;
 import com.example.music.models.Track;
 import com.example.test.R;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -23,6 +27,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
@@ -34,6 +39,7 @@ public class HomeFragment extends Fragment {
     private HomeViewModel homeViewModel;
     private FavoriteRepository favoriteRepository;
     private boolean isFetchingTracks = false;
+
 
     @Nullable
     @Override
@@ -76,6 +82,8 @@ public class HomeFragment extends Fragment {
             }
         });
 
+
+
         // Обновление избранных:
         favoriteRepository.getFavoriteTrackIds().observe(getViewLifecycleOwner(), favoriteIds -> {
             homeAdapter.updateFavoriteState();
@@ -95,6 +103,7 @@ public class HomeFragment extends Fragment {
         boolean isFavorite = favoriteRepository.isTrackFavorite(track.getId());
         if (isFavorite) {
             favoriteRepository.removeTrackFromFavorites(track);
+//            Snackbar.make(requireView(),"trrt", Snackbar.LENGTH_SHORT).show();
             Toast.makeText(getContext(), "Removed from favorites", Toast.LENGTH_SHORT).show();
         } else {
             favoriteRepository.addTrackToFavorites(track);

@@ -9,6 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Track Title"
+        android:textColor="@color/true_text_color"
         android:textStyle="bold" />
 
     <TextView
@@ -16,6 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Artist Name"
+        android:textColor="@color/true_text_color"
         android:textStyle="italic" />
 
     <Button

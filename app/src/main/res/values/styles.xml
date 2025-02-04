@@ -22,4 +22,27 @@
         <item name="cornerSize">4dp</item>
     </style>
 
+    <style name="Widget.Material3.BottomNavigationView.ActiveIndicator" parent="">
+        <item name="android:width">@dimen/m3_bottom_nav_item_active_indicator_width</item>
+        <item name="android:height">@dimen/m3_bottom_nav_item_active_indicator_height</item>
+        <item name="marginHorizontal">@dimen/m3_bottom_nav_item_active_indicator_margin_horizontal</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.M3.Comp.NavigationBar.ActiveIndicator.Shape</item>
+        <item name="android:color">@color/active_color_indicator</item>
+    </style>
+
+    <style name="Widget.MaterialComponents.BottomNavigationView" parent="Widget.Design.BottomNavigationView">
+        <item name="enforceTextAppearance">true</item>
+        <item name="enforceMaterialTheme">true</item>
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="itemBackground">@null</item>
+        <item name="itemHorizontalTranslationEnabled">false</item>
+        <item name="itemIconTint">@color/mtrl_navigation_bar_item_tint</item>
+        <item name="itemTextAppearanceInactive">?attr/textAppearanceCaption</item>
+        <item name="itemTextAppearanceActive">?attr/textAppearanceCaption</item>
+        <item name="itemTextColor">@color/active_color_indicator</item>
+        <item name="itemRippleColor">@color/mtrl_navigation_bar_ripple_color</item>
+    </style>
+
+
+
 </resources>

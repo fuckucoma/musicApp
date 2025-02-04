@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:text="Список отзывов"
         android:textSize="24sp"
+        android:textColor="@color/true_text_color"
         android:textStyle="bold"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="16dp" />

@@ -56,13 +56,13 @@ public class AdminComplaintAdapter extends RecyclerView.Adapter<AdminComplaintAd
         AdminRepository.getInstance().updateComplaintStatus(complaint.getId(), status, new AdminRepository.MyCallback<Void>() {
             @Override
             public void onSuccess(Void data) {
-                complaint.setStatus(status);
+                complaint.setStatus(status);  // Обновляем статус в локальном списке
                 notifyDataSetChanged();
             }
 
             @Override
             public void onError(Throwable t) {
-                // Обработать ошибку, показать тост или лог
+                // Обработка ошибки
             }
         });
     }

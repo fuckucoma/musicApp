@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.example.test.R;
 import com.example.music.models.Track;
 import com.example.music.repository.FavoriteRepository;
@@ -78,7 +79,7 @@ public class MediaBarFragment extends Fragment {
             if (track != null) {
                 trackTitleBar.setText(track.getTitle());
                 barNameArtist.setText(track.getArtist());
-                Picasso.get().load(track.getImageUrl()).into(trackImageBar);
+                Glide.with(this).load(track.getImageUrl()).into(trackImageBar);
 
                 updateFavoriteIcon(track);
             }

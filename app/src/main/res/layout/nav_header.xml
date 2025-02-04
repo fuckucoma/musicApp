@@ -43,6 +43,7 @@
             android:layout_gravity="center_vertical"
             android:fontFamily="sans-serif-medium"
             android:layout_marginStart="10dp"
+            android:textColor="@color/true_text_color"
             android:text="moonheller"
             android:textSize="18sp" />
 

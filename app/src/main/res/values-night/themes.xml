@@ -2,6 +2,17 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Test" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/white</item>
+        
+        <item name="colorOnSurface">@color/white</item>
+        <item name="colorOnSecondaryContainer">@color/icon_text_label_color_active</item>
+        <item name="colorOnSurfaceVariant">@color/icon_text_label_color_inactive</item>
+
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+
+    </style>
+
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
 
     </style>
 

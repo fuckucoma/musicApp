@@ -1,7 +1,6 @@
 package com.example.music.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,6 @@ import com.bumptech.glide.Glide;
 import com.example.music.models.Track;
 import com.example.test.R;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,7 +45,7 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.TrackVie
     @NonNull
     @Override
     public TrackViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_favorite, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_library, parent, false);
         return new TrackViewHolder(view);
     }
 

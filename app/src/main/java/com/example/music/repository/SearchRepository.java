@@ -1,11 +1,17 @@
 package com.example.music.repository;
 
+import android.text.TextUtils;
+
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.bumptech.glide.Glide;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
 import com.example.music.models.Track;
+import com.example.music.view_model.ProfileViewModel;
+import com.example.test.R;
 
 import java.util.List;
 
@@ -43,4 +49,5 @@ public class SearchRepository {
             }
         });
     }
+
 }

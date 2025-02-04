@@ -9,12 +9,15 @@ import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.music.view_model.FeedPlayerViewModel;
 import com.example.music.view_model.LibraryViewModel;
 import com.example.music.PlaybackSource;
@@ -35,6 +39,7 @@ import com.example.music.adapters.LibraryAdapter;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
 import com.example.music.models.Track;
+import com.example.music.view_model.ProfileViewModel;
 import com.example.test.BuildConfig;
 import com.example.test.R;
 
@@ -52,12 +57,16 @@ public class LibraryFragment extends Fragment {
     private ApiService apiService;
     private FavoriteRepository favoriteRepository;
     private FeedPlayerViewModel feedPlayerViewModel;
+    private ImageView profile;
 
     private RecyclerView recyclerView;
     private LibraryAdapter libraryAdapter;
     private List<Track> trackList = new ArrayList<>();
     private ProgressBar progressBar;
     private LibraryViewModel libraryViewModel;
+    private ProfileViewModel profileViewModel;
+
+
 
     private List<Track> libraryTracks = new ArrayList<>();
     private Set<Integer> favoriteIds = new HashSet<>();
@@ -74,6 +83,7 @@ public class LibraryFragment extends Fragment {
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
         libraryViewModel = new ViewModelProvider(this).get(LibraryViewModel.class);
         feedPlayerViewModel = new ViewModelProvider(requireActivity()).get(FeedPlayerViewModel.class);
+        profileViewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
         apiService = ApiClient.getClient().create(ApiService.class);
 
         if (getActivity() instanceof MainActivity) {
@@ -86,8 +96,8 @@ public class LibraryFragment extends Fragment {
         recyclerView.setAdapter(libraryAdapter);
 
 
-        Button btnUploadTrack = view.findViewById(R.id.upload_track);
-//        ImageView ivProfile = view.findViewById(R.id.ivProfile);
+        ImageView btnUploadTrack = view.findViewById(R.id.upload_track);
+        profile = view.findViewById(R.id.profile_image);
         progressBar = view.findViewById(R.id.progress_bar);
 
 
@@ -114,7 +124,29 @@ public class LibraryFragment extends Fragment {
             uploadTrackLauncher.launch(intent);
         });
 
-//        ivProfile.setOnClickListener(v -> openUserProfile());
+        profileViewModel.getUserProfile().observe(getViewLifecycleOwner(), userProfile -> {
+            if (userProfile != null) {
+
+                String imageUrl = userProfile.getProfileImageUrl();
+                if (!TextUtils.isEmpty(imageUrl)) {
+                    Glide.with(this)
+                            .load(imageUrl)
+                            .placeholder(R.drawable.ic_profile_24)
+                            .into(profile);
+                } else {
+                    profile.setImageResource(R.drawable.ic_profile_24);
+                }
+            } else {
+                profile.setImageResource(R.drawable.ic_profile_24);
+            }
+        });
+
+        profile.setOnClickListener(v -> {
+            DrawerLayout drawerLayout = requireActivity().findViewById(R.id.drawer_layout);
+            if (drawerLayout != null) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
 
         uploadTrackLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),

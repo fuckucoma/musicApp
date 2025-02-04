@@ -58,6 +58,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Войти"
+        android:textColor="@color/true_text_color"
         android:padding="12dp"
         android:layout_marginBottom="16dp"
         style="?attr/materialButtonOutlinedStyle"/>
@@ -68,6 +69,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Нет аккаунта? Зарегистрироваться"
+        android:textColor="@color/true_text_color"
         android:textSize="16sp" />
 </LinearLayout>
 

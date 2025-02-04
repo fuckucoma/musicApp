@@ -68,6 +68,8 @@ public class TrackOptionsBottomSheet extends BottomSheetDialogFragment {
                 // Запрещаем сворачивание при клике вне области
                 behavior.setHideable(false);
 
+                behavior.setDraggable(true);
+
                 if (isTablet()) {
                     bottomSheet.setLayoutParams(
                             new FrameLayout.LayoutParams(

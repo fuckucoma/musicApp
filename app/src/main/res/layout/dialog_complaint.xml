@@ -6,14 +6,21 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <EditText
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/etComplaintText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Опишите проблему"
         android:inputType="textMultiLine"
         android:minLines="3"
-        android:maxLines="5"
-        />
+        android:maxLines="5">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text"
+            style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

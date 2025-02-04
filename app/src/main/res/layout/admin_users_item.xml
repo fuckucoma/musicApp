@@ -25,6 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Track Title"
+            android:textColor="@color/true_text_color"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -33,6 +34,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Artist Name"
+            android:textColor="@color/true_text_color"
+            android:fontFamily="sans-serif"
             android:textSize="16sp" />
 
     </LinearLayout>

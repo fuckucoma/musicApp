@@ -75,6 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Зарегистрироваться"
+            android:textColor="@color/true_text_color"
             android:padding="12dp"
             android:layout_marginBottom="16dp"
             style="?attr/materialButtonOutlinedStyle"/>
@@ -84,6 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Уже есть аккаунт? Войти"
+            android:textColor="@color/true_text_color"
             android:textSize="16sp" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

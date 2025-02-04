@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -24,8 +26,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.exifinterface.media.ExifInterface;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -60,7 +65,6 @@ public class ProfileFragment extends Fragment {
     private ImageView ivProfilePicture;
     private TextView tvUsername;
     private EditText etCurrentPassword, etNewPassword, etNewUsername;
-    private Button btnUploadImage, btnChangePassword, btnChangeUsername, btnLogout;
 
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
@@ -79,10 +83,11 @@ public class ProfileFragment extends Fragment {
         etNewPassword = view.findViewById(R.id.et_new_password);
         etNewUsername = view.findViewById(R.id.et_new_username);
 
-        btnUploadImage = view.findViewById(R.id.btnUploadImage);
-        btnChangePassword = view.findViewById(R.id.btn_change_password);
-        btnChangeUsername = view.findViewById(R.id.btn_change_username);
-        btnLogout = view.findViewById(R.id.btnLogout);
+        Button btnChangePassword = view.findViewById(R.id.btn_change_password);
+        Button btnChangeUsername = view.findViewById(R.id.btn_change_username);
+        Button btnLogout = view.findViewById(R.id.btnLogout);
+
+        ImageView btn_back = view.findViewById(R.id.btn_back);
 
         profileViewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
 
@@ -94,11 +99,16 @@ public class ProfileFragment extends Fragment {
 
         observeViewModel();
 
-
-        btnUploadImage.setOnClickListener(v -> openImageChooser());
+        btn_back.setOnClickListener(v->{
+            NavController navController = NavHostFragment.findNavController(ProfileFragment.this);
+            navController.popBackStack();
+        });
         btnChangePassword.setOnClickListener(v -> handleChangePassword());
         btnChangeUsername.setOnClickListener(v -> handleChangeUsername());
         btnLogout.setOnClickListener(v -> logoutUser());
+        ivProfilePicture.setOnClickListener(v->{
+            openImageChooser();
+        });
 
         registerImagePickerCallback();
 
@@ -190,10 +200,8 @@ public class ProfileFragment extends Fragment {
                 result -> {
                     if (result.getResultCode() == requireActivity().RESULT_OK && result.getData() != null) {
                         try {
-                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(
-                                    requireActivity().getContentResolver(),
-                                    result.getData().getData()
-                            );
+                            Uri selectedImageUri = result.getData().getData();
+                            Bitmap bitmap = correctImageOrientation(selectedImageUri);
                             ivProfilePicture.setImageBitmap(bitmap);
                             profileViewModel.uploadProfileImage(bitmap);
 
@@ -204,6 +212,50 @@ public class ProfileFragment extends Fragment {
                     }
                 }
         );
+    }
+
+    private Bitmap correctImageOrientation(Uri imageUri) throws IOException {
+        // Получаем метаданные EXIF для изображения
+        ExifInterface exif = new ExifInterface(requireActivity().getContentResolver().openInputStream(imageUri));
+
+        // Получаем ориентацию изображения
+        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+
+        // Создаем Bitmap из URI
+        Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), imageUri);
+
+        // Исправляем ориентацию
+        Matrix matrix = new Matrix();
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.postRotate(90);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix.postRotate(180);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.postRotate(270);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                matrix.postScale(1, -1);
+                break;
+            default:
+                // Для других ориентаций ничего не делаем
+                return bitmap;
+        }
+
+        // Применяем матрицу для корректировки ориентации
+        Bitmap correctedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
+        // Освобождаем исходный Bitmap
+        if (bitmap != correctedBitmap) {
+            bitmap.recycle();
+        }
+
+        return correctedBitmap;
     }
 
     private void handleChangePassword() {

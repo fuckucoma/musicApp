@@ -51,7 +51,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.TrackViewH
     @Override
     public void onBindViewHolder(@NonNull TrackViewHolder holder, int position) {
         Track track = trackList.get(position);
-
         holder.trackTitle.setText(track.getTitle());
         holder.trackArtist.setText(track.getArtist());
 
@@ -66,6 +65,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.TrackViewH
         }
 
         holder.itemView.setOnClickListener(v -> listener.onTrackSelected(track));
+
     }
 
     @Override
