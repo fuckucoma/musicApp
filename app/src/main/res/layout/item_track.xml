@@ -57,7 +57,20 @@
                 android:fontFamily="sans-serif-light"
                 android:textColor="@color/true_text_color"
                 android:paddingStart="8dp" />
+
+
+
         </LinearLayout>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/equalizerAnimation"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:visibility="gone"
+            app:lottie_rawRes="@raw/equalizer2"
+            app:lottie_autoPlay="false"
+            app:lottie_speed="0.5"
+            app:lottie_loop="true" />
 
         <ImageButton
             android:id="@+id/btn_favorite"

@@ -54,7 +54,7 @@ public class HomeFragment extends Fragment {
 
         viewPager = view.findViewById(R.id.view_pager);
         homeAdapter = new HomeAdapter(getContext(), trackList, favoriteRepository,
-                this::onItemClicked, this::onFavoriteClicked);
+                this::onItemClicked, this::onFavoriteClicked,feedPlayerViewModel);
 
         viewPager.setAdapter(homeAdapter);
 
@@ -92,6 +92,13 @@ public class HomeFragment extends Fragment {
         homeViewModel.getFeedTracks().observe(getViewLifecycleOwner(), tracks -> {
             trackList.clear();
             trackList.addAll(tracks);
+            homeAdapter.notifyDataSetChanged();
+        });
+
+        feedPlayerViewModel.isFeedPlaying().observe(getViewLifecycleOwner(), isPlaying -> {
+            homeAdapter.notifyDataSetChanged();
+        });
+        feedPlayerViewModel.getFeedCurrentTrack().observe(getViewLifecycleOwner(), track -> {
             homeAdapter.notifyDataSetChanged();
         });
 

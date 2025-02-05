@@ -23,6 +23,8 @@ import com.example.music.view_model.ProfileViewModel;
 import com.example.music.view_model.SearchViewModel;
 import com.example.test.R;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.search.SearchBar;
+import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -102,8 +104,6 @@ public class SearchFragment extends Fragment {
             }
         });
 
-
-
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
@@ -145,6 +145,8 @@ public class SearchFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        searchInput.setText("");
 
         searchAdapter.updateData(searchViewModel.getSearchHistory().getValue());
 

@@ -1,6 +1,8 @@
 package com.example.music.repository;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -13,6 +15,7 @@ import com.example.music.api.ApiService;
 import com.example.music.models.Track;
 import com.example.music.response.FavoriteResponse;
 import com.example.music.service.MusicService;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +41,8 @@ public class TrackRepository {
     private MutableLiveData<Long> currentPositionLiveData = new MutableLiveData<>(0L);
 
     private MutableLiveData<Boolean> isRepeatEnabled = new MutableLiveData<>(false);
+
+
 
     private TrackRepository() {
         apiService = ApiClient.getClient().create(ApiService.class);
@@ -66,6 +71,7 @@ public class TrackRepository {
     public void setCurrentPlaybackSource(PlaybackSource source) {
         currentPlaybackSourceLiveData.postValue(source);
     }
+
 
     public LiveData<List<Track>> getFeedTracks() { return feedTracksLiveData; }
     public LiveData<List<Track>> getSearchTracks() { return searchTracksLiveData; }
@@ -157,6 +163,8 @@ public class TrackRepository {
         intent.putExtra("PLAYBACK_SOURCE", source.name());
         MyApp.getInstance().startService(intent);
     }
+
+
 
     public void pauseTrack() {
         Intent intent = new Intent(MyApp.getInstance(), MusicService.class);

@@ -69,7 +69,11 @@ public class AppNavigationManager {
             } else if (destId == R.id.profileFragment) {
                 bottomNavigationView.setVisibility(View.GONE);
                 activity.findViewById(R.id.media_bar_container).setVisibility(View.GONE);
-            } else {
+            }else if (destId == R.id.historyFragment){
+                bottomNavigationView.setVisibility(View.GONE);
+                activity.findViewById(R.id.media_bar_container).setVisibility(View.GONE);
+            }
+            else {
                 bottomNavigationView.setVisibility(View.VISIBLE);
                 Track currentTrack = playerViewModel.getCurrentTrack().getValue();
                 if (currentTrack != null) {

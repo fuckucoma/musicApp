@@ -34,6 +34,8 @@
                 app:trackThickness="2dp"
                 app:trackCornerRadius="6dp"
                 app:trackColor="#3E3E3E"
+                app:indicatorTrackGapSize="0dp"
+                app:showDelay="0"
                 app:indicatorColor="@color/white" />
 
             <androidx.constraintlayout.widget.ConstraintLayout

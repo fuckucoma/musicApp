@@ -115,4 +115,7 @@ public interface ApiService {
 
     @POST("/complaints/create")
     Call<Void> createComplaint(@Body ComplaintRequest complaintRequest);
+
+    @DELETE("/reviews/delete_user_review/{id}")
+    Call<Void> deleteUserReview(@Path("id") int reviewId);
 }

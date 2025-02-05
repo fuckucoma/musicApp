@@ -6,13 +6,23 @@ public class Review {
     private Track track;
     private String content;
     private int rating;
+    private String userProfileImage;
 
-    public Review(int id, User user, Track track, String content, int rating) {
+    public String getUserProfileImage() {
+        return userProfileImage;
+    }
+
+    public void setUserProfileImage(String userProfileImage) {
+        this.userProfileImage = userProfileImage;
+    }
+
+    public Review(int id, User user, Track track, String content, int rating, String userProfileImage) {
         this.id = id;
         this.user = user;
         this.track = track;
         this.content = content;
         this.rating = rating;
+        this.userProfileImage = userProfileImage;
     }
 
     public int getId() {

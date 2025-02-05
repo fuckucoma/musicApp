@@ -9,6 +9,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
 import com.example.music.repository.FavoriteRepository;
 import com.example.music.models.Track;
@@ -31,6 +32,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TrackViewHolde
     private OnItemClickListener listener;
     private OnFavoriteClickListener favoriteClickListener;
     private FavoriteRepository favoriteRepository;
+    private FeedPlayerViewModel feedPlayerViewModel;
 
     public interface OnItemClickListener {
         void onItemClicked(Track track);
@@ -40,13 +42,19 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TrackViewHolde
         void onFavoriteClicked(Track track, int position);
     }
 
-    public HomeAdapter(Context context, List<Track> trackList, FavoriteRepository favoriteRepository,OnItemClickListener listener ,OnFavoriteClickListener favoriteClickListener) {
+    public HomeAdapter(Context context,
+                       List<Track> trackList,
+                       FavoriteRepository favoriteRepository,
+                       OnItemClickListener listener,
+                       OnFavoriteClickListener favoriteClickListener,
+                       FeedPlayerViewModel feedPlayerViewModel)
+    {
         this.context = context;
         this.trackList = trackList;
         this.listener = listener;
         this.favoriteRepository = favoriteRepository;
         this.favoriteClickListener = favoriteClickListener;
-
+        this.feedPlayerViewModel = feedPlayerViewModel;
     }
 
     @NonNull
@@ -62,6 +70,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TrackViewHolde
 
         holder.trackTitle.setText(track.getTitle());
         holder.trackArtist.setText(track.getArtist());
+
+
 
         if (track.getImageUrl() != null && !track.getImageUrl().isEmpty()) {
             Glide.with(context)
@@ -82,6 +92,23 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TrackViewHolde
         boolean isFavorite = favoriteRepository.isTrackFavorite(track.getId());
         holder.favoriteButton.setImageResource(isFavorite ? R.drawable.ic_heart__24 : R.drawable.ic_favorite_24px);
 
+
+        Track currentTrack = feedPlayerViewModel.getFeedCurrentTrack().getValue();
+        Boolean isPlaying = feedPlayerViewModel.isFeedPlaying().getValue();
+        boolean isFeedPlaying = (isPlaying != null && isPlaying);
+
+        // 2. Проверяем, совпадает ли track с currentTrack и играет ли
+        if (currentTrack != null && currentTrack.getId() == track.getId() && isFeedPlaying) {
+            // Показываем анимацию
+            holder.equalizerAnimation.setVisibility(View.VISIBLE);
+            if (!holder.equalizerAnimation.isAnimating()) {
+                holder.equalizerAnimation.playAnimation();
+            }
+        } else {
+            // Иначе прячем и останавливаем анимацию
+            holder.equalizerAnimation.cancelAnimation();
+            holder.equalizerAnimation.setVisibility(View.GONE);
+        }
 
         holder.favoriteButton.setOnClickListener(v -> {
             favoriteClickListener.onFavoriteClicked(track, position);
@@ -104,6 +131,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TrackViewHolde
         TextView trackArtist;
         ImageView trackImage;
         ImageButton favoriteButton;
+        LottieAnimationView equalizerAnimation;
 
         public TrackViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -111,6 +139,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.TrackViewHolde
             trackArtist = itemView.findViewById(R.id.track_artist);
             trackImage = itemView.findViewById(R.id.track_image);
             favoriteButton = itemView.findViewById(R.id.btn_favorite);
+            equalizerAnimation = itemView.findViewById(R.id.equalizerAnimation);
         }
     }
 }

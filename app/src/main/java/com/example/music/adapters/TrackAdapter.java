@@ -1,6 +1,7 @@
 package com.example.music.adapters;
 
 import android.content.Context;
+import android.media.Image;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,7 +77,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         ImageView trackImage;
         TextView trackTitle;
         TextView artistName;
-        Button deleteButton;
+        ImageView deleteButton;
 
         public TrackViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -95,21 +95,30 @@ public class DrawerHeaderManager {
         navigationView.setNavigationItemSelectedListener(item -> {
             drawerLayout.closeDrawer(GravityCompat.START);
 
-            if (item.getItemId() == R.id.nav_exit) {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_history) {
+                navController.navigate(R.id.historyFragment);
+                return true;
+            } else if (itemId == R.id.nav_exit) {
                 logoutUser();
+
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove("authToken");
+                editor.remove("isAdmin");
+                editor.remove("history");
+                editor.remove("track_history");
+                editor.apply();
+
+                activity.findViewById(R.id.media_bar_container).setVisibility(View.GONE);
+
                 return true;
             }
+
             return NavigationUI.onNavDestinationSelected(item, navController);
         });
     }
 
     private void logoutUser() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove("authToken");
-        editor.remove("isAdmin");
-        editor.remove("history");
-        editor.apply();
-
         Intent stopServiceIntent = new Intent(activity, MusicService.class);
         stopServiceIntent.setAction("STOP_SERVICE");
         activity.startService(stopServiceIntent);
@@ -117,5 +126,6 @@ public class DrawerHeaderManager {
         Intent intent = new Intent(activity, LoginActivity.class);
         activity.startActivity(intent);
         activity.finish();
+
     }
 }

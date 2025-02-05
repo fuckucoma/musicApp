@@ -4,13 +4,16 @@ public class ReviewRequest {
     private int trackId;
     private String content;
     private int rating;
+    private String userProfileImage; // Новое поле
 
-    public ReviewRequest(int trackId, String content, int rating) {
+    public ReviewRequest(int trackId, String content, int rating, String userProfileImage) {
         this.trackId = trackId;
         this.content = content;
         this.rating = rating;
+        this.userProfileImage = userProfileImage;
     }
 
+    // Геттеры
     public int getTrackId() {
         return trackId;
     }
@@ -21,5 +24,9 @@ public class ReviewRequest {
 
     public int getRating() {
         return rating;
+    }
+
+    public String getUserProfileImage() {
+        return userProfileImage;
     }
 }

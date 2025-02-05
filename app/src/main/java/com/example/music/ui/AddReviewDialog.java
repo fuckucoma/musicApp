@@ -11,7 +11,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.music.models.User;
 import com.example.music.request.ReviewRequest;
+import com.example.music.view_model.ProfileViewModel;
 import com.example.music.view_model.ReviewViewModel;
 import com.example.test.R;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -23,6 +25,7 @@ public class AddReviewDialog extends DialogFragment {
     private int trackId;
 
     private ReviewViewModel reviewViewModel;
+    private ProfileViewModel profileViewModel;
 
     public static void show(@NonNull androidx.fragment.app.FragmentManager fm, int trackId) {
         AddReviewDialog dialog = new AddReviewDialog();
@@ -41,6 +44,7 @@ public class AddReviewDialog extends DialogFragment {
         }
 
         reviewViewModel = new ViewModelProvider(requireActivity()).get(ReviewViewModel.class);
+        profileViewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
 
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
         builder.setTitle("Добавить отзыв");
@@ -55,13 +59,19 @@ public class AddReviewDialog extends DialogFragment {
         builder.setPositiveButton("Отправить", (dialog, which) -> {
             String content = etReviewContent.getEditText().getText().toString().trim();
             float rating = rbRating.getRating(); // от 0 до 5
+            String userProfileImage = profileViewModel.getUserProfile().toString();
+
+            if (rating < 1) {
+                Toast.makeText(requireContext(), "Поставьте оценку от 1 до 5", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             if (content.isEmpty()) {
                 Toast.makeText(requireContext(), "Введите текст отзыва", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            ReviewRequest reviewRequest = new ReviewRequest(trackId, content, (int) rating);
+            ReviewRequest reviewRequest = new ReviewRequest(trackId, content, (int) rating, userProfileImage);
             reviewViewModel.createReview(reviewRequest);
 
         });

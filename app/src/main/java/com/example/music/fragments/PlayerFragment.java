@@ -2,6 +2,7 @@ package com.example.music.fragments;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -25,12 +26,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.music.adapters.ReviewAdapter;
 import com.example.music.models.Review;
+import com.example.music.models.User;
+import com.example.music.repository.ProfileRepository;
 import com.example.music.repository.ReviewRepository;
+import com.example.music.response.UserProfileResponse;
 import com.example.music.view_model.PlayerViewModel;
 import com.example.music.activity.MainActivity;
 import com.example.music.models.Track;
 import com.example.music.repository.FavoriteRepository;
 import com.example.music.ui.TrackOptionsBottomSheet;
+import com.example.music.view_model.ProfileViewModel;
 import com.example.music.view_model.ReviewViewModel;
 import com.example.test.R;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -54,11 +59,14 @@ public class PlayerFragment extends Fragment {
     private ReviewAdapter reviewAdapter;
     private List<Review> reviewList = new ArrayList<>();
     private ReviewViewModel reviewViewModel;
+    private ProfileViewModel profileViewModel;
 
     private PlayerViewModel playerViewModel;
     private FavoriteRepository favoriteRepository;
     private boolean isRepeatEnabled = false;
     private Handler handler = new Handler(Looper.getMainLooper());
+
+    private int currentUserId = -1;
 
     private Runnable updateSeekBarRunnable = new Runnable() {
         @Override
@@ -95,10 +103,12 @@ public class PlayerFragment extends Fragment {
         btn_more = view.findViewById(R.id.btn_more);
         btn_back = view.findViewById(R.id.btn_back);
 
+        profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+
         reviewsRecyclerView = view.findViewById(R.id.reviews_recyclerview);
         reviewsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        reviewAdapter = new ReviewAdapter(getContext(), reviewList);
-        reviewsRecyclerView.setAdapter(reviewAdapter);
+
+
         reviewViewModel = new ViewModelProvider(this).get(ReviewViewModel.class);
 
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
@@ -113,17 +123,31 @@ public class PlayerFragment extends Fragment {
         setupPlayerControls();
 
 
-        reviewViewModel.getReviewsLiveData().observe(getViewLifecycleOwner(), reviews -> {
-            reviewList.clear();
-            reviewList.addAll(reviews);
-            reviewAdapter.notifyDataSetChanged();
-
-        });
 
         return view;
     }
 
     private void setupPlayerControls() {
+
+
+        profileViewModel.getUserProfile().observe(getViewLifecycleOwner(), profile -> {
+            if (profile != null) {
+                currentUserId = profile.getId();
+                // Теперь у нас есть ID пользователя
+                Log.d("SomeFragment", "Текущий userId: " + currentUserId);
+
+                reviewAdapter = new ReviewAdapter(getContext(), reviewList, currentUserId);
+                reviewsRecyclerView.setAdapter(reviewAdapter);
+
+                reviewViewModel.getReviewsLiveData().observe(getViewLifecycleOwner(), reviews -> {
+                    reviewList.clear();
+                    reviewList.addAll(reviews);
+                    reviewAdapter.notifyDataSetChanged();
+                });
+            }
+        });
+
+
 
         playerViewModel.getCurrentTrack().observe(getViewLifecycleOwner(), track -> {
             if (track != null) {

@@ -1,9 +1,6 @@
 // UserFragment.java
 package com.example.music.fragments;
 
-import static android.content.Context.MODE_PRIVATE;
-
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -33,28 +30,13 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.music.activity.LoginActivity;
-import com.example.music.api.ApiClient;
-import com.example.music.api.ApiService;
-import com.example.music.request.passRequest;
-import com.example.music.request.usernameRequest;
-import com.example.music.response.RegisterResponse;
 import com.example.music.response.UserProfileResponse;
 import com.example.music.service.MusicService;
 import com.example.music.view_model.ProfileViewModel;
 import com.example.test.R;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ProfileFragment extends Fragment {
 
@@ -86,6 +68,7 @@ public class ProfileFragment extends Fragment {
         Button btnChangePassword = view.findViewById(R.id.btn_change_password);
         Button btnChangeUsername = view.findViewById(R.id.btn_change_username);
         Button btnLogout = view.findViewById(R.id.btnLogout);
+
 
         ImageView btn_back = view.findViewById(R.id.btn_back);
 
@@ -175,6 +158,8 @@ public class ProfileFragment extends Fragment {
     }
 
     private void populateUserData(UserProfileResponse userProfile) {
+
+        etNewUsername.setText(userProfile.getUsername());
         tvUsername.setText(userProfile.getUsername());
 
         String imageUrl = userProfile.getProfileImageUrl();
@@ -270,6 +255,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void handleChangeUsername() {
+
         String newUsername = etNewUsername.getText().toString();
         if (newUsername.isEmpty()) {
             Toast.makeText(getContext(), "Введите новое имя пользователя", Toast.LENGTH_SHORT).show();

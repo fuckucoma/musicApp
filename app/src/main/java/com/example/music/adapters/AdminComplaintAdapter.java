@@ -48,8 +48,8 @@ public class AdminComplaintAdapter extends RecyclerView.Adapter<AdminComplaintAd
         holder.message.setText(complaint.getMessage());
         holder.status.setText(complaint.getStatus());
 
-        holder.resolveButton.setOnClickListener(v -> updateComplaintStatus(complaint, "resolved"));
-        holder.rejectButton.setOnClickListener(v -> updateComplaintStatus(complaint, "rejected"));
+        holder.resolveButton.setOnClickListener(v -> updateComplaintStatus(complaint, "решено"));
+        holder.rejectButton.setOnClickListener(v -> updateComplaintStatus(complaint, "отказано"));
     }
 
     private void updateComplaintStatus(Complaint complaint, String status) {

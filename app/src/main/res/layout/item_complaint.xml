@@ -4,24 +4,67 @@
     android:orientation="vertical"
     android:padding="8dp">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Имя пользователя:"
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/complaint_user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         android:text="Username"
         android:textStyle="bold" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="Жалоба:" />
 
     <TextView
         android:id="@+id/complaint_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:inputType="textMultiLine"
         android:text="Complaint message" />
 
-    <TextView
-        android:id="@+id/complaint_status"
+    </LinearLayout>
+
+
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Status: Pending" />
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Статус: " />
+
+        <TextView
+            android:id="@+id/complaint_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ожидание" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -33,13 +76,15 @@
             android:id="@+id/button_resolve"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Resolve" />
+            android:backgroundTint="@color/button_color"
+            android:text="Решена" />
 
         <Button
             android:id="@+id/button_reject"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reject"
+            android:backgroundTint="@color/button_color"
+            android:text="Отказано"
             android:layout_marginStart="8dp" />
     </LinearLayout>
 </LinearLayout>

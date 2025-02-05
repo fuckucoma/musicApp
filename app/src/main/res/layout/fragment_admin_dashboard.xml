@@ -5,32 +5,37 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Кнопка выхода, расположенная в правом верхнем углу -->
-    <ImageButton
-        android:id="@+id/btn_logout"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:src="@drawable/back_to_app"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:layout_gravity="end"
-         />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-    <!-- Заголовок панели управления, расположенный ниже кнопки выхода -->
     <TextView
         android:id="@+id/title_dashboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Административная панель"
-        android:textSize="24sp"
+        android:textSize="22sp"
+        android:textColor="@color/true_text_color"
         android:textStyle="bold"
         android:gravity="center"
         android:layout_marginBottom="16dp" />
 
-    <!-- Элементы панели управления -->
+        <ImageButton
+            android:id="@+id/btn_logout"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/exit__com"
+            android:background="?android:attr/selectableItemBackgroundBorderless" />
+
+    </LinearLayout>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Пользователи:"
+        android:textColor="@color/true_text_color"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -38,6 +43,7 @@
         android:id="@+id/users_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/true_text_color"
         android:text="0"
         android:textSize="16sp"
         android:layout_marginBottom="8dp" />
@@ -47,6 +53,7 @@
         android:layout_height="wrap_content"
         android:text="Треки:"
         android:textSize="18sp"
+        android:textColor="@color/true_text_color"
         android:textStyle="bold" />
 
     <TextView
@@ -54,6 +61,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="0"
+        android:textColor="@color/true_text_color"
         android:textSize="16sp"
         android:layout_marginBottom="8dp" />
 
@@ -61,6 +69,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Жалобы:"
+        android:textColor="@color/true_text_color"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -69,6 +78,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="0"
+        android:textColor="@color/true_text_color"
         android:textSize="16sp"
         android:layout_marginBottom="8dp" />
 
@@ -77,12 +87,14 @@
         android:layout_height="wrap_content"
         android:text="Отзывы:"
         android:textSize="18sp"
+        android:textColor="@color/true_text_color"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/reviews_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/true_text_color"
         android:text="0"
         android:textSize="16sp"
         android:layout_marginBottom="8dp" />

@@ -33,7 +33,9 @@
                     android:progress="48"
                     app:indicatorColor="#FFF"
                     app:trackColor="#3E3E3F"
+                    app:indicatorTrackGapSize="0dp"
                     app:trackCornerRadius="6dp"
+                    app:hideAnimationBehavior="outward"
                     app:trackThickness="2dp" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout

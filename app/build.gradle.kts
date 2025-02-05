@@ -45,6 +45,7 @@ android {
 
 dependencies {
 
+    implementation (libs.lottie)
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
     implementation (libs.logging.interceptor.v491)

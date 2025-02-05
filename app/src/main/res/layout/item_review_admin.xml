@@ -1,39 +1,78 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
     android:padding="8dp">
 
-    <TextView
-        android:id="@+id/review_user_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Username"
-        android:textStyle="bold" />
+    <androidx.cardview.widget.CardView
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="3dp"
+        android:layout_marginTop="6dp"
+        app:cardCornerRadius="35dp">
 
-    <TextView
-        android:id="@+id/review_track_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Track Title"
-        android:textStyle="italic" />
+        <ImageView
+            android:id="@+id/review_user_avatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"/>
 
-    <TextView
-        android:id="@+id/review_rating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Rating: 5" />
+    </androidx.cardview.widget.CardView>
 
-    <TextView
-        android:id="@+id/review_content"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Review content" />
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-    <Button
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="1dp">
+
+            <TextView
+                android:id="@+id/review_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="16sp"
+                android:text="Username"
+                android:textColor="@color/true_text_color"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/review_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="16sp"
+                android:textColor="@color/true_text_color"
+                android:text="Rating: 5" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/review_content"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:inputType="textMultiLine"
+            android:textSize="14sp"
+            android:text="Review content"
+            android:textColor="@color/true_text_color"
+            tools:ignore="TextViewEdits" />
+
+    </LinearLayout>
+
+    <ImageView
         android:id="@+id/button_delete_review"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Delete"
-        android:layout_marginTop="8dp" />
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/trash"
+        android:text="Delete" />
+
 </LinearLayout>

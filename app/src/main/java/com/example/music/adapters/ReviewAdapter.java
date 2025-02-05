@@ -9,24 +9,28 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.music.models.Review;
 import com.example.music.repository.AdminRepository;
+import com.example.music.repository.ReviewRepository;
 import com.example.test.R;
 
 import java.util.List;
 
-public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder>{
+public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder> {
 
     private final Context context;
     private final List<Review> reviewList;
+    private final int currentUserId;
 
-    public ReviewAdapter(Context context, List<Review> reviewList) {
+    public ReviewAdapter(Context context, List<Review> reviewList, int currentUserId) {
         this.context = context;
         this.reviewList = reviewList;
+        this.currentUserId = currentUserId;
     }
 
     @NonNull
@@ -43,11 +47,18 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         if (review.getUser() != null) {
             holder.userName.setText(review.getUser().getUsername());
 
-             if (review.getUser().getProfileImageUrl() != null) {
-                 Glide.with(context)
-                      .load(review.getUser().getProfileImageUrl())
-                      .into(holder.userAvatar);
-             }
+            if (review.getUser().getProfileImageUrl() != null) {
+                Glide.with(context)
+                        .load(review.getUser().getProfileImageUrl())
+                        .into(holder.userAvatar);
+            }
+
+            // Проверка, является ли текущий пользователь владельцем отзыва
+            if (review.getUser().getId() == currentUserId) {
+                holder.deleteButton.setVisibility(View.VISIBLE);  // Показываем кнопку удаления
+            } else {
+                holder.deleteButton.setVisibility(View.GONE); // Скрываем кнопку удаления для чужих отзывов
+            }
         } else {
             holder.userName.setText("Unknown User");
         }
@@ -56,15 +67,18 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         holder.content.setText(review.getContent());
 
         holder.deleteButton.setOnClickListener(v -> {
-            AdminRepository.getInstance().deleteReview(review.getId(), new AdminRepository.MyCallback<Void>() {
+            // Вызываем пользовательский метод удаления (не админский)
+            ReviewRepository.getInstance().deleteUserReview(review.getId(), new ReviewRepository.MyCallback<Void>() {
                 @Override
                 public void onSuccess(Void data) {
+                    // Удаляем из списка и обновляем адаптер
                     reviewList.remove(position);
                     notifyItemRemoved(position);
                 }
 
                 @Override
                 public void onError(Throwable t) {
+                    Toast.makeText(context, "Ошибка: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         });
@@ -78,7 +92,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     static class ReviewViewHolder extends RecyclerView.ViewHolder {
         TextView userName, rating, content;
         ImageView userAvatar;
-        Button deleteButton;
+        ImageView deleteButton;
 
         public ReviewViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -89,5 +103,4 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             deleteButton = itemView.findViewById(R.id.button_delete_review);
         }
     }
-
 }

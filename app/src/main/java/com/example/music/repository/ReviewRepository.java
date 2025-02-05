@@ -79,5 +79,31 @@ public class ReviewRepository {
             }
         });
     }
+
+    public void deleteUserReview(int reviewId, MyCallback<Void> callback) {
+        apiService.deleteUserReview(reviewId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    // Успешно удалили
+                    callback.onSuccess(null);
+                } else {
+                    // Сервер вернул ошибку (например, 403, 404...)
+                    callback.onError(new Throwable("Ошибка при удалении отзыва (код " + response.code() + ")"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                callback.onError(t);
+            }
+        });
+    }
+
+    // Интерфейс callback для обработки ответа
+    public interface MyCallback<T> {
+        void onSuccess(T data);
+        void onError(Throwable t);
+    }
 }
 

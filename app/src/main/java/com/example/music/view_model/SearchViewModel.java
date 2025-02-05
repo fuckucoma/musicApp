@@ -29,7 +29,7 @@ public class SearchViewModel extends AndroidViewModel {
     public SearchViewModel(Application application) {
         super(application);
         trackRepository = TrackRepository.getInstance();
-        searchHistory.setValue(getSearchHistoryMama());
+        searchHistory.setValue(getSearchHistoryPreferences());
         Log.e("History","история :" + searchHistory.getValue().toString());
     }
 
@@ -61,22 +61,22 @@ public class SearchViewModel extends AndroidViewModel {
             currentHistory.add(track);
         }
 
-        searchHistory.setValue(currentHistory);
+        searchHistory.postValue(currentHistory);
         Log.e("History","добавленный трек в историю :" + currentHistory.toString());
 
         Gson gson = new Gson();
         String jsonHistory = gson.toJson(currentHistory);
 
         // Сохраняем строку JSON в SharedPreferences
-        SharedPreferences prefs = getApplication().getSharedPreferences("SearchHistory", Context.MODE_PRIVATE);
+        SharedPreferences prefs = getApplication().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("history", jsonHistory);
         editor.apply();
 
     }
 
-    public List<Track> getSearchHistoryMama() {
-        SharedPreferences prefs = getApplication().getSharedPreferences("SearchHistory", Context.MODE_PRIVATE);
+    public List<Track> getSearchHistoryPreferences() {
+        SharedPreferences prefs = getApplication().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
         String jsonHistory = prefs.getString("history", "[]");  // по умолчанию возвращаем пустой список
 
         Gson gson = new Gson();
