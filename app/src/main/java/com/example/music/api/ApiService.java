@@ -106,6 +106,9 @@ public interface ApiService {
     @DELETE("/api/admin/tracks/{id}")
     Call<Void> deleteTrack(@Path("id") int id);
 
+    @GET("/users/users/{id}")
+    Call<UserProfileResponse> getUserById(@Path("id") int id);
+
     // ============== отзывы и жалобы
     @POST("/reviews/create")
     Call<Void> createReview(@Body ReviewRequest reviewRequest);

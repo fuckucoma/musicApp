@@ -59,7 +59,6 @@ public class AddReviewDialog extends DialogFragment {
         builder.setPositiveButton("Отправить", (dialog, which) -> {
             String content = etReviewContent.getEditText().getText().toString().trim();
             float rating = rbRating.getRating(); // от 0 до 5
-            String userProfileImage = profileViewModel.getUserProfile().toString();
 
             if (rating < 1) {
                 Toast.makeText(requireContext(), "Поставьте оценку от 1 до 5", Toast.LENGTH_SHORT).show();
@@ -71,7 +70,7 @@ public class AddReviewDialog extends DialogFragment {
                 return;
             }
 
-            ReviewRequest reviewRequest = new ReviewRequest(trackId, content, (int) rating, userProfileImage);
+            ReviewRequest reviewRequest = new ReviewRequest(trackId, content, (int) rating);
             reviewViewModel.createReview(reviewRequest);
 
         });

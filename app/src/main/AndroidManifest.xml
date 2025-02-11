@@ -19,9 +19,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/icon"
+        android:icon="@drawable/icon123"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/icon123"
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/Theme.Test"
@@ -30,7 +30,8 @@
         <activity
             android:name="com.example.music.AdminPanel.AdminActivity"
             android:exported="false"
-            android:theme="@style/Theme.Test" />
+            android:theme="@style/Theme.Test"
+            android:screenOrientation="portrait"/>
 
         <service
             android:name="com.example.music.service.MusicService"

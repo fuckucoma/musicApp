@@ -3,14 +3,12 @@ package com.example.music.request;
 public class ReviewRequest {
     private int trackId;
     private String content;
-    private int rating;
-    private String userProfileImage; // Новое поле
+    private int rating;// Новое поле
 
-    public ReviewRequest(int trackId, String content, int rating, String userProfileImage) {
+    public ReviewRequest(int trackId, String content, int rating) {
         this.trackId = trackId;
         this.content = content;
         this.rating = rating;
-        this.userProfileImage = userProfileImage;
     }
 
     // Геттеры
@@ -24,9 +22,5 @@ public class ReviewRequest {
 
     public int getRating() {
         return rating;
-    }
-
-    public String getUserProfileImage() {
-        return userProfileImage;
     }
 }

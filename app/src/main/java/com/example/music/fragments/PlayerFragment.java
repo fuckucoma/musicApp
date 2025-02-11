@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.music.PlaybackSource;
 import com.example.music.adapters.ReviewAdapter;
 import com.example.music.models.Review;
 import com.example.music.models.User;
@@ -55,6 +56,7 @@ public class PlayerFragment extends Fragment {
     private ExtendedFloatingActionButton btnSkipPrevious;
     private ExtendedFloatingActionButton btnSkipNext;
     private ExtendedFloatingActionButton repeat_btn;
+    private ExtendedFloatingActionButton btn_shuffle;
     private RecyclerView reviewsRecyclerView;
     private ReviewAdapter reviewAdapter;
     private List<Review> reviewList = new ArrayList<>();
@@ -102,6 +104,7 @@ public class PlayerFragment extends Fragment {
         repeat_btn = view.findViewById(R.id.btn_repeat);
         btn_more = view.findViewById(R.id.btn_more);
         btn_back = view.findViewById(R.id.btn_back);
+        btn_shuffle = view.findViewById(R.id.btn_shuffle);
 
         profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
 
@@ -207,6 +210,10 @@ public class PlayerFragment extends Fragment {
             int trackId = currentTrack.getId();
             TrackOptionsBottomSheet bottomSheet = TrackOptionsBottomSheet.newInstance(trackId);
             bottomSheet.show(getParentFragmentManager(), "TrackOptionsBottomSheet");
+        });
+
+        btn_shuffle.setOnClickListener(v -> {
+
         });
 
         btn_back.setOnClickListener(v->{

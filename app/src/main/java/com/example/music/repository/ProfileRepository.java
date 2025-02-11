@@ -6,12 +6,14 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.music.Event;
 import com.example.music.api.ApiClient;
 import com.example.music.api.ApiService;
 import com.example.music.response.RegisterResponse;
 import com.example.music.response.UserProfileResponse;
 import com.example.music.request.passRequest;
 import com.example.music.request.usernameRequest;
+import com.example.music.response.UsersResponse;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,14 +35,10 @@ public class ProfileRepository {
 
     // LiveData с данными профиля
     private final MutableLiveData<UserProfileResponse> userProfileLiveData = new MutableLiveData<>();
-
-    // LiveData для отслеживания успеха/неуспеха операций
-    private final MutableLiveData<Boolean> passwordChangeSuccess = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> usernameChangeSuccess = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> imageUploadSuccess = new MutableLiveData<>();
-
-    // LiveData для ошибок (опционально)
-    private final MutableLiveData<String> errorMessageLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> passwordChangeSuccess = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> usernameChangeSuccess = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> imageUploadSuccess = new MutableLiveData<>();
+    private final MutableLiveData<Event<String>> errorMessageLiveData = new MutableLiveData<>();
 
     private ProfileRepository() {
         // Инициализация ApiService через ваш ApiClient
@@ -61,19 +59,19 @@ public class ProfileRepository {
         return userProfileLiveData;
     }
 
-    public LiveData<Boolean> getPasswordChangeSuccess() {
+    public LiveData<Event<Boolean>> getPasswordChangeSuccess() {
         return passwordChangeSuccess;
     }
 
-    public LiveData<Boolean> getUsernameChangeSuccess() {
+    public LiveData<Event<Boolean>> getUsernameChangeSuccess() {
         return usernameChangeSuccess;
     }
 
-    public LiveData<Boolean> getImageUploadSuccess() {
+    public LiveData<Event<Boolean>> getImageUploadSuccess() {
         return imageUploadSuccess;
     }
 
-    public LiveData<String> getErrorMessageLiveData() {
+    public LiveData<Event<String>> getErrorMessageLiveData() {
         return errorMessageLiveData;
     }
 
@@ -86,35 +84,56 @@ public class ProfileRepository {
                     Log.d(TAG, "User profile fetched: " + response.body().getUsername());
                 } else {
                     Log.e(TAG, "Failed to fetch user profile: " + response.message());
-                    errorMessageLiveData.postValue("Не удалось загрузить профиль");
+                    errorMessageLiveData.postValue(new Event<>("Ошибка загрузки профиля"));
                 }
             }
 
             @Override
             public void onFailure(Call<UserProfileResponse> call, Throwable t) {
                 Log.e(TAG, "Network error while fetching profile: " + t.getMessage());
-                errorMessageLiveData.postValue("Ошибка сети при загрузке профиля");
+                errorMessageLiveData.postValue(new Event<>("Ошибка сети при загрузке профиля"));
             }
         });
     }
 
+    public void getUserById(int id){
+
+        apiService.getUserById(id).enqueue(new Callback<UserProfileResponse>() {
+            @Override
+            public void onResponse(Call<UserProfileResponse> call, Response<UserProfileResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    userProfileLiveData.postValue(response.body());
+                    Log.d(TAG, "Пользователь по id: " + response.body().getUsername());
+                }
+                else {
+                    Log.e(TAG, "Failed to fetch user profile: " + response.message());
+                    errorMessageLiveData.postValue(new Event<>("Не удалось загрузить профиль"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserProfileResponse> call, Throwable t) {
+
+            }
+        });
+    }
 
     public void changePassword(String currentPassword, String newPassword) {
         apiService.editPassword(new passRequest(currentPassword, newPassword)).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    passwordChangeSuccess.postValue(true);
+                    passwordChangeSuccess.postValue(new Event<>(true));
                     Log.d(TAG, "Password changed successfully");
                 } else {
-                    passwordChangeSuccess.postValue(false);
+                    passwordChangeSuccess.postValue(new Event<>(false));
                     Log.e(TAG, "Failed to change password: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                passwordChangeSuccess.postValue(false);
+                passwordChangeSuccess.postValue(new Event<>(false));
                 Log.e(TAG, "Network error: " + t.getMessage());
             }
         });
@@ -126,17 +145,17 @@ public class ProfileRepository {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    usernameChangeSuccess.postValue(true);
+                    usernameChangeSuccess.postValue(new Event<>(true));
                     Log.d(TAG, "Username changed successfully");
                 } else {
-                    usernameChangeSuccess.postValue(false);
+                    usernameChangeSuccess.postValue(new Event<>(false));
                     Log.e(TAG, "Failed to change username: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                usernameChangeSuccess.postValue(false);
+                usernameChangeSuccess.postValue(new Event<>(false));
                 Log.e(TAG, "Network error: " + t.getMessage());
             }
         });
@@ -156,19 +175,19 @@ public class ProfileRepository {
             @Override
             public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    imageUploadSuccess.postValue(true);
+                    imageUploadSuccess.postValue(new Event<>(true));
                     Log.d(TAG, "Profile image uploaded: " + response.body().toString());
                     // После успешной загрузки можно заново запросить профиль:
                     fetchUserProfile();
                 } else {
-                    imageUploadSuccess.postValue(false);
+                    imageUploadSuccess.postValue(new Event<>(false));
                     Log.e(TAG, "Failed to upload image: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<RegisterResponse> call, Throwable t) {
-                imageUploadSuccess.postValue(false);
+                imageUploadSuccess.postValue(new Event<>(false));
                 Log.e(TAG, "Network error: " + t.getMessage());
             }
         });

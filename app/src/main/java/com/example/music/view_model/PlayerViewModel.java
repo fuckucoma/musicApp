@@ -47,7 +47,6 @@ public class PlayerViewModel extends AndroidViewModel {
         Log.e("History","история :" + listeningHistoryLiveData.getValue().toString());
     }
 
-
     public LiveData<Boolean> isRepeatModeEnabled() {
         return isRepeatEnabled;
     }

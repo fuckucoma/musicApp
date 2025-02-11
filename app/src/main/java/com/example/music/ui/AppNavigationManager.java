@@ -66,7 +66,7 @@ public class AppNavigationManager {
             } else if (destId == R.id.homeFragment) {
                 bottomNavigationView.setVisibility(View.VISIBLE);
                 activity.findViewById(R.id.media_bar_container).setVisibility(View.GONE);
-            } else if (destId == R.id.profileFragment) {
+            } else if (destId == R.id.profileFragment|| destId == R.id.editProfileFragment) {
                 bottomNavigationView.setVisibility(View.GONE);
                 activity.findViewById(R.id.media_bar_container).setVisibility(View.GONE);
             }else if (destId == R.id.historyFragment){

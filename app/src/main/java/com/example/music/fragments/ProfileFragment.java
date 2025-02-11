@@ -67,7 +67,7 @@ public class ProfileFragment extends Fragment {
 
         Button btnChangePassword = view.findViewById(R.id.btn_change_password);
         Button btnChangeUsername = view.findViewById(R.id.btn_change_username);
-        Button btnLogout = view.findViewById(R.id.btnLogout);
+//        Button btnLogout = view.findViewById(R.id.btnLogout);
 
 
         ImageView btn_back = view.findViewById(R.id.btn_back);
@@ -88,7 +88,7 @@ public class ProfileFragment extends Fragment {
         });
         btnChangePassword.setOnClickListener(v -> handleChangePassword());
         btnChangeUsername.setOnClickListener(v -> handleChangeUsername());
-        btnLogout.setOnClickListener(v -> logoutUser());
+//        btnLogout.setOnClickListener(v -> logoutUser());
         ivProfilePicture.setOnClickListener(v->{
             openImageChooser();
         });
@@ -114,45 +114,50 @@ public class ProfileFragment extends Fragment {
     }
 
     private void observeViewModel() {
-
         profileViewModel.getUserProfile().observe(getViewLifecycleOwner(), userProfile -> {
             if (userProfile != null) {
-                Log.d(TAG, "User profile fetched: " + userProfile.getUsername());
                 populateUserData(userProfile);
             }
         });
 
-        profileViewModel.getPasswordChangeSuccess().observe(getViewLifecycleOwner(), success -> {
-            if (success == null) return;
-            if (success) {
-                Toast.makeText(getContext(), "Пароль успешно изменен", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getContext(), "Ошибка изменения пароля", Toast.LENGTH_SHORT).show();
+        profileViewModel.getPasswordChangeSuccess().observe(getViewLifecycleOwner(), event -> {
+            Boolean success = event != null ? event.getContentIfNotHandled() : null;
+            if (success != null) {
+                if (success) {
+                    Toast.makeText(getContext(), "Пароль успешно изменен", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Ошибка изменения пароля", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
-        profileViewModel.getUsernameChangeSuccess().observe(getViewLifecycleOwner(), success -> {
-            if (success == null) return;
-            if (success) {
-                Toast.makeText(getContext(), "Имя пользователя успешно изменено", Toast.LENGTH_SHORT).show();
-                profileViewModel.fetchUserProfile();
-            } else {
-                Toast.makeText(getContext(), "Ошибка изменения имени пользователя", Toast.LENGTH_SHORT).show();
+        profileViewModel.getUsernameChangeSuccess().observe(getViewLifecycleOwner(), event -> {
+            Boolean success = event != null ? event.getContentIfNotHandled() : null;
+            if (success != null) {
+                if (success) {
+                    Toast.makeText(getContext(), "Имя пользователя изменено", Toast.LENGTH_SHORT).show();
+                    profileViewModel.fetchUserProfile();
+                } else {
+                    Toast.makeText(getContext(), "Ошибка изменения имени", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
-        profileViewModel.getImageUploadSuccess().observe(getViewLifecycleOwner(), success -> {
-            if (success == null) return;
-            if (success) {
-                Toast.makeText(getContext(), "Изображение профиля обновлено", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getContext(), "Не удалось загрузить изображение", Toast.LENGTH_SHORT).show();
+        profileViewModel.getImageUploadSuccess().observe(getViewLifecycleOwner(), event -> {
+            Boolean success = event != null ? event.getContentIfNotHandled() : null;
+            if (success != null) {
+                if (success) {
+                    Toast.makeText(getContext(), "Изображение обновлено", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Ошибка загрузки", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
-        profileViewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMsg -> {
-            if (errorMsg != null && !errorMsg.isEmpty()) {
-                Toast.makeText(getContext(), errorMsg, Toast.LENGTH_SHORT).show();
+        profileViewModel.getErrorMessage().observe(getViewLifecycleOwner(), event -> {
+            String error = event != null ? event.getContentIfNotHandled() : null;
+            if (error != null) {
+                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -18,6 +18,7 @@ import com.example.music.service.MusicService;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -302,5 +303,28 @@ public class TrackRepository {
             }
         }
         return null;
+    }
+
+
+    public void shuffleTracks(PlaybackSource source) {
+        List<Track> trackList = getTrackListBySource(source); // Получаем список треков в зависимости от источника
+
+        if (trackList != null && trackList.size() > 1) {
+            // Перемешиваем список
+            Collections.shuffle(trackList);
+            updateTrackList(trackList, source);  // Обновляем список треков для выбранного источника
+        }
+    }
+
+    // Метод для обновления списка треков после перемешивания
+    private void updateTrackList(List<Track> shuffledTracks, PlaybackSource source) {
+        switch (source) {
+            case LIBRARY:
+                libraryTracksLiveData.postValue(shuffledTracks);
+                break;
+            case SEARCH:
+                searchTracksLiveData.postValue(shuffledTracks);
+                break;
+        }
     }
 }

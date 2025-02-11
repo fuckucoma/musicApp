@@ -72,14 +72,14 @@
             android:layout_height="wrap_content"
             android:text="email@example.com"
             android:textSize="16sp"
-            android:layout_marginBottom="8dp" /> -->
+            android:layout_marginBottom="8dp" />
         <Button
             android:id="@+id/change_profile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10sp"
             android:text="Изменить"
-            style="@style/Widget.Material3.Button.OutlinedButton"/>
+            style="@style/Widget.Material3.Button.OutlinedButton"/> -->
 
         <EditText
             android:id="@+id/et_current_password"
@@ -99,8 +99,7 @@
             android:id="@+id/btn_change_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
-            android:backgroundTint="@color/button_color"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:text="Изменить пароль" />
 
         <EditText
@@ -113,16 +112,15 @@
             android:id="@+id/btn_change_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
-            android:backgroundTint="@color/button_color"
-            android:text="Изменить имя пользователя" />
+            android:text="Изменить имя пользователя"
+            style="@style/Widget.Material3.Button.OutlinedButton"/>
 
-        <Button
+        <!-- <Button
             android:id="@+id/btnLogout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Выйти из системы"
-            style="@style/Widget.Material3.Button.OutlinedButton"/>
+            style="@style/Widget.Material3.Button.OutlinedButton"/> -->
 
     </LinearLayout>
 

@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
@@ -28,6 +30,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.test.BuildConfig;
 import com.example.test.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,11 +94,11 @@ public class UploadTrackActivity extends AppCompatActivity {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imageUri = data.getData();
             try {
-                InputStream inputStream = getContentResolver().openInputStream(imageUri);
-                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                Bitmap bitmap = correctImageOrientation(imageUri);
                 imageView.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
+                Toast.makeText(this, "Ошибка при выборе изображения", Toast.LENGTH_SHORT).show();
             }
         } else if (requestCode == PICK_AUDIO_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             audioUri = data.getData();
@@ -115,13 +118,17 @@ public class UploadTrackActivity extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient();
 
         try {
-            ParcelFileDescriptor imagePFD = getContentResolver().openFileDescriptor(imageUri, "r");
             ParcelFileDescriptor audioPFD = getContentResolver().openFileDescriptor(audioUri, "r");
 
-            if (imagePFD == null || audioPFD == null) {
-                Toast.makeText(this, "Ошибка при доступе к файлу", Toast.LENGTH_SHORT).show();
+            if (audioPFD == null) {
+                Toast.makeText(this, "Ошибка при доступе к аудиофайлу", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            Bitmap bitmap = correctImageOrientation(imageUri);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+            byte[] imageBytes = byteArrayOutputStream.toByteArray();
 
             String imageFileName = getFileNameFromUri(imageUri);
             String audioFileName = getFileNameFromUri(audioUri);
@@ -131,23 +138,7 @@ public class UploadTrackActivity extends AppCompatActivity {
                     .addFormDataPart("title", title)
                     .addFormDataPart("artist", artist)
                     .addFormDataPart("image", imageFileName,
-                            new RequestBody() {
-                                @Override
-                                public MediaType contentType() {
-                                    return MediaType.parse("image/jpeg");
-                                }
-
-                                @Override
-                                public void writeTo(okio.BufferedSink sink) throws IOException {
-                                    try (InputStream is = new FileInputStream(imagePFD.getFileDescriptor())) {
-                                        byte[] buffer = new byte[4096];
-                                        int read;
-                                        while ((read = is.read(buffer)) != -1) {
-                                            sink.write(buffer, 0, read);
-                                        }
-                                    }
-                                }
-                            })
+                            RequestBody.create(MediaType.parse("image/jpeg"), imageBytes))
                     .addFormDataPart("track", audioFileName,
                             new RequestBody() {
                                 @Override
@@ -225,5 +216,49 @@ public class UploadTrackActivity extends AppCompatActivity {
             }
         }
         return result;
+    }
+
+    private Bitmap correctImageOrientation(Uri imageUri) throws IOException {
+        // Получаем метаданные EXIF для изображения
+        ExifInterface exif = new ExifInterface(getContentResolver().openInputStream(imageUri));
+
+        // Получаем ориентацию изображения
+        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+
+        // Создаем Bitmap из URI
+        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+
+        // Исправляем ориентацию
+        Matrix matrix = new Matrix();
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.postRotate(90);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix.postRotate(180);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.postRotate(270);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                matrix.postScale(1, -1);
+                break;
+            default:
+                // Для других ориентаций ничего не делаем
+                return bitmap;
+        }
+
+        // Применяем матрицу для корректировки ориентации
+        Bitmap correctedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
+        // Освобождаем исходный Bitmap
+        if (bitmap != correctedBitmap) {
+            bitmap.recycle();
+        }
+
+        return correctedBitmap;
     }
 }
