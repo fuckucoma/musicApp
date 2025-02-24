@@ -13,11 +13,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -31,7 +34,9 @@ import com.example.test.BuildConfig;
 import com.example.test.R;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -55,6 +60,7 @@ public class UploadTrackActivity extends AppCompatActivity {
     private EditText artistEditText;
     private ImageView imageView;
     private TextView audioFileName;
+    private byte[] embeddedAlbumArtBytes = null;
 
     private static final String SERVER_URL = BuildConfig.BASE_URL +"/tracks/add-track";
 
@@ -91,7 +97,7 @@ public class UploadTrackActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             imageUri = data.getData();
             try {
                 Bitmap bitmap = correctImageOrientation(imageUri);
@@ -102,7 +108,39 @@ public class UploadTrackActivity extends AppCompatActivity {
             }
         } else if (requestCode == PICK_AUDIO_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             audioUri = data.getData();
-            audioFileName.setText("Файл выбран: " + audioUri.getLastPathSegment());
+            audioFileName.setText("Файл выбран: " + getFileNameFromUri(audioUri));
+            try {
+                extractMetadata(audioUri); // Автоматически заполняем поля
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void extractMetadata(Uri audioUri) throws IOException {
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        try {
+            retriever.setDataSource(this, audioUri);
+
+            String title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            String artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+            byte[] albumArt = retriever.getEmbeddedPicture();
+
+            if (title != null) titleEditText.setText(title);
+            if (artist != null) artistEditText.setText(artist);
+
+            if (albumArt != null) {
+                embeddedAlbumArtBytes = albumArt; // Запоминаем для дальнейшей загрузки
+                Bitmap bitmap = BitmapFactory.decodeByteArray(albumArt, 0, albumArt.length);
+                imageView.setImageBitmap(bitmap);
+            } else {
+                embeddedAlbumArtBytes = null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Ошибка извлечения метаданных", Toast.LENGTH_SHORT).show();
+        } finally {
+            retriever.release();
         }
     }
 
@@ -110,8 +148,19 @@ public class UploadTrackActivity extends AppCompatActivity {
         String title = titleEditText.getText().toString().trim();
         String artist = artistEditText.getText().toString().trim();
 
-        if (title.isEmpty() || artist.isEmpty() || imageUri == null || audioUri == null) {
-            Toast.makeText(this, "Пожалуйста, заполните все поля и выберите изображение и аудиофайл", Toast.LENGTH_SHORT).show();
+        if (title.isEmpty() || artist.isEmpty() || audioUri == null) {
+            Log.e("UploadTrack","Метаданные трека : " +
+                    " Название : " + title +
+                    " Имя артиста : " + artist +
+                    " Картинка (Uri) : " + imageUri +
+                    " Картинка (Embedded) : " + (embeddedAlbumArtBytes != null) +
+                    " Track : " + audioUri);
+            Toast.makeText(this, "Пожалуйста, заполните название, артиста и выберите аудиофайл", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (embeddedAlbumArtBytes == null && imageUri == null) {
+            Toast.makeText(this, "У трека нет встроенной обложки, выберите картинку вручную", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -125,12 +174,21 @@ public class UploadTrackActivity extends AppCompatActivity {
                 return;
             }
 
-            Bitmap bitmap = correctImageOrientation(imageUri);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-            byte[] imageBytes = byteArrayOutputStream.toByteArray();
+            byte[] imageBytes = null;
+            String imageFileName = null;
+            if (imageUri != null) {
+                Bitmap bitmap = correctImageOrientation(imageUri);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                imageBytes = byteArrayOutputStream.toByteArray();
+                imageFileName = getFileNameFromUri(imageUri);
 
-            String imageFileName = getFileNameFromUri(imageUri);
+                // 2) Иначе, если есть встроенная обложка
+            } else if(embeddedAlbumArtBytes != null) {
+                imageBytes = embeddedAlbumArtBytes;
+                imageFileName = "album_art.jpg";
+            }
+
             String audioFileName = getFileNameFromUri(audioUri);
 
             RequestBody requestBody = new MultipartBody.Builder()

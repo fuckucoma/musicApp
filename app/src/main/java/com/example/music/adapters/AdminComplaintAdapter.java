@@ -37,16 +37,26 @@ public class AdminComplaintAdapter extends RecyclerView.Adapter<AdminComplaintAd
     public void onBindViewHolder(@NonNull ComplaintViewHolder holder, int position) {
         Complaint complaint = complaintList.get(position);
 
-        // Здесь важно, чтобы complaint.getUser() != null
-        // Иначе будет NPE
+        // Заполняем данные
         if (complaint.getUser() != null) {
             holder.userName.setText(complaint.getUser().getUsername());
         } else {
             holder.userName.setText("Unknown User");
         }
-
         holder.message.setText(complaint.getMessage());
         holder.status.setText(complaint.getStatus());
+
+        // Если статус "решено" или "отказано", окрашиваем элемент/делаем его полупрозрачным и т.п.
+        if ("решено".equals(complaint.getStatus()) || "отказано".equals(complaint.getStatus())) {
+            // Пример: делаем текст серым и полупрозрачным
+            holder.itemView.setAlpha(0.5f);
+        } else {
+            // Стандартный вид, если статус ещё "ожидается" или иной
+            holder.itemView.setAlpha(1.0f);
+            holder.itemView.setBackgroundColor(
+                    context.getResources().getColor(android.R.color.transparent)
+            );
+        }
 
         holder.resolveButton.setOnClickListener(v -> updateComplaintStatus(complaint, "решено"));
         holder.rejectButton.setOnClickListener(v -> updateComplaintStatus(complaint, "отказано"));
@@ -56,8 +66,11 @@ public class AdminComplaintAdapter extends RecyclerView.Adapter<AdminComplaintAd
         AdminRepository.getInstance().updateComplaintStatus(complaint.getId(), status, new AdminRepository.MyCallback<Void>() {
             @Override
             public void onSuccess(Void data) {
-                complaint.setStatus(status);  // Обновляем статус в локальном списке
-                notifyDataSetChanged();
+                complaint.setStatus(status);
+                int position = complaintList.indexOf(complaint);
+                if (position != -1) {
+                    notifyItemChanged(position);   // Обновляем только изменённый элемент
+                }
             }
 
             @Override

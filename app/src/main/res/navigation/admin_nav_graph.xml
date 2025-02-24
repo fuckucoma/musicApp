@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@+id/adminDashboardFragment">
+
+    <fragment
+        android:id="@+id/adminDashboardFragment"
+        android:name="com.example.music.AdminPanel.AdminDashboardFragment"
+        android:label="Dashboard"
+        tools:layout="@layout/fragment_admin_dashboard" />
+
+    <fragment
+        android:id="@+id/complaintFragment"
+        android:name="com.example.music.AdminPanel.ComplaintFragment"
+        android:label="Complaints"
+        tools:layout="@layout/fragment_complaints" />
+
+    <fragment
+        android:id="@+id/reviewFragment"
+        android:name="com.example.music.AdminPanel.ReviewFragment"
+        android:label="Reviews"
+        tools:layout="@layout/fragment_review" />
+
+    <fragment
+        android:id="@+id/trackManagmentFragment"
+        android:name="com.example.music.AdminPanel.TrackManagmentFragment"
+        android:label="Tracks"
+        tools:layout="@layout/fragment_track_managment" />
+
+</navigation>

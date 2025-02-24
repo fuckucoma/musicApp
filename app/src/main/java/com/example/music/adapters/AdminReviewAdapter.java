@@ -54,31 +54,23 @@ public class AdminReviewAdapter extends RecyclerView.Adapter<AdminReviewAdapter.
     public void onBindViewHolder(@NonNull ReviewViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Review review = reviewList.get(position);
 
+        // Имя пользователя
         if (review.getUser() != null) {
             holder.userName.setText(review.getUser().getUsername());
 
-            profileViewModel.getUserProfile().observe((LifecycleOwner) context, userProfile -> {
-                if (userProfile != null && userProfile.getProfileImageUrl() != null) {
-                    // Загрузка изображения аватарки пользователя через Glide
-                    Glide.with(context)
-                            .load(userProfile.getProfileImageUrl())
-                            .placeholder(R.drawable.placeholder_image)
-                            .into(holder.review_user_avatar);
-                } else {
-                    holder.review_user_avatar.setImageResource(R.drawable.placeholder_image);
-                }
-            });
-            Log.d("ADMIN", "url: " + review.getUser().getProfileImageUrl());
+            // Берём URL напрямую из review.getUser().getProfileImageUrl()
+            String avatarUrl = review.getUser().getProfileImageUrl();
+            Log.d("ADMIN", "url: " + avatarUrl);
+
+            Glide.with(context)
+                    .load(avatarUrl)
+                    .placeholder(R.drawable.placeholder_image)
+                    .into(holder.review_user_avatar);
 
         } else {
             holder.userName.setText("Unknown User");
+            holder.review_user_avatar.setImageResource(R.drawable.placeholder_image);
         }
-
-//        if (review.getTrack() != null) {
-//            holder.trackTitle.setText(review.getTrack().getTitle());
-//        } else {
-//            holder.trackTitle.setText("Unknown Track");
-//        }
 
         holder.rating.setText("Rating: " + review.getRating());
         holder.content.setText(review.getContent());

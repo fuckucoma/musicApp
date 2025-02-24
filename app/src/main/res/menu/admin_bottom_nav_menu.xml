@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/adminDashboardFragment"
+    android:icon="@drawable/dashboard"
+    android:title="Статистика" />
+
+    <item
+        android:id="@+id/complaintFragment"
+    android:icon="@drawable/complaint"
+    android:title="Жалобы" />
+
+    <item
+        android:id="@+id/reviewFragment"
+        android:icon="@drawable/review"
+        android:title="Отзывы" />
+
+    <item
+        android:id="@+id/trackManagmentFragment"
+        android:icon="@drawable/songs"
+        android:title="Треки" />
+</menu>

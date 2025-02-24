@@ -6,6 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 
 import com.example.test.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -28,48 +31,12 @@ public class AdminActivity extends AppCompatActivity {
 
         bottomNavigationView = findViewById(R.id.admin_bottom_navigation);
 
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
+        NavHostFragment navHostFragment = (NavHostFragment)
+                getSupportFragmentManager().findFragmentById(R.id.admin_nav_host_fragment);
 
-            if (item.getItemId() == R.id.navigation_dashboard) {
-                if (dashboardFragment == null) {
-                    dashboardFragment = new AdminDashboardFragment();
-                }
-                selectedFragment = dashboardFragment;
-            } else if (item.getItemId() == R.id.navigation_complaints) {
-                if (complaintFragment == null) {
-                    complaintFragment = new ComplaintFragment();
-                }
-                selectedFragment = complaintFragment;
-            } else if (item.getItemId() == R.id.navigation_reviews) {
-                if (reviewFragment == null) {
-                    reviewFragment = new ReviewFragment();
-                }
-                selectedFragment = reviewFragment;
-            } else if (item.getItemId() == R.id.navigation_tracks) {
-                if (trackManagmentFragment == null) {
-                    trackManagmentFragment = new TrackManagmentFragment();
-                }
-                selectedFragment = trackManagmentFragment;
-            }
+        NavController navController = navHostFragment.getNavController();
 
-            if (selectedFragment != null) {
-                currentFragment = selectedFragment;
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.admin_fragment_container, selectedFragment)
-                        .commit();
-            }
+        NavigationUI.setupWithNavController(bottomNavigationView, navController);
 
-            return true;
-        });
-
-        if (savedInstanceState == null) {
-            dashboardFragment = new AdminDashboardFragment();
-            currentFragment = dashboardFragment;
-
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.admin_fragment_container, dashboardFragment)
-                    .commit();
-        }
     }
 }

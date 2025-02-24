@@ -7,15 +7,24 @@ public class User {
     private String profileImageUrl;
     private int id;
 
-    public int getId() {
-        return id;
+    public User() {
     }
 
+    // Дополнительный конструктор (по необходимости)
     public User(String username, String password) {
         this.username = username;
         this.password = password;
     }
-    public User(int id) {
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
         this.id = id;
     }
 

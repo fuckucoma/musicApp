@@ -30,7 +30,6 @@ public class PlayerViewModel extends AndroidViewModel {
     private LiveData<Long> duration;
     private LiveData<Long> currentPosition;
     private Handler seekBarHandler = new Handler(Looper.getMainLooper());
-    private List<Track> currentTrackList = new ArrayList<>();
     private LiveData<Boolean> isRepeatEnabled;
     private MutableLiveData<List<Track>> listeningHistoryLiveData = new MutableLiveData<>(new ArrayList<>());
 
@@ -80,6 +79,7 @@ public class PlayerViewModel extends AndroidViewModel {
         return duration;
     }
 
+
     public LiveData<Long> getCurrentPosition() {
         return currentPosition;
     }
@@ -118,6 +118,10 @@ public class PlayerViewModel extends AndroidViewModel {
 
     public LiveData<List<Track>> getListeningHistory() {
         return listeningHistoryLiveData;
+    }
+
+    public LiveData<List<Track>> getTracks(){
+        return  trackRepository.getFeedTracks();
     }
 
     public List<Track> getHistoryTracksPreferences() {
