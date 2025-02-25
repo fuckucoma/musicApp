@@ -1,6 +1,7 @@
 package com.example.music.fragments;
 
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -48,6 +50,7 @@ import java.util.List;
 
 public class PlayerFragment extends Fragment {
 
+    private NestedScrollView scrollContainer;
     private ImageView albumArt;
     private TextView trackTitle, name_artist, current_duration, song_max_duration;
     private SeekBar seekBar;
@@ -69,6 +72,7 @@ public class PlayerFragment extends Fragment {
     private Handler handler = new Handler(Looper.getMainLooper());
 
     private int currentUserId = -1;
+    private int oldReviewCount = -1;
 
     private Runnable updateSeekBarRunnable = new Runnable() {
         @Override
@@ -105,6 +109,7 @@ public class PlayerFragment extends Fragment {
         btn_more = view.findViewById(R.id.btn_more);
         btn_back = view.findViewById(R.id.btn_back);
         btn_shuffle = view.findViewById(R.id.btn_shuffle);
+        scrollContainer = view.findViewById(R.id.scroll_container);
 
         profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
 
@@ -143,14 +148,27 @@ public class PlayerFragment extends Fragment {
                 reviewsRecyclerView.setAdapter(reviewAdapter);
 
                 reviewViewModel.getReviewsLiveData().observe(getViewLifecycleOwner(), reviews -> {
+                    int newCount = reviews.size();
+                    boolean shouldScroll = false;
+                    if (oldReviewCount != -1 && newCount > oldReviewCount) {
+                        shouldScroll = true;
+                    }
                     reviewList.clear();
                     reviewList.addAll(reviews);
                     reviewAdapter.notifyDataSetChanged();
+                    if (shouldScroll) {
+                        scrollContainer.post(() -> {
+                            int startY = scrollContainer.getScrollY();
+                            int targetY = scrollContainer.getChildAt(0).getBottom();
+                            ObjectAnimator animator = ObjectAnimator.ofInt(scrollContainer, "scrollY", startY, targetY);
+                            animator.setDuration(500); // Длительность анимации в миллисекундах
+                            animator.start();
+                        });
+                    }
+                    oldReviewCount = newCount;
                 });
             }
         });
-
-
 
         playerViewModel.getCurrentTrack().observe(getViewLifecycleOwner(), track -> {
             if (track != null) {

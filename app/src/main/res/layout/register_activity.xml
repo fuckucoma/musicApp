@@ -25,6 +25,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Имя пользователя"
+            app:counterEnabled="true"
+            app:counterMaxLength="16"
             app:cursorErrorColor="@color/cursor_color_light"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
@@ -41,13 +43,15 @@
             android:layout_height="wrap_content"
             android:hint="Пароль"
             app:endIconMode="password_toggle"
-            android:layout_marginBottom="3dp"
+            app:counterEnabled="true"
+            app:counterMaxLength="20"
             app:cursorErrorColor="@color/cursor_color_light"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+
                 android:inputType="textPassword" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -59,6 +63,8 @@
             android:hint="Подтвердите пароль"
             app:endIconMode="password_toggle"
             android:layout_marginBottom="30dp"
+            app:counterEnabled="true"
+            app:counterMaxLength="20"
             app:cursorErrorColor="@color/cursor_color_light"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 

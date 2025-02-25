@@ -84,6 +84,21 @@ public class RegisterActivity extends AppCompatActivity {
             return false;
         }
 
+        if (username.length() > 16) {
+            etUsername.setError("Максимальная длина имени пользователя - 16 символов");
+            return false;
+        }
+
+        if (password.length() > 20) {
+            etPassword.setError("Максимальная длина пароля - 20 символов");
+            return false;
+        }
+
+        if (confirmPassword.length() > 20) {
+            etConfirmPassword.setError("Максимальная длина пароля - 20 символов");
+            return false;
+        }
+
         if (!password.equals(confirmPassword)) {
             etConfirmPassword.setError("Пароли не совпадают");
             return false;

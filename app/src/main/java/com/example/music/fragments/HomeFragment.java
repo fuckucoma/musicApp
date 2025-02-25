@@ -39,6 +39,7 @@ public class HomeFragment extends Fragment {
     private HomeViewModel homeViewModel;
     private FavoriteRepository favoriteRepository;
     private boolean isFetchingTracks = false;
+    private boolean hasAnimated = false;
 
 
     @Nullable
@@ -57,6 +58,20 @@ public class HomeFragment extends Fragment {
                 this::onItemClicked, this::onFavoriteClicked,feedPlayerViewModel);
 
         viewPager.setAdapter(homeAdapter);
+
+        if (!hasAnimated) {
+            viewPager.postDelayed(() -> {
+                viewPager.animate()
+                        .translationY(50)  // сдвиг вниз на 50 пикселей
+                        .setDuration(300)
+                        .withEndAction(() -> viewPager.animate()
+                                .translationY(0)
+                                .setDuration(300)
+                                .start())
+                        .start();
+                hasAnimated = true;  // Анимация сыграна, теперь флаг true
+            }, 1000);
+        } // задержка 500 мс после входа на экран
 
         // При скролле ViewPager2 - когда страница выбирается:
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {

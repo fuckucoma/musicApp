@@ -60,7 +60,8 @@
             android:inputType="textMultiLine"
             android:text="Review content"
             android:textColor="@color/true_text_color"
-            tools:ignore="TextViewEdits" />
+            android:autoLink="none"
+            tools:ignore="HardcoreText" />
 
     </LinearLayout>
 
